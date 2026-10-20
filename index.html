@@ -6,11 +6,20 @@
 <title>Job Site Weather</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
 <style>
-:root{color-scheme:light dark;--bg:#eef1f3;--card:#fff;--ink:#16212b;--mut:#5b6b78;--line:#cfd7dd;--acc:#e8710a;--bad:#c0392b;--field:#f6f8f9}
-@media (prefers-color-scheme:dark){:root{--bg:#10171d;--card:#18222b;--ink:#e8eef2;--mut:#93a4b1;--line:#2c3a45;--acc:#f28a2e;--bad:#ff6b5b;--field:#111a21}}
+:root{color-scheme:light dark;--bg:#eef1f3;--card:#fff;--ink:#16212b;--mut:#5b6b78;--line:#cfd7dd;--acc:#e8710a;--bad:#c0392b;--field:#f6f8f9;--hero:#0f3c6f;--link:#0f3c6f}
+@media (prefers-color-scheme:dark){:root{--bg:#10171d;--card:#18222b;--ink:#e8eef2;--mut:#93a4b1;--line:#2c3a45;--acc:#f28a2e;--bad:#ff6b5b;--field:#111a21;--hero:#0f3c6f;--link:#f3a607}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
-main{max-width:1000px;margin:0 auto;padding:20px 16px 48px}
+main{max-width:1000px;margin:0 auto;padding:18px 16px 48px}
+.hero{background:var(--hero);color:#fff;border-bottom:4px solid var(--acc);padding:8px 16px 12px}
+.hero .in{max-width:1000px;margin:0 auto;display:flex;flex-wrap:wrap;gap:4px 22px;align-items:center}
+.hero img{height:62px;max-width:100%;object-fit:contain;display:block}
+.hero h1{color:#fff}.hero .sub{color:#c9d4dc;margin:2px 0 0}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin:0 0 14px}
+.cardsite{text-align:left;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--acc);border-radius:8px;padding:10px 12px;line-height:1.3}
+.cardsite.bad{border-left-color:var(--bad)}
+.cardsite .n{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cardsite .tmp{font-size:1.55rem;font-weight:700}
 h1{margin:0;font-size:1.9rem;line-height:1.15}
 h2{margin:28px 0 10px;font-size:1.3rem}
 .sub{color:var(--mut);margin:4px 0 14px}
@@ -30,13 +39,13 @@ th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);font-
 th{color:var(--mut);font-weight:600}tr:last-child td{border-bottom:0}
 td.bad{color:var(--bad)}td.none{color:var(--mut)}.t{font-size:.78rem;color:var(--mut)}
 .note{color:var(--mut);font-size:.88rem;margin-top:10px}
-a{color:var(--acc)}
+a{color:var(--link)}
 </style>
 </head>
 <body>
+<header class="hero"><div class="in"><img id="logo" alt="" hidden><div><h1 id="title">Job site weather</h1><p class="sub" id="status">Loading sites…</p></div></div></header>
 <main>
-  <h1>Job site weather</h1>
-  <p class="sub" id="status">Loading sites…</p>
+  <div class="cards" id="cards"></div>
   <div id="map" role="application" aria-label="Map of job sites with weather"></div>
   <div class="bar">
     <label style="margin:0"><input type="checkbox" id="radar" checked style="width:auto"> Rain radar</label>
@@ -62,7 +71,11 @@ a{color:var(--acc)}
 <script>
 (function(){
   var TZ="America/Chicago";
+  // ---- CUSTOMIZE HERE ----
+  var CONFIG={company:"The Walker Associates",title:"Job site weather",accent:"#f3a607",logo:"logo.png"}; // logo: name of an image file uploaded to the repository, e.g. "logo.png"
   var $=function(i){return document.getElementById(i)};
+  document.title=CONFIG.company+" | "+CONFIG.title;$("title").textContent=CONFIG.title;document.documentElement.style.setProperty("--acc",CONFIG.accent);
+  if(CONFIG.logo){$("logo").src=CONFIG.logo;$("logo").alt=CONFIG.company;$("logo").hidden=false}
   function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
   function bad(c){return /rain|drizzle|shower|thunder|snow|freezing/i.test(c||"")}
   function emoji(c){c=(c||"").toLowerCase();
@@ -99,9 +112,10 @@ a{color:var(--acc)}
     function step(){frames.forEach(function(f,i){f.setOpacity(i===idx?0.65:0)});
       var ago=50-5*idx;$("radarTime").textContent=ago?ago+" min ago":"Now";idx=(idx+1)%frames.length}
     step();timer=setInterval(step,700)};
+  $("cards").onclick=function(e){var b=e.target.closest("button");if(!b)return;var i=+b.dataset.i,s=SITES[i];map.flyTo([s.lat,s.lon],11);markers[i].openPopup();window.scrollTo({top:$("map").offsetTop-12,behavior:"smooth"})};
   $("radar").onchange=function(){if(this.checked){map.addLayer(cur)}else{stop();map.removeLayer(cur)}};
 
-  var SITES=[],READ=[],LIVE=[];
+  var SITES=[],READ=[],LIVE=[],markers=[];
   var todayStr=new Date().toLocaleDateString("en-CA",{timeZone:TZ});
 
   function loggedToday(name){
@@ -111,13 +125,16 @@ a{color:var(--acc)}
     return out.length?"<hr style='margin:6px 0'><b>Logged today</b><br>"+out.join("<br>"):""}
 
   function drawPins(){
-    var pts=[];
+    var pts=[],cards="",nbad=0;
     SITES.forEach(function(s,i){
       var l=LIVE[i],t=l?Math.round(l.temperature_2m)+"°":"?",c=l?label(l.weather_code,l.is_day):"",b=bad(c);
       var html='<div class="pin'+(b?" bad":"")+'"><b>'+t+"</b> "+(l?emoji(c):"")+"<small>"+esc(s.name)+"</small></div>";
       var m=L.marker([s.lat,s.lon],{icon:L.divIcon({className:"",html:html,iconSize:[0,0]}),title:s.name}).addTo(map);
       m.bindPopup("<b>"+esc(s.name)+"</b><br>"+(l?"Now: "+t+" "+esc(c)+"<br>Wind "+Math.round(l.wind_speed_10m)+" mph, rain "+l.precipitation+" in":"Live weather unavailable")+loggedToday(s.name));
-      pts.push([s.lat,s.lon])});
+      pts.push([s.lat,s.lon]);markers.push(m);
+      cards+='<button class="cardsite'+(b?" bad":"")+'" data-i="'+i+'"><div class="n">'+esc(s.name)+'</div><div class="tmp">'+(l?emoji(c)+" "+t:"?")+'</div><div class="t">'+(l?esc(c)+" &middot; wind "+Math.round(l.wind_speed_10m)+" mph":"No live data")+"</div></button>";if(b)nbad++});
+    $("cards").innerHTML=cards;
+    if(nbad)$("status").textContent+=" "+nbad+" of "+SITES.length+(nbad===1?" site has":" sites have")+" rain or storms right now.";
     if(pts.length===1)map.setView(pts[0],10);else if(pts.length)map.fitBounds(pts,{padding:[60,60],maxZoom:11})}
 
   function loadLive(){
