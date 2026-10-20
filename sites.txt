@@ -4,3 +4,5 @@
 # Lines starting with # are ignored. Replace the two examples below with your real sites.
 Buck Creek Road, 31.255262, -89.043895
 Bexley Road, 31.000784, -88.645116
+Asbury Hospice, 31.320798, -89.345813
+Hood Waynesboro, 31.656256, -88.631691
