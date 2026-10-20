@@ -1,6 +1,18 @@
 [
 {
 "date": "2026-10-19",
+"site": "131-24.04 Site D",
+"overnight_rain_in": 0.0,
+"temp_8am_f": 50,
+"am_rain_in": 0.0,
+"am_conditions": "Sunny",
+"temp_12pm_f": 67,
+"pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"temp_5pm_f": 73
+},
+{
+"date": "2026-10-19",
 "site": "Bexley Road",
 "overnight_rain_in": 0.0,
 "temp_8am_f": 52,
@@ -8,7 +20,8 @@
 "am_conditions": "Sunny",
 "temp_12pm_f": 68,
 "pm_rain_in": 0.0,
-"pm_conditions": "Sunny"
+"pm_conditions": "Sunny",
+"temp_5pm_f": 74
 },
 {
 "date": "2026-10-19",
@@ -19,18 +32,34 @@
 "am_conditions": "Sunny",
 "temp_12pm_f": 70,
 "pm_rain_in": 0.0,
-"pm_conditions": "Sunny"
+"pm_conditions": "Sunny",
+"temp_5pm_f": 76
+},
+{
+"date": "2026-10-20",
+"site": "131-24.04 Site D",
+"overnight_rain_in": 0.0,
+"temp_8am_f": 51,
+"am_rain_in": 0.0,
+"am_conditions": "Sunny",
+"temp_12pm_f": 69
 },
 {
 "date": "2026-10-20",
 "site": "Bexley Road",
 "overnight_rain_in": 0.0,
-"temp_8am_f": 52
+"temp_8am_f": 53,
+"am_rain_in": 0.0,
+"am_conditions": "Sunny",
+"temp_12pm_f": 70
 },
 {
 "date": "2026-10-20",
 "site": "Buck Creek Road",
 "overnight_rain_in": 0.0,
-"temp_8am_f": 50
+"temp_8am_f": 50,
+"am_rain_in": 0.0,
+"am_conditions": "Sunny",
+"temp_12pm_f": 72
 }
 ]
