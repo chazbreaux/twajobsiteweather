@@ -50,7 +50,7 @@ button{cursor:pointer;font-weight:600}
 .filters{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px;align-items:end}
 label{display:block;font-size:.85rem;color:var(--mut);margin-bottom:3px}
 .wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:8px}
-table{border-collapse:collapse;width:100%;min-width:1000px}
+table{border-collapse:collapse;width:100%;min-width:1100px}
 th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);font-size:.92rem;vertical-align:top}
 th{color:var(--mut);font-weight:600}tr:last-child td{border-bottom:0}
 td.bad{color:var(--bad)}td.none{color:var(--mut)}
@@ -102,7 +102,7 @@ a{color:var(--link)}
   <div class="wrap"><table>
     <thead><tr><th>Date</th><th>Site</th>
       <th>Overnight rain<div class="t">17:01 to 08:00</div></th><th>08:00 temp</th><th>AM conditions<div class="t">08:00 to 11:59</div></th><th>AM rain<div class="t">08:01 to 11:59</div></th>
-      <th>12:00 temp</th><th>PM conditions<div class="t">12:00 to 16:59</div></th><th>PM rain<div class="t">12:01 to 16:59</div></th></tr></thead>
+      <th>12:00 temp</th><th>PM conditions<div class="t">12:00 to 16:59</div></th><th>PM rain<div class="t">12:01 to 16:59</div></th><th>17:00 temp</th></tr></thead>
     <tbody id="rows"></tbody>
   </table></div>
   <div class="bar"><span id="count"></span><button id="more" hidden>Show 100 more</button></div>
@@ -222,7 +222,7 @@ a{color:var(--link)}
     if(!r)return"<hr style='margin:6px 0'><b>Today&rsquo;s record</b><br>Not recorded yet.";
     var rn=function(v){return v==null?"&mdash;":v.toFixed(2)+" in"},tp=function(v){return v==null?"&mdash;":Math.round(v)+"°F"};
     return"<hr style='margin:6px 0'><b>Today&rsquo;s record</b><br>Overnight rain: "+rn(r.overnight_rain_in)+"<br>08:00 temp: "+tp(r.temp_8am_f)+"<br>AM: "+(r.am_conditions?esc(r.am_conditions)+", "+rn(r.am_rain_in):"&mdash;")+
-      "<br>12:00 temp: "+tp(r.temp_12pm_f)+"<br>PM: "+(r.pm_conditions?esc(r.pm_conditions)+", "+rn(r.pm_rain_in):"&mdash;")}
+      "<br>12:00 temp: "+tp(r.temp_12pm_f)+"<br>PM: "+(r.pm_conditions?esc(r.pm_conditions)+", "+rn(r.pm_rain_in):"&mdash;")+"<br>17:00 temp: "+tp(r.temp_5pm_f)}
 
   function render(){
     var items=[],nrain=0,groups={},top=0;
@@ -286,8 +286,8 @@ a{color:var(--link)}
     rows.sort(function(a,b){return a.date<b.date?1:a.date>b.date?-1:(a.site<b.site?-1:1)});
     var any=SITES.some(function(s){return s.history});
     $("rows").innerHTML=rows.slice(0,SHOW).map(function(r){
-      return'<tr><td class="h">'+fmtDate(r.date)+'</td><td class="h">'+esc(r.site)+"</td>"+rainCell(r.overnight_rain_in,"Overnight rain")+tempCell(r.temp_8am_f,"08:00 temp")+condCell(r.am_conditions,"AM conditions")+rainCell(r.am_rain_in,"AM rain")+tempCell(r.temp_12pm_f,"12:00 temp")+condCell(r.pm_conditions,"PM conditions")+rainCell(r.pm_rain_in,"PM rain")+"</tr>"}).join("")||
-      '<tr><td colspan="9" class="none">'+(any?"No records yet. Each day fills in as the morning and afternoon pass.":"No sites are set up for history yet. Add <b>, history</b> to the end of a site&rsquo;s line in sites.txt.")+"</td></tr>";
+      return'<tr><td class="h">'+fmtDate(r.date)+'</td><td class="h">'+esc(r.site)+"</td>"+rainCell(r.overnight_rain_in,"Overnight rain")+tempCell(r.temp_8am_f,"08:00 temp")+condCell(r.am_conditions,"AM conditions")+rainCell(r.am_rain_in,"AM rain")+tempCell(r.temp_12pm_f,"12:00 temp")+condCell(r.pm_conditions,"PM conditions")+rainCell(r.pm_rain_in,"PM rain")+tempCell(r.temp_5pm_f,"17:00 temp")+"</tr>"}).join("")||
+      '<tr><td colspan="10" class="none">'+(any?"No records yet. Each day fills in as the morning and afternoon pass.":"No sites are set up for history yet. Add <b>, history</b> to the end of a site&rsquo;s line in sites.txt.")+"</td></tr>";
     $("count").textContent=rows.length?"Showing "+Math.min(SHOW,rows.length)+" of "+rows.length+" entries":"";
     $("more").hidden=rows.length<=SHOW}
   [hs,hf,ht].forEach(function(e){e.onchange=function(){SHOW=100;drawHistory()}});
