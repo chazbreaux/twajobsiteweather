@@ -2,16 +2,16 @@ name: Log weather
 
 on:
   schedule:
-    # Central time is UTC-5 in summer and UTC-6 in winter, so this runs at both
-    # possible UTC hours. The script only records when it is the right hour in
-    # Central time (8 am, 12 noon, 5 pm) and skips anything already recorded.
+    # Runs shortly after 08:00, 12:00 and 17:00 Central so each part of the day is
+    # recorded as soon as it is complete. Central time is UTC-5 in summer and UTC-6
+    # in winter, so it runs at both possible UTC hours; the extra runs change nothing.
     - cron: "5 13,14,17,18,22,23 * * *"
   workflow_dispatch:
     inputs:
-      force:
-        description: "Record a reading right now (replaces that time slot's reading)"
-        type: boolean
-        default: false
+      backfill_days:
+        description: "Optional: also fill in this many past days (up to 90). Leave 0 for normal use."
+        type: string
+        default: "0"
 
 permissions:
   contents: write
@@ -30,7 +30,7 @@ jobs:
           python-version: "3.12"
       - name: Record weather
         env:
-          FORCE: ${{ inputs.force }}
+          BACKFILL_DAYS: ${{ inputs.backfill_days }}
         run: |
           mkdir -p data
           python log_weather.py
@@ -39,4 +39,4 @@ jobs:
           git config user.name "weather-bot"
           git config user.email "weather-bot@users.noreply.github.com"
           git add data
-          git diff --cached --quiet || (git commit -m "Weather readings $(date -u +%Y-%m-%dT%H:%MZ)" && git pull --rebase && git push)
+          git diff --cached --quiet || (git commit -m "Weather records $(date -u +%Y-%m-%dT%H:%MZ)" && git pull --rebase && git push)
