@@ -2,52 +2,46 @@
 """
 Job site weather logger (runs automatically on GitHub Actions).
 
-Reads the site list from sites.txt, gets current temperature and conditions for
-each site from the free Open-Meteo service, and saves one reading per site for
-the 8 am, 12 noon and 5 pm Central-time slots into data/readings.json and
-data/readings.csv.
+Only sites marked with ", history" in sites.txt are logged. For each of them it
+builds one record per day from hourly weather data (Central time):
+
+  overnight_rain_in   rain from 17:01 the previous day to 08:00
+  temp_8am_f          temperature at 08:00
+  am_conditions       Sunny / Partly cloudy / Cloudy (average cloud cover 08:00-11:59),
+                      or Rain (or Snow) if any precipitation fell in that window
+  am_rain_in          rain from 08:01 to 11:59
+  temp_12pm_f         temperature at 12:00
+  pm_conditions       same method for 12:00-16:59
+  pm_rain_in          rain from 12:01 to 16:59
+
+Each run fills in whatever parts of today (and yesterday) are complete, so it is
+safe to run any time, and a missed run is caught up by the next one.
+Results are saved to data/daily.json and data/daily.csv.
 """
 import csv
 import json
 import os
+import re
 import sys
 import time
 import urllib.parse
 import urllib.request
-from datetime import datetime
+from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
 TZ = ZoneInfo("America/Chicago")
-SLOTS = {8: "Morning", 12: "Midday", 17: "Afternoon"}  # Central-time hours
-
 HERE = os.path.dirname(os.path.abspath(__file__))
 SITES_PATH = os.path.join(HERE, "sites.txt")
 DATA_DIR = os.path.join(HERE, "data")
-JSON_PATH = os.path.join(DATA_DIR, "readings.json")
-CSV_PATH = os.path.join(DATA_DIR, "readings.csv")
-FIELDS = ["date", "slot", "time", "site", "temp_f", "conditions", "wind_mph", "precip_in"]
+JSON_PATH = os.path.join(DATA_DIR, "daily.json")
+CSV_PATH = os.path.join(DATA_DIR, "daily.csv")
+FIELDS = ["date", "site", "overnight_rain_in", "temp_8am_f", "am_conditions",
+          "am_rain_in", "temp_12pm_f", "pm_conditions", "pm_rain_in"]
 
-CODES = {
-    45: "Foggy", 48: "Foggy",
-    51: "Drizzle", 53: "Drizzle", 55: "Drizzle", 56: "Freezing drizzle", 57: "Freezing drizzle",
-    61: "Light rain", 63: "Rainy", 65: "Heavy rain", 66: "Freezing rain", 67: "Freezing rain",
-    71: "Light snow", 73: "Snowy", 75: "Heavy snow", 77: "Snowy",
-    80: "Rain showers", 81: "Rain showers", 82: "Heavy rain showers",
-    85: "Snow showers", 86: "Snow showers",
-    95: "Thunderstorms", 96: "Thunderstorms with hail", 99: "Thunderstorms with hail",
-}
-
-
-def label(code, is_day):
-    if code == 0:
-        return "Sunny" if is_day else "Clear"
-    if code == 1:
-        return "Mostly sunny" if is_day else "Mostly clear"
-    if code == 2:
-        return "Partly cloudy"
-    if code == 3:
-        return "Cloudy"
-    return CODES.get(code, "Unknown")
+RAIN_MIN = 0.01                 # inches; anything at or above this counts as rain
+SUNNY_BELOW, CLOUDY_FROM = 25, 70   # average cloud cover (%) cut-offs
+SNOW_CODES = {71, 73, 75, 77, 85, 86}
+FLAG = re.compile(r",\s*(history|log|yes)\s*$", re.I)
 
 
 def load_sites():
@@ -57,101 +51,151 @@ def load_sites():
             line = line.strip()
             if not line or line.startswith("#"):
                 continue
+            history = bool(FLAG.search(line))
+            line = FLAG.sub("", line)
             try:
                 name, lat, lon = line.rsplit(",", 2)
-                sites.append({"name": name.strip(), "lat": float(lat), "lon": float(lon)})
+                sites.append({"name": name.strip(), "lat": float(lat), "lon": float(lon), "history": history})
             except ValueError:
                 print("Skipping line (use: Name, latitude, longitude): %s" % line, file=sys.stderr)
     return sites
 
 
-def fetch_current(site):
+def fetch_hourly(site, past_days):
     params = {
-        "latitude": site["lat"],
-        "longitude": site["lon"],
-        "current": "temperature_2m,weather_code,is_day,wind_speed_10m,precipitation",
-        "temperature_unit": "fahrenheit",
-        "wind_speed_unit": "mph",
-        "precipitation_unit": "inch",
-        "timezone": "America/Chicago",
+        "latitude": site["lat"], "longitude": site["lon"],
+        "hourly": "temperature_2m,precipitation,cloud_cover,weather_code",
+        "temperature_unit": "fahrenheit", "precipitation_unit": "inch",
+        "past_days": past_days, "forecast_days": 1, "timezone": "America/Chicago",
     }
     url = "https://api.open-meteo.com/v1/forecast?" + urllib.parse.urlencode(params)
     last = None
     for attempt in range(3):
         try:
-            with urllib.request.urlopen(url, timeout=20) as r:
-                c = json.load(r)["current"]
-            return {
-                "temp_f": round(c["temperature_2m"]),
-                "conditions": label(c["weather_code"], c["is_day"]),
-                "wind_mph": round(c["wind_speed_10m"]),
-                "precip_in": round(c["precipitation"], 2),
-            }
+            with urllib.request.urlopen(url, timeout=60) as r:
+                h = json.load(r)["hourly"]
+            return {t: {"t": h["temperature_2m"][i], "p": h["precipitation"][i],
+                        "c": h["cloud_cover"][i], "w": h["weather_code"][i]}
+                    for i, t in enumerate(h["time"])}
         except Exception as e:
             last = e
             time.sleep(5 * (attempt + 1))
     raise RuntimeError(last)
 
 
-def load_readings():
+def at(d, h):
+    return datetime(d.year, d.month, d.day, h)
+
+
+def stamps(start, end):
+    out, dt = [], start
+    while dt <= end:
+        out.append(dt.strftime("%Y-%m-%dT%H:00"))
+        dt += timedelta(hours=1)
+    return out
+
+
+def col(H, keys, field):
+    vals = [H.get(k, {}).get(field) for k in keys]
+    return None if any(v is None for v in vals) else vals
+
+
+def classify(precip, cloud, codes):
+    if sum(precip) >= RAIN_MIN or any(p >= RAIN_MIN for p in precip):
+        return "Snow" if any(c in SNOW_CODES for c in codes) else "Rain"
+    avg = sum(cloud) / len(cloud)
+    return "Sunny" if avg < SUNNY_BELOW else ("Partly cloudy" if avg < CLOUDY_FROM else "Cloudy")
+
+
+def window(H, d, rain_hours, cloud_hours):
+    """Rain uses hourly totals stamped at the END of each hour; cloud/codes are readings at the hour."""
+    p = col(H, stamps(at(d, rain_hours[0]), at(d, rain_hours[1])), "p")
+    c = col(H, stamps(at(d, cloud_hours[0]), at(d, cloud_hours[1])), "c")
+    w = col(H, stamps(at(d, rain_hours[0]), at(d, rain_hours[1])), "w") or []
+    if p is None or c is None:
+        return None
+    return round(sum(p), 2), classify(p, c, w)
+
+
+def compute_day(H, d, now):
+    """Return only the fields whose time windows have fully passed."""
+    rec = {}
+    prev = d - timedelta(days=1)
+    if now >= at(d, 8):
+        p = col(H, stamps(at(prev, 18), at(d, 8)), "p")      # 17:01 yesterday -> 08:00
+        if p is not None:
+            rec["overnight_rain_in"] = round(sum(p), 2)
+        t = col(H, stamps(at(d, 8), at(d, 8)), "t")
+        if t is not None:
+            rec["temp_8am_f"] = round(t[0])
+    if now >= at(d, 12):
+        am = window(H, d, (9, 12), (8, 11))                  # 08:01 -> 11:59
+        if am:
+            rec["am_rain_in"], rec["am_conditions"] = am
+        t = col(H, stamps(at(d, 12), at(d, 12)), "t")
+        if t is not None:
+            rec["temp_12pm_f"] = round(t[0])
+    if now >= at(d, 17):
+        pm = window(H, d, (13, 17), (12, 16))                # 12:01 -> 16:59
+        if pm:
+            rec["pm_rain_in"], rec["pm_conditions"] = pm
+    return rec
+
+
+def load_records():
     if os.path.exists(JSON_PATH):
         with open(JSON_PATH, encoding="utf-8") as f:
             return json.load(f)
     return []
 
 
-def save_readings(readings):
+def save_records(recs):
     os.makedirs(DATA_DIR, exist_ok=True)
-    readings.sort(key=lambda r: (r["date"], r["time"], r["site"]))
+    recs.sort(key=lambda r: (r["date"], r["site"]))
     with open(JSON_PATH, "w", encoding="utf-8") as f:
-        json.dump(readings, f, indent=0)
+        json.dump(recs, f, indent=0)
     with open(CSV_PATH, "w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=FIELDS)
+        w = csv.DictWriter(f, fieldnames=FIELDS, restval="")
         w.writeheader()
-        w.writerows(readings)
+        w.writerows(recs)
 
 
-def main(now=None, force=None):
+def main(now=None, backfill=None):
     now = now or datetime.now(TZ)
-    if force is None:
-        force = os.environ.get("FORCE", "").lower() in ("1", "true", "yes")
-    if force:
-        hour = min(SLOTS, key=lambda h: abs(h - now.hour))  # nearest slot
-    else:
-        # Accept the slot hour or the hour after it (covers late GitHub start times).
-        hour = next((h for h in SLOTS if now.hour in (h, h + 1)), None)
-        if hour is None:
-            print("Not a logging hour in Central time (%s). Nothing to do." % now.strftime("%H:%M"))
-            return 0
-    slot, date = SLOTS[hour], now.strftime("%Y-%m-%d")
-
-    sites = load_sites()
-    if not sites:
-        print("No sites found in sites.txt", file=sys.stderr)
-        return 1
-
-    readings = load_readings()
-    have = {(r["date"], r["slot"], r["site"]) for r in readings}
-    new, failed = [], 0
-    for site in sites:
-        key = (date, slot, site["name"])
-        if key in have and not force:
-            print("Already logged: %s (%s)" % (site["name"], slot))
-            continue
+    local = now.replace(tzinfo=None)
+    if backfill is None:
         try:
-            row = {"date": date, "slot": slot, "time": now.strftime("%H:%M"), "site": site["name"]}
-            row.update(fetch_current(site))
-            new.append(row)
-            print("OK   %s: %s F, %s" % (site["name"], row["temp_f"], row["conditions"]))
+            backfill = int(os.environ.get("BACKFILL_DAYS", "0") or 0)
+        except ValueError:
+            backfill = 0
+    n = max(2, min(backfill + 1, 91))          # number of days to (re)compute, ending today
+
+    sites = [s for s in load_sites() if s["history"]]
+    if not sites:
+        print('No sites are marked for history. Add ", history" to a line in sites.txt.')
+        return 0
+
+    by_key = {(r["date"], r["site"]): r for r in load_records()}
+    ok = failed = 0
+    for site in sites:
+        try:
+            H = fetch_hourly(site, n)
         except Exception as e:
             failed += 1
             print("FAIL %s: %s" % (site["name"], e), file=sys.stderr)
-
-    if new:
-        replaced = {(r["date"], r["slot"], r["site"]) for r in new}
-        readings = [r for r in readings if (r["date"], r["slot"], r["site"]) not in replaced] + new
-        save_readings(readings)
-    return 1 if failed and not new else 0
+            continue
+        ok += 1
+        for i in range(n):
+            d = (local - timedelta(days=i)).date()
+            rec = compute_day(H, d, local)
+            if rec:
+                key = (d.strftime("%Y-%m-%d"), site["name"])
+                by_key.setdefault(key, {"date": key[0], "site": key[1]}).update(rec)
+        print("OK   %s" % site["name"])
+    if ok:
+        save_records(list(by_key.values()))
+    print("Updated %d site(s)." % ok)
+    return 1 if failed and not ok else 0
 
 
 if __name__ == "__main__":
