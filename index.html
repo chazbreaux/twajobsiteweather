@@ -6,30 +6,44 @@
 <title>Job Site Weather</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
 <style>
-:root{color-scheme:light dark;--bg:#eef1f3;--card:#fff;--ink:#16212b;--mut:#5b6b78;--line:#cfd7dd;--acc:#e8710a;--bad:#c0392b;--field:#f6f8f9;--hero:#0f3c6f;--link:#0f3c6f}
-@media (prefers-color-scheme:dark){:root{--bg:#10171d;--card:#18222b;--ink:#e8eef2;--mut:#93a4b1;--line:#2c3a45;--acc:#f28a2e;--bad:#ff6b5b;--field:#111a21;--hero:#0f3c6f;--link:#f3a607}}
+:root{color-scheme:light dark;--bg:#eef1f3;--card:#fff;--ink:#16212b;--mut:#5b6b78;--line:#cfd7dd;--acc:#f3a607;--bad:#c0392b;--field:#f6f8f9;--hero:#0f3c6f;--link:#0f3c6f}
+@media (prefers-color-scheme:dark){:root{--bg:#10171d;--card:#18222b;--ink:#e8eef2;--mut:#93a4b1;--line:#2c3a45;--bad:#ff6b5b;--field:#111a21;--link:#f3a607}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
-main{max-width:1000px;margin:0 auto;padding:18px 16px 48px}
-.hero{background:var(--hero);color:#fff;border-bottom:4px solid var(--acc);padding:8px 16px 12px}
-.hero .in{max-width:1000px;margin:0 auto;display:flex;flex-wrap:wrap;gap:4px 22px;align-items:center}
-.hero img{height:62px;max-width:100%;object-fit:contain;display:block}
-.hero h1{color:#fff}.hero .sub{color:#c9d4dc;margin:2px 0 0}
-.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin:0 0 14px}
-.cardsite{text-align:left;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--acc);border-radius:8px;padding:10px 12px;line-height:1.3}
-.cardsite.bad{border-left-color:var(--bad)}
-.cardsite .n{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cardsite .tmp{font-size:1.55rem;font-weight:700}
-.fc{font-size:.82rem;margin-top:4px;color:var(--mut)}.fc.wet{color:var(--bad);font-weight:600}
-h1{margin:0;font-size:1.9rem;line-height:1.15}
+main{max-width:2000px;margin:0 auto;padding:14px 16px 48px}
+h1{margin:0;font-size:1.9rem;line-height:1.15;color:#fff}
 h2{margin:28px 0 10px;font-size:1.3rem}
-.sub{color:var(--mut);margin:4px 0 14px}
-#map{height:56vh;min-height:340px;border:1px solid var(--line);border-radius:8px}
-.bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:10px;color:var(--mut);font-size:.92rem}
+.hero{background:var(--hero);color:#fff;border-bottom:4px solid var(--acc);padding:8px 16px 12px}
+.hero .in{max-width:2000px;margin:0 auto;display:flex;flex-wrap:wrap;gap:4px 22px;align-items:center}
+.hero img{height:62px;max-width:100%;object-fit:contain;display:block}
+.sub{color:#c9d4dc;margin:2px 0 0}
+.clock{margin-left:auto;font-size:1.5rem;font-weight:700;white-space:nowrap;text-align:right}
+.banner{background:var(--bad);color:#fff;padding:10px 14px;border-radius:8px;margin-bottom:12px;font-weight:700;font-size:1.05rem}
+.banner.s2{background:var(--acc);color:#16212b}
+.dash{display:grid;gap:14px}
+.mapcol{display:flex;flex-direction:column;min-width:0}
+#map{height:56vh;min-height:340px;flex:1;border:1px solid var(--line);border-radius:8px}
+.bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:8px;color:var(--mut);font-size:.92rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;align-content:start}
+@media (min-width:1100px){
+  .dash{grid-template-columns:minmax(0,1fr) minmax(420px,42%);grid-template-rows:minmax(0,1fr);height:max(560px,calc(100vh - 170px))}
+  #map{min-height:0}
+  .cards{overflow:auto;min-height:0}
+}
+@media (min-width:1600px){body{font-size:18px}.cardsite .tmp{font-size:2rem}}
 button,select,input{font:inherit;color:inherit;padding:7px 12px;border:1px solid var(--line);border-radius:6px;background:var(--card)}
 button{cursor:pointer;font-weight:600}
+.cardsite{text-align:left;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--acc);border-radius:8px;padding:9px 11px;line-height:1.3;min-width:0}
+.cardsite.bad,.cardsite.s3{border-left-color:var(--bad)}
+.cardsite.s3{border-color:var(--bad);outline:2px solid var(--bad)}
+.cardsite .n{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cardsite .tmp{font-size:1.55rem;font-weight:700}
+.t{font-size:.78rem;color:var(--mut)}
+.fc{font-size:.82rem;margin-top:3px;color:var(--mut)}.fc.wet{color:var(--bad);font-weight:600}
+.al{margin-top:5px;padding:3px 7px;border-radius:5px;font-size:.8rem;font-weight:700;line-height:1.25}
+.al.s3{background:var(--bad);color:#fff}.al.s2{background:var(--acc);color:#16212b}.al.s1{border:1px solid var(--line)}
 .pin{position:absolute;transform:translate(-50%,-50%);background:var(--card);color:var(--ink);border:2px solid var(--ink);border-radius:12px;padding:1px 8px;text-align:center;white-space:nowrap;line-height:1.25;box-shadow:0 1px 5px rgba(0,0,0,.4)}
-.pin b{font-size:15px}.pin small{display:block;font-size:11px;font-weight:600}
+.pin b{font-size:15px}.pin small{display:block;font-size:11px;font-weight:600;max-width:130px;overflow:hidden;text-overflow:ellipsis}
 .pin.bad{background:var(--bad);border-color:var(--bad);color:#fff}
 .leaflet-popup-content{font:14px/1.45 system-ui,sans-serif;color:#16212b}
 .filters{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px;align-items:end}
@@ -38,20 +52,25 @@ label{display:block;font-size:.85rem;color:var(--mut);margin-bottom:3px}
 table{border-collapse:collapse;width:100%;min-width:680px}
 th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);font-size:.92rem;vertical-align:top}
 th{color:var(--mut);font-weight:600}tr:last-child td{border-bottom:0}
-td.bad{color:var(--bad)}td.none{color:var(--mut)}.t{font-size:.78rem;color:var(--mut)}
+td.bad{color:var(--bad)}td.none{color:var(--mut)}
 .note{color:var(--mut);font-size:.88rem;margin-top:10px}
 a{color:var(--link)}
 </style>
 </head>
 <body>
-<header class="hero"><div class="in"><img id="logo" alt="" hidden><div><h1 id="title">Job site weather</h1><p class="sub" id="status">Loading sites…</p></div></div></header>
+<header class="hero"><div class="in"><img id="logo" alt="" hidden><div><h1 id="title">Job Site Weather</h1><p class="sub" id="status">Loading sites…</p></div><div class="clock" id="clock"></div></div></header>
 <main>
-  <div class="cards" id="cards"></div>
-  <div id="map" role="application" aria-label="Map of job sites with weather"></div>
-  <div class="bar">
-    <label style="margin:0"><input type="checkbox" id="radar" checked style="width:auto"> Rain radar</label>
-    <button id="play">Play last 50 minutes</button>
-    <span id="radarTime"></span>
+  <div id="banner" class="banner" hidden></div>
+  <div class="dash">
+    <div class="mapcol">
+      <div id="map" role="application" aria-label="Map of job sites with weather"></div>
+      <div class="bar">
+        <label style="margin:0"><input type="checkbox" id="radar" checked style="width:auto"> Rain radar</label>
+        <button id="play">Play last 50 minutes</button>
+        <span id="radarTime"></span>
+      </div>
+    </div>
+    <div class="cards" id="cards"></div>
   </div>
 
   <h2>History</h2>
@@ -61,11 +80,11 @@ a{color:var(--link)}
     <div><label for="ht">To</label><input type="date" id="ht"></div>
   </div>
   <div class="wrap"><table>
-    <thead><tr><th>Date</th><th>Site</th><th>Morning (8 am)</th><th>Midday (12 pm)</th><th>Afternoon (5 pm)</th></tr></thead>
+    <thead><tr><th>Date</th><th>Site</th><th>Morning (08:00)</th><th>Midday (12:00)</th><th>Afternoon (17:00)</th></tr></thead>
     <tbody id="rows"></tbody>
   </table></div>
   <div class="bar"><span id="count"></span><button id="more" hidden>Show 100 more</button></div>
-  <p class="note">Readings are recorded automatically at about 8 am, 12 noon and 5 pm Central time. Weather data is modeled for each site&rsquo;s location, so it may differ slightly from a nearby weather station. <a href="data/readings.csv">Download all readings (CSV)</a></p>
+  <p class="note">Readings are recorded automatically at about 08:00, 12:00 and 17:00 Central time. Weather data is modeled for each site&rsquo;s location, so it may differ slightly from a nearby weather station. Warnings and watches come from the National Weather Service and refresh every 5 minutes; they are a convenience, not a substitute for official alerts, so always follow local emergency instructions. The page refreshes itself, so it can stay open on a screen. <a href="data/readings.csv">Download all readings (CSV)</a></p>
 </main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
@@ -73,10 +92,11 @@ a{color:var(--link)}
 (function(){
   var TZ="America/Chicago";
   // ---- CUSTOMIZE HERE ----
-  var CONFIG={company:"The Walker Associates",title:"Job Site Weather",accent:"#f3a607",logo:"logo.png"}; // logo: name of an image file uploaded to the repository, e.g. "logo.png"
+  var CONFIG={company:"The Walker Associates",title:"Job Site Weather",accent:"#f3a607",logo:"logo.png"}; // logo: name of an image file uploaded to the repository
   var $=function(i){return document.getElementById(i)};
   document.title=CONFIG.company+" | "+CONFIG.title;$("title").textContent=CONFIG.title;document.documentElement.style.setProperty("--acc",CONFIG.accent);
   if(CONFIG.logo){$("logo").src=CONFIG.logo;$("logo").alt=CONFIG.company;$("logo").hidden=false}
+
   function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
   function bad(c){return /rain|drizzle|shower|thunder|snow|freezing/i.test(c||"")}
   function emoji(c){c=(c||"").toLowerCase();
@@ -98,12 +118,24 @@ a{color:var(--link)}
   function getJSON(u){return fetch(u+"?t="+Date.now()).then(function(r){if(!r.ok)throw 0;return r.json()})}
   function getText(u){return fetch(u+"?t="+Date.now()).then(function(r){if(!r.ok)throw 0;return r.text()})}
 
+  // ---- 24-hour time helpers (Central) ----
+  function todayStr(){return new Date().toLocaleDateString("en-CA",{timeZone:TZ})}
+  function hm(d){return d.toLocaleTimeString("en-GB",{timeZone:TZ,hour:"2-digit",minute:"2-digit",hour12:false})}
+  function t24(iso){var d=new Date(iso);if(!iso||isNaN(d))return"";
+    var same=d.toLocaleDateString("en-CA",{timeZone:TZ})===todayStr();
+    return(same?"":d.toLocaleDateString("en-GB",{timeZone:TZ,weekday:"short"})+" ")+hm(d)}
+  function hr(t){return t.slice(11,16)}
+  function tickClock(){$("clock").textContent=new Date().toLocaleDateString("en-GB",{timeZone:TZ,weekday:"short",day:"numeric",month:"short"})+"  "+hm(new Date())+" CT"}
+  tickClock();setInterval(tickClock,30000);
+
+  // ---- map + radar ----
   var map=L.map("map",{zoomControl:true}).setView([37.5,-96],4);
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18,attribution:"&copy; OpenStreetMap contributors"}).addTo(map);
+  var markerLayer=L.layerGroup().addTo(map);
   var RAD="https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/";
-  function radarLayer(n,op){return L.tileLayer(RAD+n+"/{z}/{x}/{y}.png",{opacity:op,zIndex:5,attribution:"Radar: NOAA/NWS via Iowa Environmental Mesonet"})}
+  function rurl(n){return RAD+n+"/{z}/{x}/{y}.png?b="+Math.floor(Date.now()/300000)}
+  function radarLayer(n,op){return L.tileLayer(rurl(n),{opacity:op,zIndex:5,rname:n,attribution:"Radar: NOAA/NWS via Iowa Environmental Mesonet"})}
   var cur=radarLayer("nexrad-n0q-900913",0.65).addTo(map),frames=[],timer=null,idx=0;
-
   function stop(){clearInterval(timer);timer=null;frames.forEach(function(f){f.setOpacity(0)});cur.setOpacity(0.65);$("play").textContent="Play last 50 minutes";$("radarTime").textContent=""}
   $("play").onclick=function(){
     if(timer){stop();return}
@@ -113,19 +145,14 @@ a{color:var(--link)}
     function step(){frames.forEach(function(f,i){f.setOpacity(i===idx?0.65:0)});
       var ago=50-5*idx;$("radarTime").textContent=ago?ago+" min ago":"Now";idx=(idx+1)%frames.length}
     step();timer=setInterval(step,700)};
-  $("cards").onclick=function(e){var b=e.target.closest("button");if(!b)return;var i=+b.dataset.i,s=SITES[i];map.flyTo([s.lat,s.lon],11);markers[i].openPopup();window.scrollTo({top:$("map").offsetTop-12,behavior:"smooth"})};
   $("radar").onchange=function(){if(this.checked){map.addLayer(cur)}else{stop();map.removeLayer(cur)}};
+  function refreshRadar(){cur.setUrl(rurl(cur.options.rname));frames.forEach(function(f){if(f!==cur)f.setUrl(rurl(f.options.rname))})}
 
-  var SITES=[],READ=[],LIVE=[],FC=[],markers=[];
-  var todayStr=new Date().toLocaleDateString("en-CA",{timeZone:TZ});
+  // ---- state ----
+  var SITES=[],READ=[],LIVE={},FC={},ALERTS={},markers=[],siteKey="",lastLive="",liveFail=false,started=false;
+  var SEV={Extreme:4,Severe:3,Moderate:2,Minor:1};
 
-  function loggedToday(name){
-    var out=["Morning","Midday","Afternoon"].map(function(s){
-      var r=READ.filter(function(x){return x.site===name&&x.date===todayStr&&x.slot===s})[0];
-      return r?s+": "+r.temp_f+"° "+esc(r.conditions):null}).filter(Boolean);
-    return out.length?"<hr style='margin:6px 0'><b>Logged today</b><br>"+out.join("<br>"):""}
-
-  function hr(t){var h=+t.slice(11,13),ap=h>=12?"pm":"am";h=h%12||12;return h+" "+ap}
+  // ---- rain outlook (next 12 hours) ----
   function outlook(h){
     if(!h||!h.time||!h.precipitation)return{text:"",wet:false};
     var P=h.precipitation,pr=h.precipitation_probability||[],n=P.length;
@@ -137,26 +164,88 @@ a{color:var(--link)}
     for(var i=1;i<n;i++){if(wet(i))return{text:"Rain expected around "+hr(h.time[i])+chance(i),wet:true}}
     return{text:"Dry for the next "+n+" hours",wet:false}}
 
-  function drawPins(){
-    var pts=[],cards="",nbad=0;
-    SITES.forEach(function(s,i){
-      var l=LIVE[i],t=l?Math.round(l.temperature_2m)+"°":"?",c=l?label(l.weather_code,l.is_day):"",b=bad(c),o=outlook(FC[i]);
-      var html='<div class="pin'+(b?" bad":"")+'"><b>'+t+"</b> "+(l?emoji(c):"")+"<small>"+esc(s.name)+"</small></div>";
-      var m=L.marker([s.lat,s.lon],{icon:L.divIcon({className:"",html:html,iconSize:[0,0]}),title:s.name}).addTo(map);
-      m.bindPopup("<b>"+esc(s.name)+"</b><br>"+(l?"Now: "+t+" "+esc(c)+"<br>Wind "+Math.round(l.wind_speed_10m)+" mph, rain "+l.precipitation+" in":"Live weather unavailable")+(o.text?"<br>"+o.text:"")+loggedToday(s.name));
-      pts.push([s.lat,s.lon]);markers.push(m);
-      cards+='<button class="cardsite'+(b?" bad":"")+'" data-i="'+i+'"><div class="n">'+esc(s.name)+'</div><div class="tmp">'+(l?emoji(c)+" "+t:"?")+'</div><div class="t">'+(l?esc(c)+" &middot; wind "+Math.round(l.wind_speed_10m)+" mph":"No live data")+"</div>"+(o.text?'<div class="fc'+(o.wet?" wet":"")+'">'+o.text+"</div>":"")+"</button>";if(b)nbad++});
-    $("cards").innerHTML=cards;
-    if(nbad)$("status").textContent+=" "+nbad+" of "+SITES.length+(nbad===1?" site has":" sites have")+" rain or storms right now.";
-    if(pts.length===1)map.setView(pts[0],10);else if(pts.length)map.fitBounds(pts,{padding:[60,60],maxZoom:11})}
-
-  function loadLive(){
-    var u="https://api.open-meteo.com/v1/forecast?latitude="+SITES.map(function(s){return s.lat}).join(",")+"&longitude="+SITES.map(function(s){return s.lon}).join(",")+
+  // ---- data loading ----
+  function loadData(){
+    return getText("sites.txt").then(function(t){SITES=parseSites(t)}).catch(function(){})
+    .then(function(){return getJSON("data/readings.json").then(function(d){READ=d}).catch(function(){})})
+    .then(function(){
+      var names=[],prev=hs.value;READ.forEach(function(r){if(names.indexOf(r.site)<0)names.push(r.site)});SITES.forEach(function(s){if(names.indexOf(s.name)<0)names.push(s.name)});
+      names.sort();hs.innerHTML='<option value="">All sites</option>'+names.map(function(n){return"<option>"+esc(n)+"</option>"}).join("");hs.value=prev;drawHistory()})}
+  function loadWeather(){
+    var S=SITES.slice();if(!S.length)return Promise.resolve();
+    var u="https://api.open-meteo.com/v1/forecast?latitude="+S.map(function(s){return s.lat}).join(",")+"&longitude="+S.map(function(s){return s.lon}).join(",")+
       "&current=temperature_2m,weather_code,is_day,wind_speed_10m,precipitation&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&hourly=precipitation,precipitation_probability&forecast_hours=12&timezone=America%2FChicago";
-    return fetch(u).then(function(r){return r.json()}).then(function(j){var arr=Array.isArray(j)?j:[j];LIVE=arr.map(function(x){return x.current});FC=arr.map(function(x){return x.hourly});
-      $("status").textContent="Live weather as of "+new Date().toLocaleTimeString("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"})+" Central. Tap a pin for details."})
-      .catch(function(){LIVE=[];$("status").textContent="Live weather is unavailable right now."})}
+    return fetch(u).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){
+      var arr=Array.isArray(j)?j:[j],L2={},F2={};
+      S.forEach(function(s,i){if(arr[i]&&arr[i].current){L2[s.name]=arr[i].current;F2[s.name]=arr[i].hourly}});
+      LIVE=L2;FC=F2;lastLive=hm(new Date());liveFail=false}).catch(function(){liveFail=true})}
+  function loadAlerts(){
+    var S=SITES.slice();
+    return Promise.all(S.map(function(s){
+      return fetch("https://api.weather.gov/alerts/active?point="+s.lat.toFixed(4)+","+s.lon.toFixed(4)).then(function(r){if(!r.ok)throw 0;return r.json()})
+        .then(function(j){return(j.features||[]).map(function(f){return f.properties}).filter(function(p){
+          var e=p&&(p.ends||p.expires);return p&&p.event&&p.messageType!=="Cancel"&&(!e||new Date(e)>new Date())})})
+        .catch(function(){return null})
+    })).then(function(res){var a={};S.forEach(function(s,i){a[s.name]=res[i]});ALERTS=a})}
 
+  // ---- drawing ----
+  function loggedToday(name){
+    var td=todayStr(),out=["Morning","Midday","Afternoon"].map(function(s){
+      var r=READ.filter(function(x){return x.site===name&&x.date===td&&x.slot===s})[0];
+      return r?s+": "+r.temp_f+"° "+esc(r.conditions):null}).filter(Boolean);
+    return out.length?"<hr style='margin:6px 0'><b>Logged today</b><br>"+out.join("<br>"):""}
+
+  function render(){
+    var items=[],nrain=0,groups={},top=0;
+    markerLayer.clearLayers();markers=[];
+    SITES.forEach(function(s,i){
+      var l=LIVE[s.name],o=outlook(FC[s.name]),raw=ALERTS[s.name],known=Array.isArray(raw);
+      var al=known?raw.map(function(a){return{event:a.event,v:SEV[a.severity]||1,until:t24(a.ends||a.expires)}}).sort(function(a,b){return b.v-a.v}):[];
+      var sev=al.length?al[0].v:0,t=l?Math.round(l.temperature_2m)+"°":"?",c=l?label(l.weather_code,l.is_day):"",b=bad(c);
+      if(b)nrain++;
+      al.forEach(function(a){if(a.v>=2){var g=groups[a.event]||(groups[a.event]={v:a.v,sites:[]});g.sites.push(s.name);top=Math.max(top,a.v)}});
+
+      var pin='<div class="pin'+(b||sev>=2?" bad":"")+'"><b>'+t+"</b> "+(l?emoji(c):"")+(sev>=2?" ⚠️":"")+"<small>"+esc(s.name)+"</small></div>";
+      var m=L.marker([s.lat,s.lon],{icon:L.divIcon({className:"",html:pin,iconSize:[0,0]}),title:s.name,zIndexOffset:sev*100});
+      m.bindPopup("<b>"+esc(s.name)+"</b><br>"+(l?"Now: "+t+" "+esc(c)+"<br>Wind "+Math.round(l.wind_speed_10m)+" mph, rain "+l.precipitation+" in":"Live weather unavailable")+
+        (o.text?"<br>"+esc(o.text):"")+
+        al.map(function(a){return"<div style='color:#b03a2e;font-weight:700'>⚠️ "+esc(a.event)+(a.until?" until "+esc(a.until):"")+"</div>"}).join("")+
+        (known?"":"<div>Alerts unavailable</div>")+loggedToday(s.name));
+      markerLayer.addLayer(m);markers[i]=m;
+
+      var chips=al.slice(0,2).map(function(a){return'<div class="al s'+Math.min(a.v,3)+'">⚠️ '+esc(a.event)+(a.until?" <span style='font-weight:400'>until "+esc(a.until)+"</span>":"")+"</div>"}).join("")+
+        (al.length>2?'<div class="fc">+'+(al.length-2)+" more alert"+(al.length-2===1?"":"s")+"</div>":"")+(known?"":'<div class="fc">Alerts unavailable</div>');
+      var html='<button class="cardsite'+(sev>=3?" s3":"")+(b?" bad":"")+'" data-i="'+i+'"><div class="n">'+esc(s.name)+'</div><div class="tmp">'+(l?emoji(c)+" "+t:"?")+
+        '</div><div class="t">'+(l?esc(c)+" &middot; wind "+Math.round(l.wind_speed_10m)+" mph":"No live data")+"</div>"+
+        (o.text?'<div class="fc'+(o.wet?" wet":"")+'">'+esc(o.text)+"</div>":"")+chips+"</button>";
+      items.push({i:i,html:html,rank:sev>=3?4:sev===2?3:(b||o.wet)?2:sev===1?1:0});
+    });
+    items.sort(function(a,b){return b.rank-a.rank||a.i-b.i});
+    $("cards").innerHTML=items.map(function(x){return x.html}).join("");
+
+    var bn=$("banner"),ev=Object.keys(groups).sort(function(a,b){return groups[b].v-groups[a].v});
+    if(ev.length){bn.hidden=false;bn.className="banner"+(top>=3?"":" s2");
+      bn.innerHTML=ev.map(function(e){return"⚠️ "+esc(e)+": "+esc(groups[e].sites.join(", "))}).join("&nbsp;&nbsp;|&nbsp;&nbsp;")}
+    else{bn.hidden=true}
+
+    var checked=0,count=0,missing=0;
+    SITES.forEach(function(s){var a=ALERTS[s.name];if(Array.isArray(a)){checked++;count+=a.length}else missing++});
+    var p=[lastLive?"Weather updated "+lastLive+" CT"+(liveFail?" (latest refresh failed)":""):"Live weather unavailable"];
+    p.push(checked?(count?count+" active alert"+(count===1?"":"s"):"No active alerts")+(missing?" ("+missing+" site"+(missing===1?"":"s")+" could not be checked)":""):"Alerts unavailable");
+    if(nrain)p.push(nrain+" of "+SITES.length+" sites "+(nrain===1?"has":"have")+" rain or storms now");
+    $("status").textContent=SITES.length?p.join(" · "):"No sites found. Add some to sites.txt.";
+
+    var key=SITES.map(function(s){return s.name+s.lat+s.lon}).join(";");
+    if(key!==siteKey&&SITES.length){siteKey=key;map.invalidateSize();
+      var pts=SITES.map(function(s){return[s.lat,s.lon]});
+      if(pts.length===1)map.setView(pts[0],10);else map.fitBounds(pts,{padding:[60,60],maxZoom:11})}
+    if(!started){started=true;if(window.innerWidth>=1100&&SITES.length)$("play").click()}
+  }
+
+  $("cards").onclick=function(e){var b=e.target.closest("button");if(!b)return;var i=+b.dataset.i,s=SITES[i];if(!s)return;
+    map.flyTo([s.lat,s.lon],11);if(markers[i])markers[i].openPopup();window.scrollTo({top:$("map").offsetTop-12,behavior:"smooth"})};
+
+  // ---- history ----
   var hs=$("hs"),hf=$("hf"),ht=$("ht"),SHOW=100;
   function fmtDate(d){return new Date(d+"T12:00:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric"})}
   function cell(r){return r?'<td'+(bad(r.conditions)?' class="bad"':"")+">"+emoji(r.conditions)+" <b>"+r.temp_f+"°F</b> "+esc(r.conditions)+'<div class="t">'+esc(r.time)+" &middot; wind "+r.wind_mph+" mph</div></td>":'<td class="none">&mdash;</td>'}
@@ -173,14 +262,15 @@ a{color:var(--link)}
   [hs,hf,ht].forEach(function(e){e.onchange=function(){SHOW=100;drawHistory()}});
   $("more").onclick=function(){SHOW+=100;drawHistory()};
 
-  getText("sites.txt").then(function(t){SITES=parseSites(t)}).catch(function(){SITES=[]})
-  .then(function(){return getJSON("data/readings.json").then(function(d){READ=d}).catch(function(){READ=[]})})
-  .then(function(){
-    var names=[];READ.forEach(function(r){if(names.indexOf(r.site)<0)names.push(r.site)});SITES.forEach(function(s){if(names.indexOf(s.name)<0)names.push(s.name)});
-    names.sort();hs.innerHTML='<option value="">All sites</option>'+names.map(function(n){return"<option>"+esc(n)+"</option>"}).join("");
-    drawHistory();
-    if(!SITES.length){$("status").textContent="No sites found. Add some to sites.txt.";return}
-    return loadLive().then(drawPins)});
+  // ---- keep everything fresh (for a screen that is never touched) ----
+  function refreshAll(){return loadData().then(function(){return Promise.all([loadWeather(),loadAlerts()])}).then(render).catch(function(){})}
+  function refreshAlerts(){return loadAlerts().then(render).catch(function(){})}
+  refreshAll();
+  setInterval(refreshAll,10*60*1000);      // sites, readings, weather, rain outlook
+  setInterval(refreshAlerts,5*60*1000);    // warnings and watches
+  setInterval(refreshRadar,5*60*1000);     // radar images
+  setTimeout(function(){location.reload()},6*60*60*1000); // pick up page updates, clear memory
+  document.addEventListener("visibilitychange",function(){if(!document.hidden)refreshAll()});
 })();
 </script>
 </body>
