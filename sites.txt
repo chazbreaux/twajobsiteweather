@@ -3,4 +3,4 @@
 # To get the numbers: in Google Maps, right-click the spot and click the two numbers at the top of the menu.
 # Lines starting with # are ignored. Replace the two examples below with your real sites.
 Buck Creek Road, 31.255262, -89.043895
-Bexley Road, 39.000784, -88.645116
+Bexley Road, 31.000784, -88.645116
