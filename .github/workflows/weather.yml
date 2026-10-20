@@ -1,185 +1,42 @@
-#!/usr/bin/env python3
-"""
-Job site weather logger.
+name: Log weather
 
-Run this 3 times a day (see setup steps). Each run:
-  1. Gets current conditions for every site in SITES (free Open-Meteo service, no account needed)
-  2. Appends one row per site to weather_log.csv
-  3. Rebuilds weather_report.html, a page you can open any time to review the history
+on:
+  schedule:
+    # Central time is UTC-5 in summer and UTC-6 in winter, so this runs at both
+    # possible UTC hours. The script only records when it is the right hour in
+    # Central time (8 am, 12 noon, 5 pm) and skips anything already recorded.
+    - cron: "5 13,14,17,18,22,23 * * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Record a reading right now (replaces that time slot's reading)"
+        type: boolean
+        default: false
 
-Only needs Python 3.8+ (nothing to install).
-"""
-import csv
-import json
-import os
-import sys
-import time
-import urllib.parse
-import urllib.request
+permissions:
+  contents: write
 
-# ---------------------------------------------------------------------------
-# EDIT THIS: one line per job site. Get lat/lon by right-clicking the spot in
-# Google Maps and clicking the numbers at the top of the menu.
-# ---------------------------------------------------------------------------
-SITES = [
-    {"name": "Example site A", "lat": 39.7392, "lon": -104.9903},
-    {"name": "Example site B", "lat": 39.5501, "lon": -105.7821},
-]
+concurrency:
+  group: weather-log
+  cancel-in-progress: false
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-CSV_PATH = os.path.join(HERE, "weather_log.csv")
-REPORT_PATH = os.path.join(HERE, "weather_report.html")
-FIELDS = ["site", "local_time", "temp_f", "feels_like_f", "humidity_pct",
-          "precip_in", "wind_mph", "gust_mph", "conditions"]
-
-WMO = {
-    0: "Clear", 1: "Mostly clear", 2: "Partly cloudy", 3: "Overcast",
-    45: "Fog", 48: "Freezing fog",
-    51: "Light drizzle", 53: "Drizzle", 55: "Heavy drizzle",
-    56: "Freezing drizzle", 57: "Freezing drizzle",
-    61: "Light rain", 63: "Rain", 65: "Heavy rain",
-    66: "Freezing rain", 67: "Freezing rain",
-    71: "Light snow", 73: "Snow", 75: "Heavy snow", 77: "Snow grains",
-    80: "Light showers", 81: "Showers", 82: "Heavy showers",
-    85: "Snow showers", 86: "Heavy snow showers",
-    95: "Thunderstorm", 96: "Thunderstorm with hail", 99: "Thunderstorm with hail",
-}
-
-
-def fetch_site(site):
-    params = {
-        "latitude": site["lat"],
-        "longitude": site["lon"],
-        "current": "temperature_2m,apparent_temperature,relative_humidity_2m,"
-                   "precipitation,weather_code,wind_speed_10m,wind_gusts_10m",
-        "temperature_unit": "fahrenheit",
-        "wind_speed_unit": "mph",
-        "precipitation_unit": "inch",
-        "timezone": "auto",
-    }
-    url = "https://api.open-meteo.com/v1/forecast?" + urllib.parse.urlencode(params)
-    last_err = None
-    for attempt in range(3):
-        try:
-            with urllib.request.urlopen(url, timeout=20) as r:
-                cur = json.load(r)["current"]
-            return {
-                "site": site["name"],
-                "local_time": cur["time"].replace("T", " "),
-                "temp_f": cur["temperature_2m"],
-                "feels_like_f": cur["apparent_temperature"],
-                "humidity_pct": cur["relative_humidity_2m"],
-                "precip_in": cur["precipitation"],
-                "wind_mph": cur["wind_speed_10m"],
-                "gust_mph": cur["wind_gusts_10m"],
-                "conditions": WMO.get(cur["weather_code"], "Code %s" % cur["weather_code"]),
-            }
-        except Exception as e:  # network hiccup: wait and retry
-            last_err = e
-            time.sleep(5 * (attempt + 1))
-    raise RuntimeError(last_err)
-
-
-def append_rows(rows):
-    new_file = not os.path.exists(CSV_PATH)
-    with open(CSV_PATH, "a", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=FIELDS)
-        if new_file:
-            w.writeheader()
-        w.writerows(rows)
-
-
-def read_all():
-    if not os.path.exists(CSV_PATH):
-        return []
-    with open(CSV_PATH, newline="", encoding="utf-8") as f:
-        return list(csv.DictReader(f))
-
-
-REPORT_TEMPLATE = """<!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Job site weather report</title>
-<style>
-:root{color-scheme:light dark;--bg:#eef1f3;--card:#fff;--ink:#16212b;--mut:#5b6b78;--line:#cfd7dd;--acc:#e8710a}
-@media (prefers-color-scheme:dark){:root{--bg:#10171d;--card:#18222b;--ink:#e8eef2;--mut:#93a4b1;--line:#2c3a45;--acc:#f28a2e}}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
-main{max-width:1000px;margin:0 auto;padding:20px 16px 48px}
-h1{margin:0 0 4px;font-size:1.8rem}
-.sub{color:var(--mut);margin:0 0 16px}
-.filters{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:14px}
-label{display:block;font-size:.85rem;color:var(--mut);margin-bottom:4px}
-select,input{padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:inherit;font:inherit}
-.wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:6px}
-table{border-collapse:collapse;width:100%;min-width:700px}
-th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);font-size:.92rem}
-th{color:var(--mut);font-weight:600}
-tr.day td{background:var(--bg);font-weight:600;border-top:3px solid var(--acc)}
-.rain{color:var(--acc);font-weight:600}
-</style></head><body><main>
-<h1>Job site weather report</h1>
-<p class="sub" id="sub"></p>
-<div class="filters">
-  <div><label for="site">Site</label><select id="site"></select></div>
-  <div><label for="from">From</label><input type="date" id="from"></div>
-  <div><label for="to">To</label><input type="date" id="to"></div>
-</div>
-<div class="wrap"><table><thead><tr>
-<th>Time of day</th><th>Site</th><th>Logged</th><th>Temp</th><th>Feels like</th><th>Wind (gusts)</th><th>Humidity</th><th>Precip</th><th>Conditions</th>
-</tr></thead><tbody id="rows"></tbody></table></div>
-<script>
-var DATA=__DATA__;
-var UPDATED="__UPDATED__";
-function slot(t){var h=parseInt(t.slice(11,13),10);return h<10?"Morning":(h<14?"Midday":"Afternoon");}
-var sel=document.getElementById("site"),from=document.getElementById("from"),to=document.getElementById("to");
-var sites=[];DATA.forEach(function(r){if(sites.indexOf(r.site)<0)sites.push(r.site)});
-sel.innerHTML='<option value="">All sites</option>'+sites.map(function(s){return '<option>'+esc(s)+'</option>'}).join('');
-function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
-function draw(){
-  var rows=DATA.filter(function(r){
-    var d=r.local_time.slice(0,10);
-    return (!sel.value||r.site===sel.value)&&(!from.value||d>=from.value)&&(!to.value||d<=to.value);
-  }).sort(function(a,b){return a.local_time<b.local_time?1:-1});
-  var out="",day="";
-  rows.forEach(function(r){
-    var d=r.local_time.slice(0,10);
-    if(d!==day){day=d;out+='<tr class="day"><td colspan="9">'+d+'</td></tr>';}
-    var rain=parseFloat(r.precip_in)>0;
-    out+='<tr><td>'+slot(r.local_time)+'</td><td>'+esc(r.site)+'</td><td>'+r.local_time.slice(11)+'</td><td>'+r.temp_f+'\\u00b0F</td><td>'+r.feels_like_f+'\\u00b0F</td><td>'+r.wind_mph+' mph ('+r.gust_mph+')</td><td>'+r.humidity_pct+'%</td><td'+(rain?' class="rain"':'')+'>'+r.precip_in+' in</td><td>'+esc(r.conditions)+'</td></tr>';
-  });
-  document.getElementById("rows").innerHTML=out||'<tr><td colspan="9">No readings match.</td></tr>';
-  document.getElementById("sub").textContent=DATA.length+" readings. Last updated "+UPDATED+".";
-}
-[sel,from,to].forEach(function(e){e.addEventListener("change",draw)});
-draw();
-</script></main></body></html>
-"""
-
-
-def build_report():
-    data = json.dumps(read_all()).replace("</", "<\\/")
-    html = (REPORT_TEMPLATE
-            .replace("__DATA__", data)
-            .replace("__UPDATED__", time.strftime("%Y-%m-%d %H:%M")))
-    with open(REPORT_PATH, "w", encoding="utf-8") as f:
-        f.write(html)
-
-
-def main():
-    rows, failures = [], 0
-    for site in SITES:
-        try:
-            rows.append(fetch_site(site))
-            print("OK   %s" % site["name"])
-        except Exception as e:
-            failures += 1
-            print("FAIL %s: %s" % (site["name"], e), file=sys.stderr)
-    if rows:
-        append_rows(rows)
-    build_report()
-    print("Saved %d reading(s). Report: %s" % (len(rows), REPORT_PATH))
-    sys.exit(1 if failures and not rows else 0)
-
-
-if __name__ == "__main__":
-    main()
+jobs:
+  log:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Record weather
+        env:
+          FORCE: ${{ inputs.force }}
+        run: |
+          mkdir -p data
+          python log_weather.py
+      - name: Save readings
+        run: |
+          git config user.name "weather-bot"
+          git config user.email "weather-bot@users.noreply.github.com"
+          git add data
+          git diff --cached --quiet || (git commit -m "Weather readings $(date -u +%Y-%m-%dT%H:%MZ)" && git pull --rebase && git push)
