@@ -13,6 +13,7 @@ builds one record per day from hourly weather data (Central time):
   temp_12pm_f         temperature at 12:00
   pm_conditions       same method for 12:00-16:59
   pm_rain_in          rain from 12:01 to 16:59
+  temp_5pm_f          temperature at 17:00
 
 Each run fills in whatever parts of today (and yesterday) are complete, so it is
 safe to run any time, and a missed run is caught up by the next one.
