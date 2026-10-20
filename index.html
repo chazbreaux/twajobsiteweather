@@ -49,7 +49,7 @@ button{cursor:pointer;font-weight:600}
 .filters{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px;align-items:end}
 label{display:block;font-size:.85rem;color:var(--mut);margin-bottom:3px}
 .wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:8px}
-table{border-collapse:collapse;width:100%;min-width:680px}
+table{border-collapse:collapse;width:100%;min-width:1000px}
 th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);font-size:.92rem;vertical-align:top}
 th{color:var(--mut);font-weight:600}tr:last-child td{border-bottom:0}
 td.bad{color:var(--bad)}td.none{color:var(--mut)}
@@ -80,11 +80,13 @@ a{color:var(--link)}
     <div><label for="ht">To</label><input type="date" id="ht"></div>
   </div>
   <div class="wrap"><table>
-    <thead><tr><th>Date</th><th>Site</th><th>Morning (08:00)</th><th>Midday (12:00)</th><th>Afternoon (17:00)</th></tr></thead>
+    <thead><tr><th>Date</th><th>Site</th>
+      <th>Overnight rain<div class="t">17:01 to 08:00</div></th><th>08:00 temp</th><th>AM conditions<div class="t">08:00 to 11:59</div></th><th>AM rain<div class="t">08:01 to 11:59</div></th>
+      <th>12:00 temp</th><th>PM conditions<div class="t">12:00 to 16:59</div></th><th>PM rain<div class="t">12:01 to 16:59</div></th></tr></thead>
     <tbody id="rows"></tbody>
   </table></div>
   <div class="bar"><span id="count"></span><button id="more" hidden>Show 100 more</button></div>
-  <p class="note">Readings are recorded automatically at about 08:00, 12:00 and 17:00 Central time. Weather data is modeled for each site&rsquo;s location, so it may differ slightly from a nearby weather station. Warnings and watches come from the National Weather Service and refresh every 5 minutes; they are a convenience, not a substitute for official alerts, so always follow local emergency instructions. The page refreshes itself, so it can stay open on a screen. <a href="data/readings.csv">Download all readings (CSV)</a></p>
+  <p class="note">Each day&rsquo;s record fills in as it happens, at about 08:00, 12:00 and 17:00 Central time, and only for sites marked for history. Overnight rain covers the previous day from 17:01 to 08:00. Conditions are the average cloud cover for the period (Sunny, Partly cloudy or Cloudy), or Rain if any rain fell during it. Rain amounts and conditions come from hourly weather model data for each site&rsquo;s location, not from a rain gauge, so they are estimates. Warnings and watches come from the National Weather Service and refresh every 5 minutes; they are a convenience, not a substitute for official alerts, so always follow local emergency instructions. The page refreshes itself, so it can stay open on a screen. <a href="data/daily.csv">Download all records (CSV)</a></p>
 </main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
@@ -110,11 +112,13 @@ a{color:var(--link)}
     if(code>=51&&code<=57)return"Drizzle"; if(code===61)return"Light rain"; if(code===63)return"Rainy"; if(code===65)return"Heavy rain";
     if(code===66||code===67)return"Freezing rain"; if(code>=71&&code<=77)return"Snowy"; if(code>=80&&code<=82)return"Rain showers";
     if(code===85||code===86)return"Snow showers"; if(code>=95)return"Thunderstorms"; return"Unknown"}
+  var FLAG=/,\s*(history|log|yes)\s*$/i;
   function parseSites(t){
     return t.split(/\r?\n/).map(function(l){l=l.trim(); if(!l||l[0]==="#")return null;
+      var h=FLAG.test(l);l=l.replace(FLAG,"");
       var p=l.split(","); if(p.length<3)return null;
       var lon=parseFloat(p.pop()),lat=parseFloat(p.pop()),name=p.join(",").trim();
-      return(isNaN(lat)||isNaN(lon)||!name)?null:{name:name,lat:lat,lon:lon}}).filter(Boolean)}
+      return(isNaN(lat)||isNaN(lon)||!name)?null:{name:name,lat:lat,lon:lon,history:h}}).filter(Boolean)}
   function getJSON(u){return fetch(u+"?t="+Date.now()).then(function(r){if(!r.ok)throw 0;return r.json()})}
   function getText(u){return fetch(u+"?t="+Date.now()).then(function(r){if(!r.ok)throw 0;return r.text()})}
 
@@ -167,9 +171,9 @@ a{color:var(--link)}
   // ---- data loading ----
   function loadData(){
     return getText("sites.txt").then(function(t){SITES=parseSites(t)}).catch(function(){})
-    .then(function(){return getJSON("data/readings.json").then(function(d){READ=d}).catch(function(){})})
+    .then(function(){return getJSON("data/daily.json").then(function(d){READ=d}).catch(function(){})})
     .then(function(){
-      var names=[],prev=hs.value;READ.forEach(function(r){if(names.indexOf(r.site)<0)names.push(r.site)});SITES.forEach(function(s){if(names.indexOf(s.name)<0)names.push(s.name)});
+      var names=[],prev=hs.value;READ.forEach(function(r){if(names.indexOf(r.site)<0)names.push(r.site)});SITES.forEach(function(s){if(s.history&&names.indexOf(s.name)<0)names.push(s.name)});
       names.sort();hs.innerHTML='<option value="">All sites</option>'+names.map(function(n){return"<option>"+esc(n)+"</option>"}).join("");hs.value=prev;drawHistory()})}
   function loadWeather(){
     var S=SITES.slice();if(!S.length)return Promise.resolve();
@@ -189,11 +193,13 @@ a{color:var(--link)}
     })).then(function(res){var a={};S.forEach(function(s,i){a[s.name]=res[i]});ALERTS=a})}
 
   // ---- drawing ----
-  function loggedToday(name){
-    var td=todayStr(),out=["Morning","Midday","Afternoon"].map(function(s){
-      var r=READ.filter(function(x){return x.site===name&&x.date===td&&x.slot===s})[0];
-      return r?s+": "+r.temp_f+"° "+esc(r.conditions):null}).filter(Boolean);
-    return out.length?"<hr style='margin:6px 0'><b>Logged today</b><br>"+out.join("<br>"):""}
+  function loggedToday(site){
+    if(!site.history)return"<hr style='margin:6px 0'><span style='color:#5b6b78'>History logging is off for this site.</span>";
+    var td=todayStr(),r=READ.filter(function(x){return x.site===site.name&&x.date===td})[0];
+    if(!r)return"<hr style='margin:6px 0'><b>Today&rsquo;s record</b><br>Not recorded yet.";
+    var rn=function(v){return v==null?"&mdash;":v.toFixed(2)+" in"},tp=function(v){return v==null?"&mdash;":Math.round(v)+"°F"};
+    return"<hr style='margin:6px 0'><b>Today&rsquo;s record</b><br>Overnight rain: "+rn(r.overnight_rain_in)+"<br>08:00 temp: "+tp(r.temp_8am_f)+"<br>AM: "+(r.am_conditions?esc(r.am_conditions)+", "+rn(r.am_rain_in):"&mdash;")+
+      "<br>12:00 temp: "+tp(r.temp_12pm_f)+"<br>PM: "+(r.pm_conditions?esc(r.pm_conditions)+", "+rn(r.pm_rain_in):"&mdash;")}
 
   function render(){
     var items=[],nrain=0,groups={},top=0;
@@ -210,7 +216,7 @@ a{color:var(--link)}
       m.bindPopup("<b>"+esc(s.name)+"</b><br>"+(l?"Now: "+t+" "+esc(c)+"<br>Wind "+Math.round(l.wind_speed_10m)+" mph, rain "+l.precipitation+" in":"Live weather unavailable")+
         (o.text?"<br>"+esc(o.text):"")+
         al.map(function(a){return"<div style='color:#b03a2e;font-weight:700'>⚠️ "+esc(a.event)+(a.until?" until "+esc(a.until):"")+"</div>"}).join("")+
-        (known?"":"<div>Alerts unavailable</div>")+loggedToday(s.name));
+        (known?"":"<div>Alerts unavailable</div>")+loggedToday(s));
       markerLayer.addLayer(m);markers[i]=m;
 
       var chips=al.slice(0,2).map(function(a){return'<div class="al s'+Math.min(a.v,3)+'">⚠️ '+esc(a.event)+(a.until?" <span style='font-weight:400'>until "+esc(a.until)+"</span>":"")+"</div>"}).join("")+
@@ -248,17 +254,19 @@ a{color:var(--link)}
   // ---- history ----
   var hs=$("hs"),hf=$("hf"),ht=$("ht"),SHOW=100;
   function fmtDate(d){return new Date(d+"T12:00:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric"})}
-  function cell(r){return r?'<td'+(bad(r.conditions)?' class="bad"':"")+">"+emoji(r.conditions)+" <b>"+r.temp_f+"°F</b> "+esc(r.conditions)+'<div class="t">'+esc(r.time)+" &middot; wind "+r.wind_mph+" mph</div></td>":'<td class="none">&mdash;</td>'}
+  var NONE='<td class="none">&mdash;</td>';
+  function rainCell(v){return v==null?NONE:"<td"+(v>=0.01?' class="bad"':"")+">"+v.toFixed(2)+" in</td>"}
+  function tempCell(v){return v==null?NONE:"<td><b>"+Math.round(v)+"°F</b></td>"}
+  function condCell(c){return c?"<td"+(bad(c)?' class="bad"':"")+">"+emoji(c)+" "+esc(c)+"</td>":NONE}
   function drawHistory(){
-    var g={},keys=[];
-    READ.forEach(function(r){
-      if(hs.value&&r.site!==hs.value)return; if(hf.value&&r.date<hf.value)return; if(ht.value&&r.date>ht.value)return;
-      var k=r.date+"|"+r.site; if(!g[k]){g[k]={date:r.date,site:r.site};keys.push(k)} g[k][r.slot]=r});
-    keys.sort(function(a,b){var A=g[a],B=g[b];return A.date<B.date?1:A.date>B.date?-1:(A.site<B.site?-1:1)});
-    $("rows").innerHTML=keys.slice(0,SHOW).map(function(k){var x=g[k];
-      return"<tr><td>"+fmtDate(x.date)+"</td><td>"+esc(x.site)+"</td>"+cell(x.Morning)+cell(x.Midday)+cell(x.Afternoon)+"</tr>"}).join("")||'<tr><td colspan="5" class="none">No readings yet. The first ones appear after the next scheduled check.</td></tr>';
-    $("count").textContent=keys.length?"Showing "+Math.min(SHOW,keys.length)+" of "+keys.length+" days":"";
-    $("more").hidden=keys.length<=SHOW}
+    var rows=READ.filter(function(r){return(!hs.value||r.site===hs.value)&&(!hf.value||r.date>=hf.value)&&(!ht.value||r.date<=ht.value)});
+    rows.sort(function(a,b){return a.date<b.date?1:a.date>b.date?-1:(a.site<b.site?-1:1)});
+    var any=SITES.some(function(s){return s.history});
+    $("rows").innerHTML=rows.slice(0,SHOW).map(function(r){
+      return"<tr><td>"+fmtDate(r.date)+"</td><td>"+esc(r.site)+"</td>"+rainCell(r.overnight_rain_in)+tempCell(r.temp_8am_f)+condCell(r.am_conditions)+rainCell(r.am_rain_in)+tempCell(r.temp_12pm_f)+condCell(r.pm_conditions)+rainCell(r.pm_rain_in)+"</tr>"}).join("")||
+      '<tr><td colspan="9" class="none">'+(any?"No records yet. Each day fills in as the morning and afternoon pass.":"No sites are set up for history yet. Add <b>, history</b> to the end of a site&rsquo;s line in sites.txt.")+"</td></tr>";
+    $("count").textContent=rows.length?"Showing "+Math.min(SHOW,rows.length)+" of "+rows.length+" entries":"";
+    $("more").hidden=rows.length<=SHOW}
   [hs,hf,ht].forEach(function(e){e.onchange=function(){SHOW=100;drawHistory()}});
   $("more").onclick=function(){SHOW+=100;drawHistory()};
 
