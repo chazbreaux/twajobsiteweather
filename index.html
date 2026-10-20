@@ -20,6 +20,7 @@ main{max-width:1000px;margin:0 auto;padding:18px 16px 48px}
 .cardsite.bad{border-left-color:var(--bad)}
 .cardsite .n{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cardsite .tmp{font-size:1.55rem;font-weight:700}
+.fc{font-size:.82rem;margin-top:4px;color:var(--mut)}.fc.wet{color:var(--bad);font-weight:600}
 h1{margin:0;font-size:1.9rem;line-height:1.15}
 h2{margin:28px 0 10px;font-size:1.3rem}
 .sub{color:var(--mut);margin:4px 0 14px}
@@ -115,7 +116,7 @@ a{color:var(--link)}
   $("cards").onclick=function(e){var b=e.target.closest("button");if(!b)return;var i=+b.dataset.i,s=SITES[i];map.flyTo([s.lat,s.lon],11);markers[i].openPopup();window.scrollTo({top:$("map").offsetTop-12,behavior:"smooth"})};
   $("radar").onchange=function(){if(this.checked){map.addLayer(cur)}else{stop();map.removeLayer(cur)}};
 
-  var SITES=[],READ=[],LIVE=[],markers=[];
+  var SITES=[],READ=[],LIVE=[],FC=[],markers=[];
   var todayStr=new Date().toLocaleDateString("en-CA",{timeZone:TZ});
 
   function loggedToday(name){
@@ -124,23 +125,35 @@ a{color:var(--link)}
       return r?s+": "+r.temp_f+"° "+esc(r.conditions):null}).filter(Boolean);
     return out.length?"<hr style='margin:6px 0'><b>Logged today</b><br>"+out.join("<br>"):""}
 
+  function hr(t){var h=+t.slice(11,13),ap=h>=12?"pm":"am";h=h%12||12;return h+" "+ap}
+  function outlook(h){
+    if(!h||!h.time||!h.precipitation)return{text:"",wet:false};
+    var P=h.precipitation,pr=h.precipitation_probability||[],n=P.length;
+    function wet(i){return P[i]>=0.01&&(pr[i]==null||pr[i]>=40)}
+    function chance(i){return pr[i]!=null?" ("+pr[i]+"% chance)":""}
+    if(wet(0)){
+      for(var j=1;j<n;j++){if(!wet(j))return{text:"Rain this hour"+chance(0)+", easing around "+hr(h.time[j]),wet:true}}
+      return{text:"Rain this hour"+chance(0)+" and continuing",wet:true}}
+    for(var i=1;i<n;i++){if(wet(i))return{text:"Rain expected around "+hr(h.time[i])+chance(i),wet:true}}
+    return{text:"Dry for the next "+n+" hours",wet:false}}
+
   function drawPins(){
     var pts=[],cards="",nbad=0;
     SITES.forEach(function(s,i){
-      var l=LIVE[i],t=l?Math.round(l.temperature_2m)+"°":"?",c=l?label(l.weather_code,l.is_day):"",b=bad(c);
+      var l=LIVE[i],t=l?Math.round(l.temperature_2m)+"°":"?",c=l?label(l.weather_code,l.is_day):"",b=bad(c),o=outlook(FC[i]);
       var html='<div class="pin'+(b?" bad":"")+'"><b>'+t+"</b> "+(l?emoji(c):"")+"<small>"+esc(s.name)+"</small></div>";
       var m=L.marker([s.lat,s.lon],{icon:L.divIcon({className:"",html:html,iconSize:[0,0]}),title:s.name}).addTo(map);
-      m.bindPopup("<b>"+esc(s.name)+"</b><br>"+(l?"Now: "+t+" "+esc(c)+"<br>Wind "+Math.round(l.wind_speed_10m)+" mph, rain "+l.precipitation+" in":"Live weather unavailable")+loggedToday(s.name));
+      m.bindPopup("<b>"+esc(s.name)+"</b><br>"+(l?"Now: "+t+" "+esc(c)+"<br>Wind "+Math.round(l.wind_speed_10m)+" mph, rain "+l.precipitation+" in":"Live weather unavailable")+(o.text?"<br>"+o.text:"")+loggedToday(s.name));
       pts.push([s.lat,s.lon]);markers.push(m);
-      cards+='<button class="cardsite'+(b?" bad":"")+'" data-i="'+i+'"><div class="n">'+esc(s.name)+'</div><div class="tmp">'+(l?emoji(c)+" "+t:"?")+'</div><div class="t">'+(l?esc(c)+" &middot; wind "+Math.round(l.wind_speed_10m)+" mph":"No live data")+"</div></button>";if(b)nbad++});
+      cards+='<button class="cardsite'+(b?" bad":"")+'" data-i="'+i+'"><div class="n">'+esc(s.name)+'</div><div class="tmp">'+(l?emoji(c)+" "+t:"?")+'</div><div class="t">'+(l?esc(c)+" &middot; wind "+Math.round(l.wind_speed_10m)+" mph":"No live data")+"</div>"+(o.text?'<div class="fc'+(o.wet?" wet":"")+'">'+o.text+"</div>":"")+"</button>";if(b)nbad++});
     $("cards").innerHTML=cards;
     if(nbad)$("status").textContent+=" "+nbad+" of "+SITES.length+(nbad===1?" site has":" sites have")+" rain or storms right now.";
     if(pts.length===1)map.setView(pts[0],10);else if(pts.length)map.fitBounds(pts,{padding:[60,60],maxZoom:11})}
 
   function loadLive(){
     var u="https://api.open-meteo.com/v1/forecast?latitude="+SITES.map(function(s){return s.lat}).join(",")+"&longitude="+SITES.map(function(s){return s.lon}).join(",")+
-      "&current=temperature_2m,weather_code,is_day,wind_speed_10m,precipitation&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=America%2FChicago";
-    return fetch(u).then(function(r){return r.json()}).then(function(j){LIVE=(Array.isArray(j)?j:[j]).map(function(x){return x.current});
+      "&current=temperature_2m,weather_code,is_day,wind_speed_10m,precipitation&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&hourly=precipitation,precipitation_probability&forecast_hours=12&timezone=America%2FChicago";
+    return fetch(u).then(function(r){return r.json()}).then(function(j){var arr=Array.isArray(j)?j:[j];LIVE=arr.map(function(x){return x.current});FC=arr.map(function(x){return x.hourly});
       $("status").textContent="Live weather as of "+new Date().toLocaleTimeString("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"})+" Central. Tap a pin for details."})
       .catch(function(){LIVE=[];$("status").textContent="Live weather is unavailable right now."})}
 
