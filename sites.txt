@@ -2,5 +2,5 @@
 # To add a site: add a line.  To remove a site: delete its line.
 # To get the numbers: in Google Maps, right-click the spot and click the two numbers at the top of the menu.
 # Lines starting with # are ignored. Replace the two examples below with your real sites.
-Example Site A, 39.7392, -104.9903
-Example Site B, 39.5501, -105.7821
+Buck Creek Road, 31.255262, -89.043895
+Bexley Road, 39.000784, -88.645116
