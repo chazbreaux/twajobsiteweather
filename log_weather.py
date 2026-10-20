@@ -37,7 +37,7 @@ DATA_DIR = os.path.join(HERE, "data")
 JSON_PATH = os.path.join(DATA_DIR, "daily.json")
 CSV_PATH = os.path.join(DATA_DIR, "daily.csv")
 FIELDS = ["date", "site", "overnight_rain_in", "temp_8am_f", "am_conditions",
-          "am_rain_in", "temp_12pm_f", "pm_conditions", "pm_rain_in"]
+          "am_rain_in", "temp_12pm_f", "pm_conditions", "pm_rain_in", "temp_5pm_f"]
 
 RAIN_MIN = 0.01                 # inches; anything at or above this counts as rain
 SUNNY_BELOW, CLOUDY_FROM = 25, 70   # average cloud cover (%) cut-offs
@@ -140,6 +140,9 @@ def compute_day(H, d, now):
         pm = window(H, d, (13, 17), (12, 16))                # 12:01 -> 16:59
         if pm:
             rec["pm_rain_in"], rec["pm_conditions"] = pm
+        t = col(H, stamps(at(d, 17), at(d, 17)), "t")
+        if t is not None:
+            rec["temp_5pm_f"] = round(t[0])
     return rec
 
 
