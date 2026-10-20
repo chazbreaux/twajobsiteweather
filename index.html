@@ -73,7 +73,7 @@ a{color:var(--link)}
 (function(){
   var TZ="America/Chicago";
   // ---- CUSTOMIZE HERE ----
-  var CONFIG={company:"The Walker Associates",title:"Job site weather",accent:"#f3a607",logo:"logo.png"}; // logo: name of an image file uploaded to the repository, e.g. "logo.png"
+  var CONFIG={company:"The Walker Associates",title:"Job Site Weather",accent:"#f3a607",logo:"logo.png"}; // logo: name of an image file uploaded to the repository, e.g. "logo.png"
   var $=function(i){return document.getElementById(i)};
   document.title=CONFIG.company+" | "+CONFIG.title;$("title").textContent=CONFIG.title;document.documentElement.style.setProperty("--acc",CONFIG.accent);
   if(CONFIG.logo){$("logo").src=CONFIG.logo;$("logo").alt=CONFIG.company;$("logo").hidden=false}
