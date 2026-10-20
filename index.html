@@ -54,6 +54,7 @@ a{color:var(--acc)}
     <thead><tr><th>Date</th><th>Site</th><th>Morning (8 am)</th><th>Midday (12 pm)</th><th>Afternoon (5 pm)</th></tr></thead>
     <tbody id="rows"></tbody>
   </table></div>
+  <div class="bar"><span id="count"></span><button id="more" hidden>Show 100 more</button></div>
   <p class="note">Readings are recorded automatically at about 8 am, 12 noon and 5 pm Central time. Weather data is modeled for each site&rsquo;s location, so it may differ slightly from a nearby weather station. <a href="data/readings.csv">Download all readings (CSV)</a></p>
 </main>
 
@@ -126,7 +127,7 @@ a{color:var(--acc)}
       $("status").textContent="Live weather as of "+new Date().toLocaleTimeString("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"})+" Central. Tap a pin for details."})
       .catch(function(){LIVE=[];$("status").textContent="Live weather is unavailable right now."})}
 
-  var hs=$("hs"),hf=$("hf"),ht=$("ht");
+  var hs=$("hs"),hf=$("hf"),ht=$("ht"),SHOW=100;
   function fmtDate(d){return new Date(d+"T12:00:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric"})}
   function cell(r){return r?'<td'+(bad(r.conditions)?' class="bad"':"")+">"+emoji(r.conditions)+" <b>"+r.temp_f+"°F</b> "+esc(r.conditions)+'<div class="t">'+esc(r.time)+" &middot; wind "+r.wind_mph+" mph</div></td>":'<td class="none">&mdash;</td>'}
   function drawHistory(){
@@ -135,9 +136,12 @@ a{color:var(--acc)}
       if(hs.value&&r.site!==hs.value)return; if(hf.value&&r.date<hf.value)return; if(ht.value&&r.date>ht.value)return;
       var k=r.date+"|"+r.site; if(!g[k]){g[k]={date:r.date,site:r.site};keys.push(k)} g[k][r.slot]=r});
     keys.sort(function(a,b){var A=g[a],B=g[b];return A.date<B.date?1:A.date>B.date?-1:(A.site<B.site?-1:1)});
-    $("rows").innerHTML=keys.slice(0,200).map(function(k){var x=g[k];
-      return"<tr><td>"+fmtDate(x.date)+"</td><td>"+esc(x.site)+"</td>"+cell(x.Morning)+cell(x.Midday)+cell(x.Afternoon)+"</tr>"}).join("")||'<tr><td colspan="5" class="none">No readings yet. The first ones appear after the next scheduled check.</td></tr>'}
-  [hs,hf,ht].forEach(function(e){e.onchange=drawHistory});
+    $("rows").innerHTML=keys.slice(0,SHOW).map(function(k){var x=g[k];
+      return"<tr><td>"+fmtDate(x.date)+"</td><td>"+esc(x.site)+"</td>"+cell(x.Morning)+cell(x.Midday)+cell(x.Afternoon)+"</tr>"}).join("")||'<tr><td colspan="5" class="none">No readings yet. The first ones appear after the next scheduled check.</td></tr>';
+    $("count").textContent=keys.length?"Showing "+Math.min(SHOW,keys.length)+" of "+keys.length+" days":"";
+    $("more").hidden=keys.length<=SHOW}
+  [hs,hf,ht].forEach(function(e){e.onchange=function(){SHOW=100;drawHistory()}});
+  $("more").onclick=function(){SHOW+=100;drawHistory()};
 
   getText("sites.txt").then(function(t){SITES=parseSites(t)}).catch(function(){SITES=[]})
   .then(function(){return getJSON("data/readings.json").then(function(d){READ=d}).catch(function(){READ=[]})})
