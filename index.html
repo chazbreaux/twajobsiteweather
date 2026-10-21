@@ -40,6 +40,9 @@ button{cursor:pointer;font-weight:600}
 .cardsite .n{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cardsite .tmp{font-size:1.55rem;font-weight:700}
 .t{font-size:.78rem;color:var(--mut)}
+.rr{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+.rr .k{display:block;font-size:.68rem;color:var(--mut);text-transform:uppercase;letter-spacing:.03em}
+.rr .v{display:block;font-size:.85rem;font-weight:600;line-height:1.25}.rr .v.wet{color:var(--bad)}
 .fc{font-size:.82rem;margin-top:3px;color:var(--mut)}.fc.wet{color:var(--bad);font-weight:600}
 .al{margin-top:5px;padding:3px 7px;border-radius:5px;font-size:.8rem;font-weight:700;line-height:1.25}
 .al.s3{background:var(--bad);color:#fff}.al.s2{background:var(--acc);color:#16212b}.al.s1{border:1px solid var(--line)}
@@ -77,10 +80,12 @@ input[type=date]{min-height:42px}
   main{padding:12px 12px 40px}
   #map{height:50vh;min-height:360px}
   .cardsite{padding:8px 10px}.cardsite .tmp{font-size:1.4rem}
-  .filters{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .filters{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
   .filters>div:first-child{grid-column:1/-1}
   .filters>div{min-width:0}
-  .filters select,.filters input{width:100%;min-width:0;max-width:100%;min-height:42px}
+  .filters select,.filters input{display:block;width:100%;min-width:0;max-width:100%;min-height:42px}
+  .filters input{-webkit-appearance:none;appearance:none;overflow:hidden}
+  .filters input::-webkit-date-and-time-value{text-align:left;min-width:0}
   table{min-width:0}thead{display:none}
   table,tbody,tr,td{display:block;width:100%}
   tr{border-bottom:8px solid var(--bg);padding:4px 0}
@@ -195,20 +200,20 @@ a{color:var(--link)}
   function refreshRadar(){cur.setUrl(rurl(cur.options.rname));frames.forEach(function(f){if(f!==cur)f.setUrl(rurl(f.options.rname))})}
 
   // ---- state ----
-  var SITES=[],READ=[],LIVE={},FC={},ALERTS={},markers=[],siteKey="",lastLive="",liveFail=false,started=false,OPEN=null;
+  var SITES=[],READ=[],LIVE={},FC={},ALERTS={},markers=[],siteKey="",lastLive="",liveFail=false,started=false,OPEN=null,RAIN24={};
   var SEV={Extreme:4,Severe:3,Moderate:2,Minor:1};
 
   // ---- rain outlook (next 12 hours) ----
   function outlook(h){
-    if(!h||!h.time||!h.precipitation)return{text:"",wet:false};
+    if(!h||!h.time||!h.precipitation)return{text:"",short:"",wet:false};
     var P=h.precipitation,pr=h.precipitation_probability||[],n=P.length;
     function wet(i){return P[i]>=0.01&&(pr[i]==null||pr[i]>=40)}
     function chance(i){return pr[i]!=null?" ("+pr[i]+"% chance)":""}
     if(wet(0)){
-      for(var j=1;j<n;j++){if(!wet(j))return{text:"Rain this hour"+chance(0)+", easing around "+hr(h.time[j]),wet:true}}
-      return{text:"Rain this hour"+chance(0)+" and continuing",wet:true}}
-    for(var i=1;i<n;i++){if(wet(i))return{text:"Rain expected around "+hr(h.time[i])+chance(i),wet:true}}
-    return{text:"Dry for the next "+n+" hours",wet:false}}
+      for(var j=1;j<n;j++){if(!wet(j))return{text:"Rain this hour"+chance(0)+", easing around "+hr(h.time[j]),short:"Raining, easing ~"+hr(h.time[j]),wet:true}}
+      return{text:"Rain this hour"+chance(0)+" and continuing",short:"Raining, continuing",wet:true}}
+    for(var i=1;i<n;i++){if(wet(i))return{text:"Rain expected around "+hr(h.time[i])+chance(i),short:"Rain ~"+hr(h.time[i])+(pr[i]!=null?" ("+pr[i]+"%)":""),wet:true}}
+    return{text:"Dry for the next "+n+" hours",short:"Dry",wet:false}}
 
   // ---- data loading ----
   function loadData(){
@@ -217,14 +222,22 @@ a{color:var(--link)}
     .then(function(){
       var names=[],prev=hs.value;READ.forEach(function(r){if(names.indexOf(r.site)<0)names.push(r.site)});SITES.forEach(function(s){if(s.history&&names.indexOf(s.name)<0)names.push(s.name)});
       names.sort();hs.innerHTML='<option value="">All sites</option>'+names.map(function(n){return"<option>"+esc(n)+"</option>"}).join("");hs.value=prev;drawHistory()})}
+  // hourly data = last 24 h + next 12 h; totals are stamped at the end of each hour
+  function splitHourly(h,ct){
+    if(!h||!h.time)return{fc:h,rain24:null};
+    var i=h.time.indexOf(String(ct||"").slice(0,13)+":00");
+    if(i<0)i=Math.min(24,h.time.length-1);
+    var P=h.precipitation,rain=null;
+    if(i>=23){rain=0;for(var k=i-23;k<=i;k++){if(P[k]==null){rain=null;break}rain+=P[k]}}
+    return{fc:{time:h.time.slice(i),precipitation:P.slice(i),precipitation_probability:(h.precipitation_probability||[]).slice(i)},rain24:rain==null?null:Math.round(rain*100)/100}}
   function loadWeather(){
     var S=SITES.slice();if(!S.length)return Promise.resolve();
     var u="https://api.open-meteo.com/v1/forecast?latitude="+S.map(function(s){return s.lat}).join(",")+"&longitude="+S.map(function(s){return s.lon}).join(",")+
-      "&current=temperature_2m,weather_code,is_day,wind_speed_10m,precipitation&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&hourly=precipitation,precipitation_probability&forecast_hours=12&timezone=America%2FChicago";
+      "&current=temperature_2m,weather_code,is_day,wind_speed_10m,precipitation&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&hourly=precipitation,precipitation_probability&past_hours=24&forecast_hours=12&timezone=America%2FChicago";
     return fetch(u).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){
-      var arr=Array.isArray(j)?j:[j],L2={},F2={};
-      S.forEach(function(s,i){if(arr[i]&&arr[i].current){L2[s.name]=arr[i].current;F2[s.name]=arr[i].hourly}});
-      LIVE=L2;FC=F2;lastLive=hm(new Date());liveFail=false}).catch(function(){liveFail=true})}
+      var arr=Array.isArray(j)?j:[j],L2={},F2={},R2={};
+      S.forEach(function(s,i){var a=arr[i];if(a&&a.current){L2[s.name]=a.current;var sp=splitHourly(a.hourly,a.current.time);F2[s.name]=sp.fc;R2[s.name]=sp.rain24}});
+      LIVE=L2;FC=F2;RAIN24=R2;lastLive=hm(new Date());liveFail=false}).catch(function(){liveFail=true})}
   function loadAlerts(){
     var S=SITES.slice();
     return Promise.all(S.map(function(s){
@@ -247,7 +260,7 @@ a{color:var(--link)}
     var items=[],nrain=0,groups={},top=0;
     markerLayer.clearLayers();markers=[];
     SITES.forEach(function(s,i){
-      var l=LIVE[s.name],o=outlook(FC[s.name]),raw=ALERTS[s.name],known=Array.isArray(raw);
+      var l=LIVE[s.name],o=outlook(FC[s.name]),raw=ALERTS[s.name],known=Array.isArray(raw),r24=RAIN24[s.name];
       var al=known?raw.map(function(a){return{event:a.event,v:SEV[a.severity]||1,until:t24(a.ends||a.expires)}}).sort(function(a,b){return b.v-a.v}):[];
       var sev=al.length?al[0].v:0,t=l?Math.round(l.temperature_2m)+"°":"?",c=l?label(l.weather_code,l.is_day):"",b=bad(c);
       if(b)nrain++;
@@ -256,16 +269,17 @@ a{color:var(--link)}
       var pin='<div class="pin'+(b||sev>=2?" bad":"")+'"><b>'+t+"</b> "+(l?emoji(c):"")+(sev>=2?" ⚠️":"")+"<small>"+esc(s.name)+"</small></div>";
       var m=L.marker([s.lat,s.lon],{icon:L.divIcon({className:"",html:pin,iconSize:[0,0]}),title:s.name,zIndexOffset:sev*100});
       m.bindPopup("<b>"+esc(s.name)+"</b><br>"+(l?"Now: "+t+" "+esc(c)+"<br>Wind "+Math.round(l.wind_speed_10m)+" mph, rain "+l.precipitation+" in":"Live weather unavailable")+
-        (o.text?"<br>"+esc(o.text):"")+
+        (o.text?"<br>"+esc(o.text):"")+(r24!=null?"<br>Rain in the last 24 h: "+(r24>=0.01?r24.toFixed(2)+" in":"none"):"")+
         al.map(function(a){return"<div style='color:#b03a2e;font-weight:700'>⚠️ "+esc(a.event)+(a.until?" until "+esc(a.until):"")+"</div>"}).join("")+
         (al.length?"<div><a href='#' data-detail='"+i+"'>View alert details</a></div>":"")+(known?"":"<div>Alerts unavailable</div>")+loggedToday(s));
       markerLayer.addLayer(m);markers[i]=m;
 
       var chips=al.slice(0,2).map(function(a){return'<div class="al s'+Math.min(a.v,3)+'">⚠️ '+esc(a.event)+(a.until?" <span style='font-weight:400'>until "+esc(a.until)+"</span>":"")+"</div>"}).join("")+
         (al.length>2?'<div class="fc">+'+(al.length-2)+" more alert"+(al.length-2===1?"":"s")+"</div>":"")+(al.length?'<div class="fc">Details &rsaquo;</div>':"")+(known?"":'<div class="fc">Alerts unavailable</div>');
+      var rr=(o.text||r24!=null)?'<div class="rr"><div><span class="k">Past 24 h</span><span class="v">'+(r24==null?"&mdash;":r24>=0.01?r24.toFixed(2)+" in":"None")+'</span></div><div><span class="k">Next 12 h</span><span class="v'+(o.wet?" wet":"")+'">'+(o.short?esc(o.short):"&mdash;")+"</span></div></div>":"";
       var html='<button class="cardsite'+(sev>=3?" s3":"")+(b?" bad":"")+'" data-i="'+i+'"><div class="n">'+esc(s.name)+'</div><div class="tmp">'+(l?emoji(c)+" "+t:"?")+
         '</div><div class="t">'+(l?esc(c)+" &middot; wind "+Math.round(l.wind_speed_10m)+" mph":"No live data")+"</div>"+
-        (o.text?'<div class="fc'+(o.wet?" wet":"")+'">'+esc(o.text)+"</div>":"")+chips+"</button>";
+        rr+chips+"</button>";
       items.push({i:i,html:html,rank:sev>=3?4:sev===2?3:(b||o.wet)?2:sev===1?1:0});
     });
     items.sort(function(a,b){return b.rank-a.rank||a.i-b.i});
