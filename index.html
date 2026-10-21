@@ -14,7 +14,8 @@ main{max-width:2000px;margin:0 auto;padding:14px 16px 48px}
 h1{margin:0;font-size:1.9rem;line-height:1.15;color:#fff}
 h2{margin:28px 0 10px;font-size:1.3rem}
 .hero{background:var(--hero);color:#fff;border-bottom:4px solid var(--acc);padding:8px 16px 12px}
-.hero .in{max-width:2000px;margin:0 auto;display:flex;flex-wrap:wrap;gap:4px 22px;align-items:center}
+.hero .in{max-width:2000px;margin:0 auto;display:flex;flex-wrap:wrap;gap:4px 22px;align-items:center;justify-content:flex-start;text-align:left}
+.hero.center .in{justify-content:center;text-align:center}.hero.center .clock{margin-left:0}
 .hero img{height:62px;max-width:100%;object-fit:contain;display:block}
 .sub{color:#c9d4dc;margin:2px 0 0}
 .clock{margin-left:auto;font-size:1.5rem;font-weight:700;white-space:nowrap;text-align:right}
@@ -56,9 +57,23 @@ th{color:var(--mut);font-weight:600}tr:last-child td{border-bottom:0}
 td.bad{color:var(--bad)}td.none{color:var(--mut)}
 .note{color:var(--mut);font-size:.88rem;margin-top:10px}
 details.about summary{cursor:pointer;color:var(--mut);font-weight:600;margin-top:12px}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:flex-end;justify-content:center;z-index:2000}
+.ov[hidden]{display:none}
+.sheet{background:var(--card);color:var(--ink);width:100%;max-width:780px;max-height:88vh;overflow:auto;border-radius:14px 14px 0 0;padding:14px 16px 22px}
+@media (min-width:700px){.ov{align-items:center;padding:20px}.sheet{border-radius:14px}}
+.sheet h3{margin:0;font-size:1.3rem}
+.sh{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.al-block{border:1px solid var(--line);border-left:6px solid var(--acc);border-radius:8px;padding:10px 12px;margin:12px 0}
+.al-block.s3{border-left-color:var(--bad)}
+.al-block h4{margin:0 0 2px;font-size:1.05rem}
+.al-meta{color:var(--mut);font-size:.85rem;margin:2px 0}
+.al-txt{white-space:pre-line;font-size:.95rem;margin-top:4px}
+.al-lbl{font-weight:700;margin-top:10px}
+.leaflet-popup-content a{color:#0f3c6f;font-weight:600}
 input[type=date]{min-height:42px}
 @media (max-width:700px){
-  .hero{padding:6px 14px 10px}.hero img{height:46px}h1{font-size:1.45rem}.clock{display:none}
+  .hero{padding:8px 14px 12px}.hero img{height:48px;margin:0 auto}h1{font-size:1.45rem}.clock{display:none}
+  .hero .in{flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:4px}
   main{padding:12px 12px 40px}
   #map{height:50vh;min-height:360px}
   .cardsite{padding:8px 10px}.cardsite .tmp{font-size:1.4rem}
@@ -78,7 +93,7 @@ a{color:var(--link)}
 </style>
 </head>
 <body>
-<header class="hero"><div class="in"><img id="logo" alt="" hidden><div><h1 id="title">Job Site Weather</h1><p class="sub" id="status">Loading sites…</p></div><div class="clock" id="clock"></div></div></header>
+<header class="hero" id="hero"><div class="in"><img id="logo" alt="" hidden><div><h1 id="title">Job Site Weather</h1><p class="sub" id="status">Loading sites…</p></div><div class="clock" id="clock"></div></div></header>
 <main>
   <div id="banner" class="banner" hidden></div>
   <div class="dash">
@@ -110,14 +125,17 @@ a{color:var(--link)}
   <p class="note"><a href="data/daily.csv">Download all records (CSV)</a></p>
 </main>
 
+<div id="ov" class="ov" hidden role="dialog" aria-modal="true" aria-label="Alert details"><div class="sheet" id="ovb"></div></div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script>
 (function(){
   var TZ="America/Chicago";
   // ---- CUSTOMIZE HERE ----
-  var CONFIG={company:"The Walker Associates",title:"Job Site Weather",accent:"#f3a607",logo:"logo.png"}; // logo: name of an image file uploaded to the repository
+  var CONFIG={company:"The Walker Associates",title:"Job Site Weather",accent:"#f3a607",logo:"logo.png",headerAlign:"left"}; // headerAlign: "left" or "center" // logo: name of an image file uploaded to the repository
   var $=function(i){return document.getElementById(i)};
   document.title=CONFIG.company+" | "+CONFIG.title;$("title").textContent=CONFIG.title;document.documentElement.style.setProperty("--acc",CONFIG.accent);
+  if(CONFIG.headerAlign==="center")$("hero").classList.add("center");
   if(CONFIG.logo){$("logo").src=CONFIG.logo;$("logo").alt=CONFIG.company;$("logo").hidden=false}
 
   function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
@@ -176,7 +194,7 @@ a{color:var(--link)}
   function refreshRadar(){cur.setUrl(rurl(cur.options.rname));frames.forEach(function(f){if(f!==cur)f.setUrl(rurl(f.options.rname))})}
 
   // ---- state ----
-  var SITES=[],READ=[],LIVE={},FC={},ALERTS={},markers=[],siteKey="",lastLive="",liveFail=false,started=false;
+  var SITES=[],READ=[],LIVE={},FC={},ALERTS={},markers=[],siteKey="",lastLive="",liveFail=false,started=false,OPEN=null;
   var SEV={Extreme:4,Severe:3,Moderate:2,Minor:1};
 
   // ---- rain outlook (next 12 hours) ----
@@ -239,11 +257,11 @@ a{color:var(--link)}
       m.bindPopup("<b>"+esc(s.name)+"</b><br>"+(l?"Now: "+t+" "+esc(c)+"<br>Wind "+Math.round(l.wind_speed_10m)+" mph, rain "+l.precipitation+" in":"Live weather unavailable")+
         (o.text?"<br>"+esc(o.text):"")+
         al.map(function(a){return"<div style='color:#b03a2e;font-weight:700'>⚠️ "+esc(a.event)+(a.until?" until "+esc(a.until):"")+"</div>"}).join("")+
-        (known?"":"<div>Alerts unavailable</div>")+loggedToday(s));
+        (al.length?"<div><a href='#' data-detail='"+i+"'>View alert details</a></div>":"")+(known?"":"<div>Alerts unavailable</div>")+loggedToday(s));
       markerLayer.addLayer(m);markers[i]=m;
 
       var chips=al.slice(0,2).map(function(a){return'<div class="al s'+Math.min(a.v,3)+'">⚠️ '+esc(a.event)+(a.until?" <span style='font-weight:400'>until "+esc(a.until)+"</span>":"")+"</div>"}).join("")+
-        (al.length>2?'<div class="fc">+'+(al.length-2)+" more alert"+(al.length-2===1?"":"s")+"</div>":"")+(known?"":'<div class="fc">Alerts unavailable</div>');
+        (al.length>2?'<div class="fc">+'+(al.length-2)+" more alert"+(al.length-2===1?"":"s")+"</div>":"")+(al.length?'<div class="fc">Details &rsaquo;</div>':"")+(known?"":'<div class="fc">Alerts unavailable</div>');
       var html='<button class="cardsite'+(sev>=3?" s3":"")+(b?" bad":"")+'" data-i="'+i+'"><div class="n">'+esc(s.name)+'</div><div class="tmp">'+(l?emoji(c)+" "+t:"?")+
         '</div><div class="t">'+(l?esc(c)+" &middot; wind "+Math.round(l.wind_speed_10m)+" mph":"No live data")+"</div>"+
         (o.text?'<div class="fc'+(o.wet?" wet":"")+'">'+esc(o.text)+"</div>":"")+chips+"</button>";
@@ -263,6 +281,7 @@ a{color:var(--link)}
     p.push(checked?(count?count+" active alert"+(count===1?"":"s"):"No active alerts")+(missing?" ("+missing+" site"+(missing===1?"":"s")+" could not be checked)":""):"Alerts unavailable");
     if(nrain)p.push(nrain+" of "+SITES.length+" sites "+(nrain===1?"has":"have")+" rain or storms now");
     $("status").textContent=SITES.length?p.join(" · "):"No sites found. Add some to sites.txt.";
+    if(OPEN!=null&&!$("ov").hidden)fillDetail();
 
     var key=SITES.map(function(s){return s.name+s.lat+s.lon}).join(";");
     if(key!==siteKey&&SITES.length){siteKey=key;map.invalidateSize();
@@ -272,7 +291,37 @@ a{color:var(--link)}
   }
 
   $("cards").onclick=function(e){var b=e.target.closest("button");if(!b)return;var i=+b.dataset.i,s=SITES[i];if(!s)return;
+    var a=ALERTS[s.name];if(Array.isArray(a)&&a.length){showDetail(i);return}
     map.flyTo([s.lat,s.lon],11);if(markers[i])markers[i].openPopup();window.scrollTo({top:$("map").offsetTop-12,behavior:"smooth"})};
+
+  // ---- alert details sheet ----
+  function fillDetail(){
+    var s=SITES[OPEN];if(!s){closeDetail();return}
+    var l=LIVE[s.name],al=(ALERTS[s.name]||[]).slice().sort(function(a,b){return(SEV[b.severity]||1)-(SEV[a.severity]||1)});
+    var h='<div class="sh"><div><h3>'+esc(s.name)+'</h3><div class="al-meta">'+(l?Math.round(l.temperature_2m)+"°F, "+esc(label(l.weather_code,l.is_day))+", wind "+Math.round(l.wind_speed_10m)+" mph":"")+
+      '</div></div><button data-act="close">Close</button></div>';
+    if(!al.length)h+="<p>No active alerts for this site right now.</p>";
+    al.forEach(function(a){
+      var from=t24(a.effective||a.onset||a.sent),to=t24(a.ends||a.expires);
+      var tags=[a.severity?a.severity+" severity":"",a.urgency&&a.urgency!=="Unknown"?a.urgency:"",a.certainty&&a.certainty!=="Unknown"?a.certainty+" certainty":""].filter(Boolean).map(esc).join(" &middot; ");
+      h+='<div class="al-block s'+Math.min(SEV[a.severity]||1,3)+'"><h4>⚠️ '+esc(a.event)+"</h4>"+(tags?'<div class="al-meta">'+tags+"</div>":"")+
+        '<div class="al-meta">'+(from?"From "+esc(from)+" ":"")+(to?"until "+esc(to):"")+" (Central time)</div>"+
+        (a.areaDesc?'<div class="al-meta">Areas: '+esc(a.areaDesc)+"</div>":"")+
+        (a.headline?'<div class="al-lbl">'+esc(a.headline)+"</div>":"")+
+        (a.description?'<div class="al-txt">'+esc(a.description)+"</div>":"")+
+        (a.instruction?'<div class="al-lbl">What to do</div><div class="al-txt">'+esc(a.instruction)+"</div>":"")+
+        (a.senderName?'<div class="al-meta" style="margin-top:10px">Official text issued by '+esc(a.senderName)+"</div>":"")+"</div>"});
+    h+='<p><button data-act="map">Show on map</button></p>';
+    $("ovb").innerHTML=h}
+  function showDetail(i){OPEN=i;fillDetail();$("ov").hidden=false}
+  function closeDetail(){OPEN=null;$("ov").hidden=true}
+  $("ov").onclick=function(e){
+    if(e.target===$("ov")){closeDetail();return}
+    var b=e.target.closest("[data-act]");if(!b)return;
+    if(b.dataset.act==="close")closeDetail();
+    else{var i=OPEN,s=SITES[i];closeDetail();if(s){map.flyTo([s.lat,s.lon],11);if(markers[i])markers[i].openPopup();window.scrollTo({top:$("map").offsetTop-12,behavior:"smooth"})}}};
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeDetail()});
+  document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("[data-detail]");if(a){e.preventDefault();showDetail(+a.dataset.detail)}});
 
   // ---- history ----
   var hs=$("hs"),hf=$("hf"),ht=$("ht"),SHOW=100;
@@ -282,16 +331,19 @@ a{color:var(--link)}
   function tempCell(v,l){return v==null?none(l):'<td data-l="'+l+'"><b>'+Math.round(v)+"°F</b></td>"}
   function condCell(c,l){return c?'<td data-l="'+l+'"'+(bad(c)?' class="bad"':"")+">"+emoji(c)+" "+esc(c)+"</td>":none(l)}
   function drawHistory(){
-    var rows=READ.filter(function(r){return(!hs.value||r.site===hs.value)&&(!hf.value||r.date>=hf.value)&&(!ht.value||r.date<=ht.value)});
+    var today=todayStr(),onlyToday=window.innerWidth<700&&!hf.value&&!ht.value;   // phones: today only until a date is picked
+    var rows=READ.filter(function(r){return(!hs.value||r.site===hs.value)&&(!hf.value||r.date>=hf.value)&&(!ht.value||r.date<=ht.value)&&(!onlyToday||r.date===today)});
     rows.sort(function(a,b){return a.date<b.date?1:a.date>b.date?-1:(a.site<b.site?-1:1)});
     var any=SITES.some(function(s){return s.history});
     $("rows").innerHTML=rows.slice(0,SHOW).map(function(r){
       return'<tr><td class="h">'+fmtDate(r.date)+'</td><td class="h">'+esc(r.site)+"</td>"+rainCell(r.overnight_rain_in,"Overnight rain")+tempCell(r.temp_8am_f,"08:00 temp")+condCell(r.am_conditions,"AM conditions")+rainCell(r.am_rain_in,"AM rain")+tempCell(r.temp_12pm_f,"12:00 temp")+condCell(r.pm_conditions,"PM conditions")+rainCell(r.pm_rain_in,"PM rain")+tempCell(r.temp_5pm_f,"17:00 temp")+"</tr>"}).join("")||
-      '<tr><td colspan="10" class="none">'+(any?"No records yet. Each day fills in as the morning and afternoon pass.":"No sites are set up for history yet. Add <b>, history</b> to the end of a site&rsquo;s line in sites.txt.")+"</td></tr>";
-    $("count").textContent=rows.length?"Showing "+Math.min(SHOW,rows.length)+" of "+rows.length+" entries":"";
+      '<tr><td colspan="10" class="none">'+(any?(onlyToday?"No records for today yet. Pick dates above to look at earlier days.":"No records yet. Each day fills in as the morning and afternoon pass."):"No sites are set up for history yet. Add <b>, history</b> to the end of a site&rsquo;s line in sites.txt.")+"</td></tr>";
+    $("count").textContent=onlyToday?"Showing today only. Pick dates above to see earlier days.":(rows.length?"Showing "+Math.min(SHOW,rows.length)+" of "+rows.length+" entries":"");
     $("more").hidden=rows.length<=SHOW}
   [hs,hf,ht].forEach(function(e){e.onchange=function(){SHOW=100;drawHistory()}});
   $("more").onclick=function(){SHOW+=100;drawHistory()};
+  var wasNarrow=window.innerWidth<700;
+  window.addEventListener("resize",function(){var n=window.innerWidth<700;if(n!==wasNarrow){wasNarrow=n;drawHistory()}});
 
   // ---- keep everything fresh (for a screen that is never touched) ----
   function refreshAll(){return loadData().then(function(){return Promise.all([loadWeather(),loadAlerts()])}).then(render).catch(function(){})}
