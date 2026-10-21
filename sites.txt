@@ -10,3 +10,4 @@ Leakesville, 31.153682, -88.551407
 Poplarville, 30.835765, -89.530476
 Sumrall, 31.416736, -89.545598
 131-24.04 Site D, 31.379180, -88.522846, history
+162-19A Perry Industrial Bridge, 31.207569, -88.996457, history
