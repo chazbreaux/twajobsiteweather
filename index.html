@@ -73,6 +73,9 @@ details.about summary{cursor:pointer;color:var(--mut);font-weight:600;margin-top
 .al-txt{white-space:pre-line;font-size:.95rem;margin-top:4px}
 .al-lbl{font-weight:700;margin-top:10px}
 .leaflet-popup-content a{color:#0f3c6f;font-weight:600}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.72}}
+.banner:not(.s2){animation:pulse 1.6s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.banner{animation:none!important}}
 input[type=date]{min-height:42px}
 @media (max-width:700px){
   .hero{padding:8px 14px 12px}.hero img{height:48px;margin:0 auto}h1{font-size:1.45rem}.clock{display:none}
@@ -107,6 +110,7 @@ a{color:var(--link)}
       <div id="map" role="application" aria-label="Map of job sites with weather"></div>
       <div class="bar">
         <label style="margin:0"><input type="checkbox" id="radar" checked style="width:auto"> Rain radar</label>
+        <label style="margin:0"><input type="checkbox" id="storms" checked style="width:auto"> Storm tracks &amp; warnings</label>
         <button id="play">Play last 50 minutes</button>
         <span id="radarTime"></span>
       </div>
@@ -127,7 +131,7 @@ a{color:var(--link)}
     <tbody id="rows"></tbody>
   </table></div>
   <div class="bar"><span id="count"></span><button id="more" hidden>Show 100 more</button></div>
-  <details class="about"><summary>About this data</summary><p class="note">Each day&rsquo;s record fills in as it happens, at about 08:00, 12:00 and 17:00 Central time, and only for sites marked for history. Overnight rain covers the previous day from 17:01 to 08:00. Conditions are the average cloud cover for the period (Sunny, Partly cloudy or Cloudy), or Rain if any rain fell during it. Rain amounts and conditions come from hourly weather model data for each site&rsquo;s location, not from a rain gauge, so they are estimates. Warnings and watches come from the National Weather Service and refresh every 5 minutes; they are a convenience, not a substitute for official alerts, so always follow local emergency instructions. The page refreshes itself, so it can stay open on a screen.</p></details>
+  <details class="about"><summary>About this data</summary><p class="note">Each day&rsquo;s record fills in as it happens, at about 08:00, 12:00 and 17:00 Central time, and only for sites marked for history. Overnight rain covers the previous day from 17:01 to 08:00. Conditions are the average cloud cover for the period (Sunny, Partly cloudy or Cloudy), or Rain if any rain fell during it. Rain amounts and conditions come from hourly weather model data for each site&rsquo;s location, not from a rain gauge, so they are estimates. Warnings and watches come from the National Weather Service and refresh every 2 minutes. Storm tracks come from the National Weather Service radar storm-tracking data (via Iowa State&rsquo;s Mesonet) and mark radar-detected rotation and its projected path; a rotation or tornado-signature flag is a radar indication, not a confirmed tornado, and some storms are missed or false-alarmed. All of this is a convenience, not a substitute for official alerts, so always follow local emergency instructions. The page refreshes itself, so it can stay open on a screen.</p></details>
   <p class="note"><a href="data/daily.csv">Download all records (CSV)</a></p>
 </main>
 
@@ -140,7 +144,7 @@ a{color:var(--link)}
   // ---- CUSTOMIZE HERE ----
   var CONFIG={company:"The Walker Associates",title:"Job Site Weather",accent:"#f3a607",logo:"logo.png",headerAlign:"left"}; // headerAlign: "left" or "center" // logo: name of an image file uploaded to the repository
   var $=function(i){return document.getElementById(i)};
-  document.title=CONFIG.company+" | "+CONFIG.title;$("title").textContent=CONFIG.title;document.documentElement.style.setProperty("--acc",CONFIG.accent);
+  var BASE=CONFIG.company+" | "+CONFIG.title;document.title=BASE;$("title").textContent=CONFIG.title;document.documentElement.style.setProperty("--acc",CONFIG.accent);
   if(CONFIG.headerAlign==="center")$("hero").classList.add("center");
   if(CONFIG.logo){$("logo").src=CONFIG.logo;$("logo").alt=CONFIG.company;$("logo").hidden=false}
 
@@ -180,7 +184,7 @@ a{color:var(--link)}
   // ---- map + radar ----
   var map=L.map("map",{zoomControl:true}).setView([37.5,-96],4);
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18,attribution:"&copy; OpenStreetMap contributors"}).addTo(map);
-  var markerLayer=L.layerGroup().addTo(map);
+  var markerLayer=L.layerGroup().addTo(map),warnLayer=L.layerGroup().addTo(map),stormLayer=L.layerGroup().addTo(map);
   function setNames(){$("map").classList.toggle("showNames",window.innerWidth>=700||map.getZoom()>=10)}
   map.on("zoomend",setNames);setNames();
   var RAD="https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/";
@@ -197,11 +201,23 @@ a{color:var(--link)}
       var ago=50-5*idx;$("radarTime").textContent=ago?ago+" min ago":"Now";idx=(idx+1)%frames.length}
     step();timer=setInterval(step,700)};
   $("radar").onchange=function(){if(this.checked){map.addLayer(cur)}else{stop();map.removeLayer(cur)}};
+  $("storms").onchange=function(){if(this.checked){map.addLayer(warnLayer);map.addLayer(stormLayer)}else{map.removeLayer(warnLayer);map.removeLayer(stormLayer)}};
   function refreshRadar(){cur.setUrl(rurl(cur.options.rname));frames.forEach(function(f){if(f!==cur)f.setUrl(rurl(f.options.rname))})}
 
   // ---- state ----
-  var SITES=[],READ=[],LIVE={},FC={},ALERTS={},markers=[],siteKey="",lastLive="",liveFail=false,started=false,OPEN=null,RAIN24={};
+  var SITES=[],READ=[],LIVE={},FC={},ALERTS={},markers=[],siteKey="",lastLive="",liveFail=false,started=false,OPEN=null,RAIN24={},STORMS=[],WARN=[],stormFail=false,warnFail=false;
   var SEV={Extreme:4,Severe:3,Moderate:2,Minor:1};
+  // any Warning is red, any Watch or Statement is at least amber, whatever severity the NWS tags it with
+  function lvl(a){var v=SEV[a.severity]||1,e=a.event||"";if(/warning|emergency/i.test(e))v=Math.max(v,3);else if(/watch|statement/i.test(e))v=Math.max(v,2);return v}
+  // ---- storm tracking settings ----
+  var MESO_MIN=5,NEAR_KM=250,CORRIDOR_KM=16,LOOK_MIN=90;   // rotation strength to show, map radius, path width (~10 mi), look-ahead
+  var R_KM=6371,DIRS=["N","NE","E","SE","S","SW","W","NW"];
+  function rad(d){return d*Math.PI/180}
+  function distKm(a,b,c,d){var p1=rad(a),p2=rad(c),h=Math.pow(Math.sin((p2-p1)/2),2)+Math.cos(p1)*Math.cos(p2)*Math.pow(Math.sin(rad(d-b)/2),2);return 2*R_KM*Math.asin(Math.sqrt(h))}
+  function bearing(a,b,c,d){var p1=rad(a),p2=rad(c),dl=rad(d-b);return(Math.atan2(Math.sin(dl)*Math.cos(p2),Math.cos(p1)*Math.sin(p2)-Math.sin(p1)*Math.cos(p2)*Math.cos(dl))*180/Math.PI+360)%360}
+  function compass(b){return DIRS[Math.round(b/45)%8]}
+  function dest(lat,lon,brg,km){var d=km/R_KM,b=rad(brg),p1=rad(lat),l1=rad(lon),p2=Math.asin(Math.sin(p1)*Math.cos(d)+Math.cos(p1)*Math.sin(d)*Math.cos(b)),
+    l2=l1+Math.atan2(Math.sin(b)*Math.sin(d)*Math.cos(p1),Math.cos(d)-Math.sin(p1)*Math.sin(p2));return[p2*180/Math.PI,((l2*180/Math.PI+540)%360)-180]}
 
   // ---- rain outlook (next 12 hours) ----
   function outlook(h){
@@ -247,6 +263,55 @@ a{color:var(--link)}
         .catch(function(){return null})
     })).then(function(res){var a={};S.forEach(function(s,i){a[s.name]=res[i]});ALERTS=a})}
 
+  // ---- storm tracks and warning areas ----
+  function nearSite(lat,lon){return SITES.some(function(s){return distKm(s.lat,s.lon,lat,lon)<=NEAR_KM})}
+  function loadStorms(){
+    return fetch("https://mesonet.agron.iastate.edu/geojson/nexrad_attr.py").then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){
+      var out=[];
+      (j.features||[]).forEach(function(f){
+        var p={},g=f.geometry&&f.geometry.coordinates;if(!g)return;
+        Object.keys(f.properties||{}).forEach(function(k){p[k.toLowerCase()]=f.properties[k]});
+        var tvs=p.tvs!=null&&!/^(none|no|0|)$/i.test(String(p.tvs).trim()),meso=parseInt(p.meso,10)||0;
+        if(!(tvs||meso>=MESO_MIN)||!nearSite(g[1],g[0]))return;
+        out.push({lat:g[1],lon:g[0],tvs:tvs,meso:meso,drct:parseFloat(p.drct),sknt:parseFloat(p.sknt)})});
+      STORMS=out;stormFail=false}).catch(function(){stormFail=true})}
+  function loadWarnings(){
+    return fetch("https://api.weather.gov/alerts/active?status=actual&event="+encodeURIComponent("Tornado Warning,Severe Thunderstorm Warning")).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){
+      WARN=(j.features||[]).filter(function(f){
+        var g=f.geometry;if(!g||!g.coordinates)return false;
+        var ring=g.type==="Polygon"?g.coordinates[0]:g.type==="MultiPolygon"?[].concat.apply([],g.coordinates.map(function(c){return c[0]})):[];
+        return ring.some(function(c){return nearSite(c[1],c[0])})});
+      warnFail=false}).catch(function(){warnFail=true})}
+  // will a flagged storm pass within ~10 mi of this site in the next 90 minutes?
+  function approach(s){
+    var best=null,cl=Math.cos(rad(s.lat));
+    STORMS.forEach(function(st){
+      var sx=(st.lon-s.lon)*cl*111.32,sy=(st.lat-s.lat)*110.57,d0=Math.sqrt(sx*sx+sy*sy),vx=0,vy=0,mv=isFinite(st.drct)&&st.sknt>0;
+      if(mv){var hd=rad((st.drct+180)%360),sp=st.sknt*1.852/60;vx=sp*Math.sin(hd);vy=sp*Math.cos(hd)}   // direction is where the storm comes FROM
+      var vv=vx*vx+vy*vy,t=vv>0?Math.max(0,Math.min(LOOK_MIN,-(sx*vx+sy*vy)/vv)):0,cx=sx+vx*t,cy=sy+vy*t;
+      var now=d0<=CORRIDOR_KM;
+      if(!now&&!(t>0&&Math.sqrt(cx*cx+cy*cy)<=CORRIDOR_KM))return;
+      var c={tvs:st.tvs,lvl:st.tvs?3:2,eta:now?0:Math.round(t),miles:Math.round(d0*0.621),dir:compass(bearing(s.lat,s.lon,st.lat,st.lon)),
+        mph:Math.round((st.sknt||0)*1.15078),mov:mv?compass((st.drct+180)%360):""};
+      if(!best||c.lvl>best.lvl||(c.lvl===best.lvl&&c.eta<best.eta))best=c});
+    if(best){best.text=(best.tvs?"Possible tornado signature":"Rotating storm")+" "+best.miles+" mi "+best.dir+(best.eta>0?" · ~"+best.eta+" min":" · near site");
+      best.long=best.text+(best.mov?", moving "+best.mov+" at "+best.mph+" mph":"")}
+    return best}
+  function drawOverlays(){
+    warnLayer.clearLayers();stormLayer.clearLayers();
+    WARN.forEach(function(f){
+      var p=f.properties||{},tor=/tornado/i.test(p.event),pr=p.parameters||{},det=(pr.tornadoDetection||[])[0]||"",obs=/observed/i.test(det),col=tor?"#c0392b":"#e8710a";
+      var info="<b>"+esc(p.event)+"</b>"+(obs?" &ndash; tornado observed":det?" &ndash; "+esc(det.toLowerCase()):"")+(p.ends||p.expires?"<br>Until "+esc(t24(p.ends||p.expires)):"")+
+        (pr.maxWindGust?"<br>Wind gusts up to "+esc(pr.maxWindGust[0]):"")+(pr.maxHailSize?"<br>Hail up to "+esc(pr.maxHailSize[0])+" in":"")+(p.areaDesc?"<br>"+esc(p.areaDesc):"");
+      L.geoJSON(f.geometry,{style:{color:col,weight:obs?4:2,fillColor:col,fillOpacity:obs?0.28:0.12}}).bindPopup(info).addTo(warnLayer)});
+    STORMS.forEach(function(st){
+      var col=st.tvs?"#c0392b":"#e8710a",mv=isFinite(st.drct)&&st.sknt>0,hd=(st.drct+180)%360;
+      if(mv){var pts=[[st.lat,st.lon]];[15,30,45,60].forEach(function(m){pts.push(dest(st.lat,st.lon,hd,st.sknt*1.852*m/60))});
+        L.polyline(pts,{color:col,weight:3,dashArray:"6 6"}).addTo(stormLayer);
+        L.circleMarker(pts[pts.length-1],{radius:3,color:col,fillColor:col,fillOpacity:1}).addTo(stormLayer)}
+      L.circleMarker([st.lat,st.lon],{radius:7,color:"#fff",weight:2,fillColor:col,fillOpacity:1}).bindPopup("<b>"+(st.tvs?"Possible tornado signature (radar)":"Rotation detected (strength "+st.meso+" of 25)")+"</b>"+
+        (mv?"<br>Moving "+compass(hd)+" at "+Math.round(st.sknt*1.15078)+" mph. Dashed line is the next 60 min.":"")+"<br>Radar-detected, not a confirmed tornado.").addTo(stormLayer)})}
+
   // ---- drawing ----
   function loggedToday(site){
     if(!site.history)return"<hr style='margin:6px 0'><span style='color:#5b6b78'>History logging is off for this site.</span>";
@@ -261,20 +326,21 @@ a{color:var(--link)}
     markerLayer.clearLayers();markers=[];
     SITES.forEach(function(s,i){
       var l=LIVE[s.name],o=outlook(FC[s.name]),raw=ALERTS[s.name],known=Array.isArray(raw),r24=RAIN24[s.name];
-      var al=known?raw.map(function(a){return{event:a.event,v:SEV[a.severity]||1,until:t24(a.ends||a.expires)}}).sort(function(a,b){return b.v-a.v}):[];
-      var sev=al.length?al[0].v:0,t=l?Math.round(l.temperature_2m)+"°":"?",c=l?label(l.weather_code,l.is_day):"",b=bad(c);
+      var al=known?raw.map(function(a){return{event:a.event,v:lvl(a),until:t24(a.ends||a.expires)}}).sort(function(a,b){return b.v-a.v}):[];
+      var sm=approach(s),sev=Math.max(al.length?al[0].v:0,sm?sm.lvl:0),t=l?Math.round(l.temperature_2m)+"°":"?",c=l?label(l.weather_code,l.is_day):"",b=bad(c);
       if(b)nrain++;
       al.forEach(function(a){if(a.v>=2){var g=groups[a.event]||(groups[a.event]={v:a.v,sites:[]});g.sites.push(s.name);top=Math.max(top,a.v)}});
+      if(sm){var sk=sm.tvs?"Possible tornado signature approaching":"Rotating storm approaching",g2=groups[sk]||(groups[sk]={v:sm.lvl,sites:[]});g2.sites.push(s.name+(sm.eta>0?" (~"+sm.eta+" min)":""));top=Math.max(top,sm.lvl)}
 
       var pin='<div class="pin'+(b||sev>=2?" bad":"")+'"><b>'+t+"</b> "+(l?emoji(c):"")+(sev>=2?" ⚠️":"")+"<small>"+esc(s.name)+"</small></div>";
       var m=L.marker([s.lat,s.lon],{icon:L.divIcon({className:"",html:pin,iconSize:[0,0]}),title:s.name,zIndexOffset:sev*100});
-      m.bindPopup("<b>"+esc(s.name)+"</b><br>"+(l?"Now: "+t+" "+esc(c)+"<br>Wind "+Math.round(l.wind_speed_10m)+" mph, rain "+l.precipitation+" in":"Live weather unavailable")+
+      m.bindPopup("<b>"+esc(s.name)+"</b><br>"+(l?"Now: "+t+" "+esc(c)+"<br>Wind "+Math.round(l.wind_speed_10m)+" mph":"Live weather unavailable")+
         (o.text?"<br>"+esc(o.text):"")+(r24!=null?"<br>Rain in the last 24 h: "+(r24>=0.01?r24.toFixed(2)+" in":"none"):"")+
         al.map(function(a){return"<div style='color:#b03a2e;font-weight:700'>⚠️ "+esc(a.event)+(a.until?" until "+esc(a.until):"")+"</div>"}).join("")+
-        (al.length?"<div><a href='#' data-detail='"+i+"'>View alert details</a></div>":"")+(known?"":"<div>Alerts unavailable</div>")+loggedToday(s));
+        (sm?"<div style='color:#b03a2e;font-weight:700'>&#127786;&#65039; "+esc(sm.long)+"</div>":"")+(al.length?"<div><a href='#' data-detail='"+i+"'>View alert details</a></div>":"")+(known?"":"<div>Alerts unavailable</div>")+loggedToday(s));
       markerLayer.addLayer(m);markers[i]=m;
 
-      var chips=al.slice(0,2).map(function(a){return'<div class="al s'+Math.min(a.v,3)+'">⚠️ '+esc(a.event)+(a.until?" <span style='font-weight:400'>until "+esc(a.until)+"</span>":"")+"</div>"}).join("")+
+      var chips=(sm?'<div class="al s'+sm.lvl+'">&#127786;&#65039; '+esc(sm.text)+"</div>":"")+al.slice(0,2).map(function(a){return'<div class="al s'+Math.min(a.v,3)+'">⚠️ '+esc(a.event)+(a.until?" <span style='font-weight:400'>until "+esc(a.until)+"</span>":"")+"</div>"}).join("")+
         (al.length>2?'<div class="fc">+'+(al.length-2)+" more alert"+(al.length-2===1?"":"s")+"</div>":"")+(al.length?'<div class="fc">Details &rsaquo;</div>':"")+(known?"":'<div class="fc">Alerts unavailable</div>');
       var rr=(o.text||r24!=null)?'<div class="rr"><div><span class="k">Past 24 h</span><span class="v">'+(r24==null?"&mdash;":r24>=0.01?r24.toFixed(2)+" in":"None")+'</span></div><div><span class="k">Next 12 h</span><span class="v'+(o.wet?" wet":"")+'">'+(o.short?esc(o.short):"&mdash;")+"</span></div></div>":"";
       var html='<button class="cardsite'+(sev>=3?" s3":"")+(b?" bad":"")+'" data-i="'+i+'"><div class="n">'+esc(s.name)+'</div><div class="tmp">'+(l?emoji(c)+" "+t:"?")+
@@ -289,15 +355,18 @@ a{color:var(--link)}
     if(ev.length){bn.hidden=false;bn.className="banner"+(top>=3?"":" s2");
       bn.innerHTML=ev.map(function(e){return"⚠️ "+esc(e)+": "+esc(groups[e].sites.join(", "))}).join("&nbsp;&nbsp;|&nbsp;&nbsp;")}
     else{bn.hidden=true}
+    document.title=(ev.length?"\u26a0\ufe0f ("+ev.length+") ":"")+BASE;
 
     var checked=0,count=0,missing=0;
     SITES.forEach(function(s){var a=ALERTS[s.name];if(Array.isArray(a)){checked++;count+=a.length}else missing++});
     var p=[lastLive?"Weather updated "+lastLive+" CT"+(liveFail?" (latest refresh failed)":""):"Live weather unavailable"];
     p.push(checked?(count?count+" active alert"+(count===1?"":"s"):"No active alerts")+(missing?" ("+missing+" site"+(missing===1?"":"s")+" could not be checked)":""):"Alerts unavailable");
     if(nrain)p.push(nrain+" of "+SITES.length+" sites "+(nrain===1?"has":"have")+" rain or storms now");
+    if(stormFail||warnFail)p.push("Storm tracking unavailable");
     $("status").textContent=SITES.length?p.join(" · "):"No sites found. Add some to sites.txt.";
     if(OPEN!=null&&!$("ov").hidden)fillDetail();
 
+    drawOverlays();
     var key=SITES.map(function(s){return s.name+s.lat+s.lon}).join(";");
     if(key!==siteKey&&SITES.length){siteKey=key;map.invalidateSize();
       var pts=SITES.map(function(s){return[s.lat,s.lon]});
@@ -312,14 +381,14 @@ a{color:var(--link)}
   // ---- alert details sheet ----
   function fillDetail(){
     var s=SITES[OPEN];if(!s){closeDetail();return}
-    var l=LIVE[s.name],al=(ALERTS[s.name]||[]).slice().sort(function(a,b){return(SEV[b.severity]||1)-(SEV[a.severity]||1)});
+    var l=LIVE[s.name],al=(ALERTS[s.name]||[]).slice().sort(function(a,b){return lvl(b)-lvl(a)});
     var h='<div class="sh"><div><h3>'+esc(s.name)+'</h3><div class="al-meta">'+(l?Math.round(l.temperature_2m)+"°F, "+esc(label(l.weather_code,l.is_day))+", wind "+Math.round(l.wind_speed_10m)+" mph":"")+
       '</div></div><button data-act="close">Close</button></div>';
     if(!al.length)h+="<p>No active alerts for this site right now.</p>";
     al.forEach(function(a){
       var from=t24(a.effective||a.onset||a.sent),to=t24(a.ends||a.expires);
       var tags=[a.severity?a.severity+" severity":"",a.urgency&&a.urgency!=="Unknown"?a.urgency:"",a.certainty&&a.certainty!=="Unknown"?a.certainty+" certainty":""].filter(Boolean).map(esc).join(" &middot; ");
-      h+='<div class="al-block s'+Math.min(SEV[a.severity]||1,3)+'"><h4>⚠️ '+esc(a.event)+"</h4>"+(tags?'<div class="al-meta">'+tags+"</div>":"")+
+      h+='<div class="al-block s'+Math.min(lvl(a),3)+'"><h4>⚠️ '+esc(a.event)+"</h4>"+(tags?'<div class="al-meta">'+tags+"</div>":"")+
         '<div class="al-meta">'+(from?"From "+esc(from)+" ":"")+(to?"until "+esc(to):"")+" (Central time)</div>"+
         (a.areaDesc?'<div class="al-meta">Areas: '+esc(a.areaDesc)+"</div>":"")+
         (a.headline?'<div class="al-lbl">'+esc(a.headline)+"</div>":"")+
@@ -361,11 +430,13 @@ a{color:var(--link)}
   window.addEventListener("resize",function(){var n=window.innerWidth<700;if(n!==wasNarrow){wasNarrow=n;drawHistory()}});
 
   // ---- keep everything fresh (for a screen that is never touched) ----
-  function refreshAll(){return loadData().then(function(){return Promise.all([loadWeather(),loadAlerts()])}).then(render).catch(function(){})}
-  function refreshAlerts(){return loadAlerts().then(render).catch(function(){})}
+  function refreshAll(){return loadData().then(function(){return Promise.all([loadWeather(),loadAlerts(),loadWarnings(),loadStorms()])}).then(render).catch(function(){})}
+  function refreshAlerts(){return Promise.all([loadAlerts(),loadWarnings()]).then(render).catch(function(){})}
+  function refreshStorms(){return loadStorms().then(render).catch(function(){})}
   refreshAll();
   setInterval(refreshAll,10*60*1000);      // sites, readings, weather, rain outlook
-  setInterval(refreshAlerts,5*60*1000);    // warnings and watches
+  setInterval(refreshAlerts,2*60*1000);    // warnings, watches and warning areas
+  setInterval(refreshStorms,4*60*1000);    // radar storm tracks
   setInterval(refreshRadar,5*60*1000);     // radar images
   setTimeout(function(){location.reload()},6*60*60*1000); // pick up page updates, clear memory
   document.addEventListener("visibilitychange",function(){if(!document.hidden)refreshAll()});
