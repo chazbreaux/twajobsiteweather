@@ -76,6 +76,7 @@ details.about summary{cursor:pointer;color:var(--mut);font-weight:600;margin-top
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.72}}
 .banner:not(.s2){animation:pulse 1.6s ease-in-out infinite}
 @media (prefers-reduced-motion:reduce){.banner{animation:none!important}}
+.al.burn{background:#fff1dc;color:#6b3500;border:1px solid #e8710a}
 input[type=date]{min-height:42px}
 @media (max-width:700px){
   .hero{padding:8px 14px 12px}.hero img{height:48px;margin:0 auto}h1{font-size:1.45rem}.clock{display:none}
@@ -132,6 +133,7 @@ a{color:var(--link)}
   </table></div>
   <div class="bar"><span id="count"></span><button id="more" hidden>Show 100 more</button></div>
   <details class="about"><summary>About this data</summary><p class="note">Each day&rsquo;s record fills in as it happens, at about 08:00, 12:00 and 17:00 Central time, and only for sites marked for history. Overnight rain covers the previous day from 17:01 to 08:00. Conditions are the average cloud cover for the period (Sunny, Partly cloudy or Cloudy), or Rain if any rain fell during it. Rain amounts and conditions come from hourly weather model data for each site&rsquo;s location, not from a rain gauge, so they are estimates. Warnings and watches come from the National Weather Service and refresh every 2 minutes. Storm tracks come from the National Weather Service radar storm-tracking data (via Iowa State&rsquo;s Mesonet) and mark radar-detected rotation and its projected path; a rotation or tornado-signature flag is a radar indication, not a confirmed tornado, and some storms are missed or false-alarmed. All of this is a convenience, not a substitute for official alerts, so always follow local emergency instructions. The page refreshes itself, so it can stay open on a screen.</p></details>
+  <p class="note" id="banNote" hidden></p>
   <p class="note"><a href="data/daily.csv">Download all records (CSV)</a></p>
 </main>
 
@@ -205,7 +207,7 @@ a{color:var(--link)}
   function refreshRadar(){cur.setUrl(rurl(cur.options.rname));frames.forEach(function(f){if(f!==cur)f.setUrl(rurl(f.options.rname))})}
 
   // ---- state ----
-  var SITES=[],READ=[],LIVE={},FC={},ALERTS={},markers=[],siteKey="",lastLive="",liveFail=false,started=false,OPEN=null,RAIN24={},STORMS=[],WARN=[],stormFail=false,warnFail=false;
+  var SITES=[],READ=[],LIVE={},FC={},ALERTS={},markers=[],siteKey="",lastLive="",liveFail=false,started=false,OPEN=null,RAIN24={},BANS=[],BANUPD="",COUNTY={},STORMS=[],WARN=[],stormFail=false,warnFail=false;
   var SEV={Extreme:4,Severe:3,Moderate:2,Minor:1};
   // any Warning is red, any Watch or Statement is at least amber, whatever severity the NWS tags it with
   function lvl(a){var v=SEV[a.severity]||1,e=a.event||"";if(/warning|emergency/i.test(e))v=Math.max(v,3);else if(/watch|statement/i.test(e))v=Math.max(v,2);return v}
@@ -233,7 +235,7 @@ a{color:var(--link)}
 
   // ---- data loading ----
   function loadData(){
-    return getText("sites.txt").then(function(t){SITES=parseSites(t)}).catch(function(){})
+    return getText("sites.txt").then(function(t){SITES=parseSites(t)}).catch(function(){}).then(loadBans)
     .then(function(){return getJSON("data/daily.json").then(function(d){READ=d}).catch(function(){})})
     .then(function(){
       var names=[],prev=hs.value;READ.forEach(function(r){if(names.indexOf(r.site)<0)names.push(r.site)});SITES.forEach(function(s){if(s.history&&names.indexOf(s.name)<0)names.push(s.name)});
@@ -262,6 +264,44 @@ a{color:var(--link)}
           var e=p&&(p.ends||p.expires);return p&&p.event&&p.messageType!=="Cancel"&&(!e||new Date(e)>new Date())})})
         .catch(function(){return null})
     })).then(function(res){var a={};S.forEach(function(s,i){a[s.name]=res[i]});ALERTS=a})}
+
+  // ---- burn bans (list kept in burnbans.txt; the county of each site is looked up from its coordinates) ----
+  var BAN_URL="https://www.mfc.ms.gov/burning-info/burn-bans/",BAN_STALE_DAYS=14;
+  function normCounty(n){return String(n||"").toLowerCase().replace(/\bcounty\b/g,"").replace(/\s+/g," ").trim()}
+  function isoDate(t){var m=String(t).match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);if(!m)return"";var y=+m[3];if(y<100)y+=2000;return y+"-"+("0"+m[1]).slice(-2)+"-"+("0"+m[2]).slice(-2)}
+  function mdShort(iso){return iso?(+iso.slice(5,7))+"/"+(+iso.slice(8,10)):""}
+  function parseBans(t){
+    var bans=[],upd="";
+    t.split(/\r?\n/).forEach(function(l){l=l.trim();if(!l)return;
+      var u=l.match(/^#\s*updated\s*:?\s*(\S+)/i);if(u){upd=isoDate(u[1]);return}
+      if(l[0]==="#")return;
+      var m=l.match(/^(.+?)[\s,]+(\d{1,2}\/\d{1,2}\/\d{2,4})[\s,]+(\d{1,2}\/\d{1,2}\/\d{2,4})\s*$/);
+      if(!m)return;var a=isoDate(m[2]),b=isoDate(m[3]);if(a&&b)bans.push({county:normCounty(m[1]),start:a,end:b})});
+    return{bans:bans,upd:upd}}
+  function ckey(s){return s.lat+","+s.lon}
+  function loadBans(){return getText("burnbans.txt").then(function(t){var r=parseBans(t);BANS=r.bans;BANUPD=r.upd}).catch(function(){})}
+  function loadCounties(){
+    var need=SITES.filter(function(s){return !COUNTY[ckey(s)]});
+    return Promise.all(need.map(function(s){
+      var k=ckey(s),c=null;
+      try{c=JSON.parse(localStorage.getItem("cty:"+k))}catch(e){}
+      if(c&&c.name){COUNTY[k]=c;return null}
+      return fetch("https://api.weather.gov/points/"+s.lat.toFixed(4)+","+s.lon.toFixed(4)).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){
+        var u=j.properties&&j.properties.county;if(!u)throw 0;var id=u.split("/").pop();
+        return fetch(u).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(z){
+          var o={name:normCounty(z.properties.name),state:id.slice(0,2)};COUNTY[k]=o;try{localStorage.setItem("cty:"+k,JSON.stringify(o))}catch(e){}})}).catch(function(){})}))}
+  // a ban applies from its start date through the end of its end date (they expire at midnight on the end date)
+  function banFor(s){
+    var c=COUNTY[ckey(s)];if(!c||c.state!=="MS")return null;var td=todayStr();
+    for(var i=0;i<BANS.length;i++){var b=BANS[i];if(b.county===c.name&&b.start<=td&&td<=b.end)return{end:mdShort(b.end),county:c.name}}
+    return null}
+  function drawBanNote(){
+    var el=$("banNote");if(!BANS.length){el.hidden=true;return}
+    var td=todayStr(),stale=BANUPD&&(Date.parse(td)-Date.parse(BANUPD))/86400000>BAN_STALE_DAYS;
+    el.hidden=false;
+    el.innerHTML="Burn bans: counties are matched from each site&rsquo;s location against a list "+(BANUPD?"last updated "+esc(mdShort(BANUPD))+". ":"")+
+      (stale?"<b>That list is more than "+BAN_STALE_DAYS+" days old and may be out of date.</b> ":"")+
+      'Always confirm on the <a href="'+BAN_URL+'">Mississippi Forestry Commission burn ban page</a>.'}
 
   // ---- storm tracks and warning areas ----
   function nearSite(lat,lon){return SITES.some(function(s){return distKm(s.lat,s.lon,lat,lon)<=NEAR_KM})}
@@ -327,23 +367,23 @@ a{color:var(--link)}
     SITES.forEach(function(s,i){
       var l=LIVE[s.name],o=outlook(FC[s.name]),raw=ALERTS[s.name],known=Array.isArray(raw),r24=RAIN24[s.name];
       var al=known?raw.map(function(a){return{event:a.event,v:lvl(a),until:t24(a.ends||a.expires)}}).sort(function(a,b){return b.v-a.v}):[];
-      var sm=approach(s),sev=Math.max(al.length?al[0].v:0,sm?sm.lvl:0),t=l?Math.round(l.temperature_2m)+"°":"?",c=l?label(l.weather_code,l.is_day):"",b=bad(c);
+      var bn=banFor(s),sm=approach(s),sev=Math.max(al.length?al[0].v:0,sm?sm.lvl:0),t=l?Math.round(l.temperature_2m)+"°":"?",c=l?label(l.weather_code,l.is_day):"",b=bad(c);
       if(b)nrain++;
       al.forEach(function(a){if(a.v>=2){var g=groups[a.event]||(groups[a.event]={v:a.v,sites:[]});g.sites.push(s.name);top=Math.max(top,a.v)}});
       if(sm){var sk=sm.tvs?"Possible tornado signature approaching":"Rotating storm approaching",g2=groups[sk]||(groups[sk]={v:sm.lvl,sites:[]});g2.sites.push(s.name+(sm.eta>0?" (~"+sm.eta+" min)":""));top=Math.max(top,sm.lvl)}
 
-      var pin='<div class="pin'+(b||sev>=2?" bad":"")+'"><b>'+t+"</b> "+(l?emoji(c):"")+(sev>=2?" ⚠️":"")+"<small>"+esc(s.name)+"</small></div>";
+      var pin='<div class="pin'+(b||sev>=2?" bad":"")+'"><b>'+t+"</b> "+(l?emoji(c):"")+(sev>=2?" ⚠️":"")+(bn?" &#128293;":"")+"<small>"+esc(s.name)+"</small></div>";
       var m=L.marker([s.lat,s.lon],{icon:L.divIcon({className:"",html:pin,iconSize:[0,0]}),title:s.name,zIndexOffset:sev*100});
       m.bindPopup("<b>"+esc(s.name)+"</b><br>"+(l?"Now: "+t+" "+esc(c)+"<br>Wind "+Math.round(l.wind_speed_10m)+" mph":"Live weather unavailable")+
         (o.text?"<br>"+esc(o.text):"")+(r24!=null?"<br>Rain in the last 24 h: "+(r24>=0.01?r24.toFixed(2)+" in":"none"):"")+
         al.map(function(a){return"<div style='color:#b03a2e;font-weight:700'>⚠️ "+esc(a.event)+(a.until?" until "+esc(a.until):"")+"</div>"}).join("")+
-        (sm?"<div style='color:#b03a2e;font-weight:700'>&#127786;&#65039; "+esc(sm.long)+"</div>":"")+(al.length?"<div><a href='#' data-detail='"+i+"'>View alert details</a></div>":"")+(known?"":"<div>Alerts unavailable</div>")+loggedToday(s));
+        (sm?"<div style='color:#b03a2e;font-weight:700'>&#127786;&#65039; "+esc(sm.long)+"</div>":"")+(al.length?"<div><a href='#' data-detail='"+i+"'>View alert details</a></div>":"")+(bn?"<div style='color:#6b3500;font-weight:700'>Burn ban in effect through "+esc(bn.end)+"</div>":"")+(known?"":"<div>Alerts unavailable</div>")+loggedToday(s));
       markerLayer.addLayer(m);markers[i]=m;
 
-      var chips=(sm?'<div class="al s'+sm.lvl+'">&#127786;&#65039; '+esc(sm.text)+"</div>":"")+al.slice(0,2).map(function(a){return'<div class="al s'+Math.min(a.v,3)+'">⚠️ '+esc(a.event)+(a.until?" <span style='font-weight:400'>until "+esc(a.until)+"</span>":"")+"</div>"}).join("")+
+      var chips=(bn&&!al.length&&!sm?'<div class="al burn">&#128293; Burn ban in effect through '+esc(bn.end)+"</div>":"")+(sm?'<div class="al s'+sm.lvl+'">&#127786;&#65039; '+esc(sm.text)+"</div>":"")+al.slice(0,2).map(function(a){return'<div class="al s'+Math.min(a.v,3)+'">⚠️ '+esc(a.event)+(a.until?" <span style='font-weight:400'>until "+esc(a.until)+"</span>":"")+"</div>"}).join("")+
         (al.length>2?'<div class="fc">+'+(al.length-2)+" more alert"+(al.length-2===1?"":"s")+"</div>":"")+(al.length?'<div class="fc">Details &rsaquo;</div>':"")+(known?"":'<div class="fc">Alerts unavailable</div>');
       var rr=(o.text||r24!=null)?'<div class="rr"><div><span class="k">Past 24 h</span><span class="v">'+(r24==null?"&mdash;":r24>=0.01?r24.toFixed(2)+" in":"None")+'</span></div><div><span class="k">Next 12 h</span><span class="v'+(o.wet?" wet":"")+'">'+(o.short?esc(o.short):"&mdash;")+"</span></div></div>":"";
-      var html='<button class="cardsite'+(sev>=3?" s3":"")+(b?" bad":"")+'" data-i="'+i+'"><div class="n">'+esc(s.name)+'</div><div class="tmp">'+(l?emoji(c)+" "+t:"?")+
+      var html='<button class="cardsite'+(sev>=3?" s3":"")+(b?" bad":"")+'" data-i="'+i+'"><div class="n">'+esc(s.name)+(bn?" &#128293;":"")+'</div><div class="tmp">'+(l?emoji(c)+" "+t:"?")+
         '</div><div class="t">'+(l?esc(c)+" &middot; wind "+Math.round(l.wind_speed_10m)+" mph":"No live data")+"</div>"+
         rr+chips+"</button>";
       items.push({i:i,html:html,rank:sev>=3?4:sev===2?3:(b||o.wet)?2:sev===1?1:0});
@@ -362,6 +402,9 @@ a{color:var(--link)}
     var p=[lastLive?"Weather updated "+lastLive+" CT"+(liveFail?" (latest refresh failed)":""):"Live weather unavailable"];
     p.push(checked?(count?count+" active alert"+(count===1?"":"s"):"No active alerts")+(missing?" ("+missing+" site"+(missing===1?"":"s")+" could not be checked)":""):"Alerts unavailable");
     if(nrain)p.push(nrain+" of "+SITES.length+" sites "+(nrain===1?"has":"have")+" rain or storms now");
+    var nb=SITES.filter(function(s){return banFor(s)}).length;if(nb)p.push(nb+" site"+(nb===1?"":"s")+" in a burn-ban county");
+    var nu=SITES.filter(function(s){return !COUNTY[ckey(s)]}).length;if(BANS.length&&nu)p.push("Burn ban not checked for "+nu+" site"+(nu===1?"":"s")+" (county lookup failed)");
+    drawBanNote();
     if(stormFail||warnFail)p.push("Storm tracking unavailable");
     $("status").textContent=SITES.length?p.join(" · "):"No sites found. Add some to sites.txt.";
     if(OPEN!=null&&!$("ov").hidden)fillDetail();
@@ -395,6 +438,8 @@ a{color:var(--link)}
         (a.description?'<div class="al-txt">'+esc(a.description)+"</div>":"")+
         (a.instruction?'<div class="al-lbl">What to do</div><div class="al-txt">'+esc(a.instruction)+"</div>":"")+
         (a.senderName?'<div class="al-meta" style="margin-top:10px">Official text issued by '+esc(a.senderName)+"</div>":"")+"</div>"});
+    var bnn=banFor(s);
+    if(bnn)h+='<div class="al-block" style="border-left-color:#e8710a"><h4>&#128293; Burn ban in effect through '+esc(bnn.end)+'</h4><div class="al-meta">'+esc(bnn.county.replace(/\b\w/g,function(c){return c.toUpperCase()}))+' County, Mississippi</div><div class="al-txt">Outdoor burning is not allowed in this county. Exemptions vary, so confirm on the <a href="'+BAN_URL+'">Mississippi Forestry Commission burn ban page</a>.</div></div>';
     h+='<p><button data-act="map">Show on map</button></p>';
     $("ovb").innerHTML=h}
   function showDetail(i){OPEN=i;fillDetail();$("ov").hidden=false}
@@ -430,7 +475,7 @@ a{color:var(--link)}
   window.addEventListener("resize",function(){var n=window.innerWidth<700;if(n!==wasNarrow){wasNarrow=n;drawHistory()}});
 
   // ---- keep everything fresh (for a screen that is never touched) ----
-  function refreshAll(){return loadData().then(function(){return Promise.all([loadWeather(),loadAlerts(),loadWarnings(),loadStorms()])}).then(render).catch(function(){})}
+  function refreshAll(){return loadData().then(function(){return Promise.all([loadWeather(),loadAlerts(),loadWarnings(),loadStorms(),loadCounties()])}).then(render).catch(function(){})}
   function refreshAlerts(){return Promise.all([loadAlerts(),loadWarnings()]).then(render).catch(function(){})}
   function refreshStorms(){return loadStorms().then(render).catch(function(){})}
   refreshAll();
