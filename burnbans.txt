@@ -1,0 +1,64 @@
+# MISSISSIPPI BURN BANS. One county per line:  County  start-date  end-date  (month/day/year)
+# To update: copy the table rows from the Mississippi Forestry Commission burn ban page
+#   https://www.mfc.ms.gov/burning-info/burn-bans/
+# and paste them over the lines below. Tabs, spaces or commas between the columns all work.
+# Then change the "updated" date on the next line to today's date.
+# A county is shown as under a ban from its start date through the end of its end date,
+# and drops off the page by itself after that. The page warns if this list is over 14 days old.
+# updated: 10/22/26
+Lamar 10/22/26 10/31/26
+Marion 10/21/26 11/20/26
+Smith 10/21/26 11/21/26
+Walthall 10/22/26 11/2/26
+Tippah 10/21/26 11/21/26
+Covington 10/20/26 11/20/26
+Pontotoc 10/20/26 11/20/26
+Jefferson 10/19/26 11/19/26
+Choctaw 10/21/26 11/21/26
+Marshall 10/20/26 11/20/26
+Tishomingo 10/19/26 11/19/26
+Neshoba 10/19/26 11/2/26
+Sharkey 10/19/26 11/19/26
+Quitman 10/19/26 11/16/26
+Madison 10/19/26 11/18/26
+Hinds 10/19/26 11/18/26
+Chickasaw 10/19/26 11/12/26
+Jasper 10/19/26 11/19/26
+Jones 10/19/26 11/16/26
+Lawrence 10/19/26 11/19/26
+Stone 10/20/26 11/2/26
+Adams 10/20/26 11/2/26
+Newton 10/16/26 11/2/26
+Sunflower 10/16/26 11/16/26
+Tallahatchie 10/15/26 10/31/26
+Wayne 10/16/26 11/2/26
+Wilkinson 10/14/26 10/31/26
+Holmes 10/15/26 11/15/26
+Leake 10/15/26 11/15/26
+Oktibbeha 10/16/26 11/16/26
+Rankin 10/15/26 11/15/26
+Yazoo 10/15/26 11/15/26
+Forrest 10/15/26 10/31/26
+Franklin 10/15/26 11/15/26
+Washington 10/13/26 11/13/26
+Lee 10/13/26 11/12/26
+Copiah 10/13/26 11/13/26
+Jefferson Davis 10/12/26 11/2/26
+Scott 10/12/26 11/2/26
+Simpson 10/13/26 11/2/26
+Amite 10/11/26 11/11/26
+Attala 10/5/26 11/2/26
+Webster 10/5/26 10/31/26
+Lafayette 10/6/26 11/6/26
+Winston 10/5/26 11/2/26
+Montgomery 10/5/26 11/5/26
+Tate 9/30/26 10/31/26
+Pike 9/28/26 10/31/26
+Carroll 9/28/26 10/28/26
+Noxubee 9/23/26 10/31/26
+Lowndes 9/25/26 10/25/26
+Itawamba 9/23/26 11/3/26
+Calhoun 9/17/26 11/17/26
+Monroe 9/17/26 10/23/26
+Humphreys 9/16/26 11/20/26
+Grenada 8/18/26 11/3/26
