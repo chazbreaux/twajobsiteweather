@@ -285,7 +285,7 @@
 "temp_12pm_f": 73,
 "pm_rain_in": 0.0,
 "pm_conditions": "Sunny",
-"temp_5pm_f": 76
+"temp_5pm_f": 77
 },
 {
 "date": "2026-10-25",
@@ -297,7 +297,7 @@
 "temp_12pm_f": 76,
 "pm_rain_in": 0.0,
 "pm_conditions": "Sunny",
-"temp_5pm_f": 78
+"temp_5pm_f": 79
 },
 {
 "date": "2026-10-25",
@@ -309,7 +309,7 @@
 "temp_12pm_f": 75,
 "pm_rain_in": 0.0,
 "pm_conditions": "Sunny",
-"temp_5pm_f": 77
+"temp_5pm_f": 78
 },
 {
 "date": "2026-10-25",
@@ -321,6 +321,30 @@
 "temp_12pm_f": 76,
 "pm_rain_in": 0.0,
 "pm_conditions": "Sunny",
-"temp_5pm_f": 78
+"temp_5pm_f": 79
+},
+{
+"date": "2026-10-26",
+"site": "131-24.04 Site D",
+"overnight_rain_in": 0.0,
+"temp_8am_f": 54
+},
+{
+"date": "2026-10-26",
+"site": "162-19A Perry Industrial Bridge",
+"overnight_rain_in": 0.0,
+"temp_8am_f": 52
+},
+{
+"date": "2026-10-26",
+"site": "Bexley Road",
+"overnight_rain_in": 0.0,
+"temp_8am_f": 56
+},
+{
+"date": "2026-10-26",
+"site": "Buck Creek Road",
+"overnight_rain_in": 0.0,
+"temp_8am_f": 52
 }
 ]
