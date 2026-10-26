@@ -357,7 +357,7 @@
 "temp_12pm_f": 75,
 "pm_rain_in": 0.0,
 "pm_conditions": "Partly cloudy",
-"temp_5pm_f": 77
+"temp_5pm_f": 76
 },
 {
 "date": "2026-10-26",
@@ -369,6 +369,6 @@
 "temp_12pm_f": 75,
 "pm_rain_in": 0.0,
 "pm_conditions": "Cloudy",
-"temp_5pm_f": 77
+"temp_5pm_f": 78
 }
 ]
