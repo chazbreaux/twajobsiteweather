@@ -329,7 +329,7 @@
 "overnight_rain_in": 0.0,
 "temp_8am_f": 54,
 "am_rain_in": 0.0,
-"am_conditions": "Sunny",
+"am_conditions": "Partly cloudy",
 "temp_12pm_f": 72
 },
 {
@@ -348,7 +348,7 @@
 "temp_8am_f": 56,
 "am_rain_in": 0.0,
 "am_conditions": "Partly cloudy",
-"temp_12pm_f": 74
+"temp_12pm_f": 75
 },
 {
 "date": "2026-10-26",
