@@ -327,24 +327,36 @@
 "date": "2026-10-26",
 "site": "131-24.04 Site D",
 "overnight_rain_in": 0.0,
-"temp_8am_f": 54
+"temp_8am_f": 54,
+"am_rain_in": 0.0,
+"am_conditions": "Sunny",
+"temp_12pm_f": 72
 },
 {
 "date": "2026-10-26",
 "site": "162-19A Perry Industrial Bridge",
 "overnight_rain_in": 0.0,
-"temp_8am_f": 52
+"temp_8am_f": 52,
+"am_rain_in": 0.0,
+"am_conditions": "Partly cloudy",
+"temp_12pm_f": 75
 },
 {
 "date": "2026-10-26",
 "site": "Bexley Road",
 "overnight_rain_in": 0.0,
-"temp_8am_f": 56
+"temp_8am_f": 56,
+"am_rain_in": 0.0,
+"am_conditions": "Partly cloudy",
+"temp_12pm_f": 74
 },
 {
 "date": "2026-10-26",
 "site": "Buck Creek Road",
 "overnight_rain_in": 0.0,
-"temp_8am_f": 52
+"temp_8am_f": 52,
+"am_rain_in": 0.0,
+"am_conditions": "Partly cloudy",
+"temp_12pm_f": 75
 }
 ]

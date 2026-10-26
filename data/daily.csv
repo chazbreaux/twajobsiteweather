@@ -26,7 +26,7 @@ date,site,overnight_rain_in,temp_8am_f,am_conditions,am_rain_in,temp_12pm_f,pm_c
 2026-10-25,162-19A Perry Industrial Bridge,0.0,48,Sunny,0.0,76,Sunny,0.0,79
 2026-10-25,Bexley Road,0.0,52,Sunny,0.0,75,Sunny,0.0,78
 2026-10-25,Buck Creek Road,0.0,48,Sunny,0.0,76,Sunny,0.0,79
-2026-10-26,131-24.04 Site D,0.0,54,,,,,,
-2026-10-26,162-19A Perry Industrial Bridge,0.0,52,,,,,,
-2026-10-26,Bexley Road,0.0,56,,,,,,
-2026-10-26,Buck Creek Road,0.0,52,,,,,,
+2026-10-26,131-24.04 Site D,0.0,54,Sunny,0.0,72,,,
+2026-10-26,162-19A Perry Industrial Bridge,0.0,52,Partly cloudy,0.0,75,,,
+2026-10-26,Bexley Road,0.0,56,Partly cloudy,0.0,74,,,
+2026-10-26,Buck Creek Road,0.0,52,Partly cloudy,0.0,75,,,
