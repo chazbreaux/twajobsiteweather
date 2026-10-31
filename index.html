@@ -224,13 +224,18 @@ a{color:var(--link)}
   // ---- rain outlook (next 12 hours) ----
   function outlook(h){
     if(!h||!h.time||!h.precipitation)return{text:"",short:"",wet:false};
-    var P=h.precipitation,pr=h.precipitation_probability||[],n=P.length;
-    function wet(i){return P[i]>=0.01&&(pr[i]==null||pr[i]>=40)}
+    var P=h.precipitation,pr=h.precipitation_probability||[],n=P.length,nws=!!h.nws;
+    // with NWS hourly chances, a chance of 40% or more counts as rain; otherwise fall back to modeled amount + chance
+    function wet(i){return nws?(pr[i]!=null&&pr[i]>=40):(P[i]>=0.01&&(pr[i]==null||pr[i]>=40))}
     function chance(i){return pr[i]!=null?" ("+pr[i]+"% chance)":""}
-    if(wet(0)){
+    if(P[0]>=0.01&&wet(0)){
       for(var j=1;j<n;j++){if(!wet(j))return{text:"Rain this hour"+chance(0)+", easing around "+hr(h.time[j]),short:"Raining, easing ~"+hr(h.time[j]),wet:true}}
       return{text:"Rain this hour"+chance(0)+" and continuing",short:"Raining, continuing",wet:true}}
-    for(var i=1;i<n;i++){if(wet(i))return{text:"Rain expected around "+hr(h.time[i])+chance(i),short:"Rain ~"+hr(h.time[i])+(pr[i]!=null?" ("+pr[i]+"%)":""),wet:true}}
+    for(var i=0;i<n;i++){if(wet(i)){
+      var when=i===0?"this hour":"around "+hr(h.time[i]);
+      return{text:"Rain expected "+when+chance(i),short:(i===0?"Rain likely now":"Rain ~"+hr(h.time[i]))+(pr[i]!=null?" ("+pr[i]+"%)":""),wet:true}}}
+    var mx=-1,mi=-1;for(var k=0;k<n;k++){if(pr[k]!=null&&pr[k]>mx){mx=pr[k];mi=k}}
+    if(mx>=20)return{text:"Dry for now. Highest chance "+mx+"% around "+hr(h.time[mi]),short:"Low chance ~"+hr(h.time[mi])+" ("+mx+"%)",wet:false};
     return{text:"Dry for the next "+n+" hours",short:"Dry",wet:false}}
 
   // ---- data loading ----
@@ -256,6 +261,18 @@ a{color:var(--link)}
       var arr=Array.isArray(j)?j:[j],L2={},F2={},R2={};
       S.forEach(function(s,i){var a=arr[i];if(a&&a.current){L2[s.name]=a.current;var sp=splitHourly(a.hourly,a.current.time);F2[s.name]=sp.fc;R2[s.name]=sp.rain24}});
       LIVE=L2;FC=F2;RAIN24=R2;lastLive=hm(new Date());liveFail=false}).catch(function(){liveFail=true})}
+  // NWS hourly forecast: chance of rain for each hour (replaces Open-Meteo's chances when available)
+  function loadNWS(){
+    return Promise.all(SITES.map(function(s){
+      var f=FC[s.name];if(!f||!f.time)return null;
+      var k="fh:"+ckey(s),url=null;try{url=localStorage.getItem(k)}catch(e){}
+      var get=url?Promise.resolve(url):fetch("https://api.weather.gov/points/"+s.lat.toFixed(4)+","+s.lon.toFixed(4)).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){var u=j.properties&&j.properties.forecastHourly;if(!u)throw 0;try{localStorage.setItem(k,u)}catch(e){}return u});
+      return get.then(function(u){return fetch(u).then(function(r){if(!r.ok){try{localStorage.removeItem(k)}catch(e){}throw 0}return r.json()})}).then(function(j){
+        var per=(j.properties&&j.properties.periods)||[],m={};
+        per.forEach(function(p){var v=p.probabilityOfPrecipitation&&p.probabilityOfPrecipitation.value;m[String(p.startTime).slice(0,13)+":00"]=v==null?0:Math.round(v)});
+        var pr=f.time.map(function(t){return m[t]!=null?m[t]:null});
+        if(pr.some(function(v){return v!=null})){f.precipitation_probability=pr.map(function(v,i){return v!=null?v:(f.precipitation_probability[i]!=null?f.precipitation_probability[i]:null)});f.nws=true}
+      }).catch(function(){})}))}
   function loadAlerts(){
     var S=SITES.slice();
     return Promise.all(S.map(function(s){
@@ -475,7 +492,7 @@ a{color:var(--link)}
   window.addEventListener("resize",function(){var n=window.innerWidth<700;if(n!==wasNarrow){wasNarrow=n;drawHistory()}});
 
   // ---- keep everything fresh (for a screen that is never touched) ----
-  function refreshAll(){return loadData().then(function(){return Promise.all([loadWeather(),loadAlerts(),loadWarnings(),loadStorms(),loadCounties()])}).then(render).catch(function(){})}
+  function refreshAll(){return loadData().then(function(){return Promise.all([loadWeather().then(loadNWS),loadAlerts(),loadWarnings(),loadStorms(),loadCounties()])}).then(render).catch(function(){})}
   function refreshAlerts(){return Promise.all([loadAlerts(),loadWarnings()]).then(render).catch(function(){})}
   function refreshStorms(){return loadStorms().then(render).catch(function(){})}
   refreshAll();
