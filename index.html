@@ -228,7 +228,7 @@ a{color:var(--link)}
     // with NWS hourly chances, a chance of 40% or more counts as rain; otherwise fall back to modeled amount + chance
     function wet(i){return nws?(pr[i]!=null&&pr[i]>=40):(P[i]>=0.01&&(pr[i]==null||pr[i]>=40))}
     function chance(i){return pr[i]!=null?" ("+pr[i]+"% chance)":""}
-    if(P[0]>=0.01&&wet(0)){
+    if(P[0]>=0.01){
       for(var j=1;j<n;j++){if(!wet(j))return{text:"Rain this hour"+chance(0)+", easing around "+hr(h.time[j]),short:"Raining, easing ~"+hr(h.time[j]),wet:true}}
       return{text:"Rain this hour"+chance(0)+" and continuing",short:"Raining, continuing",wet:true}}
     for(var i=0;i<n;i++){if(wet(i)){
