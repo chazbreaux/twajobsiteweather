@@ -222,18 +222,18 @@ a{color:var(--link)}
     l2=l1+Math.atan2(Math.sin(b)*Math.sin(d)*Math.cos(p1),Math.cos(d)-Math.sin(p1)*Math.sin(p2));return[p2*180/Math.PI,((l2*180/Math.PI+540)%360)-180]}
 
   // ---- rain outlook (next 12 hours) ----
-  function outlook(h){
+  function outlook(h,rc){
     if(!h||!h.time||!h.precipitation)return{text:"",short:"",wet:false};
     var P=h.precipitation,pr=h.precipitation_probability||[],n=P.length,nws=!!h.nws;
     // with NWS hourly chances, a chance of 40% or more counts as rain; otherwise fall back to modeled amount + chance
     function wet(i){return nws?(pr[i]!=null&&pr[i]>=40):(P[i]>=0.01&&(pr[i]==null||pr[i]>=40))}
     function chance(i){return pr[i]!=null?" ("+pr[i]+"% chance)":""}
-    if(P[0]>=0.01){
-      for(var j=1;j<n;j++){if(!wet(j))return{text:"Rain this hour"+chance(0)+", easing around "+hr(h.time[j]),short:"Raining, easing ~"+hr(h.time[j]),wet:true}}
-      return{text:"Rain this hour"+chance(0)+" and continuing",short:"Raining, continuing",wet:true}}
+    if(P[0]>=0.01||rc){
+      for(var j=1;j<n;j++){if(!wet(j))return{text:"Rain this hour"+chance(0)+", easing around "+hr(h.time[j]),short:"Raining, easing ~"+hr(h.time[j]),wet:true,raining:true}}
+      return{text:"Rain this hour"+chance(0)+" and continuing",short:"Raining, continuing",wet:true,raining:true}}
     for(var i=0;i<n;i++){if(wet(i)){
       var when=i===0?"this hour":"around "+hr(h.time[i]);
-      return{text:"Rain expected "+when+chance(i),short:(i===0?"Rain likely now":"Rain ~"+hr(h.time[i]))+(pr[i]!=null?" ("+pr[i]+"%)":""),wet:true}}}
+      return{text:"Rain expected "+when+chance(i),short:(i===0?"Rain likely now":"Rain ~"+hr(h.time[i]))+(pr[i]!=null?" ("+pr[i]+"%)":""),wet:true,likely:i===0}}}
     var mx=-1,mi=-1;for(var k=0;k<n;k++){if(pr[k]!=null&&pr[k]>mx){mx=pr[k];mi=k}}
     if(mx>=20)return{text:"Dry for now. Highest chance "+mx+"% around "+hr(h.time[mi]),short:"Low chance ~"+hr(h.time[mi])+" ("+mx+"%)",wet:false};
     return{text:"Dry for the next "+n+" hours",short:"Dry",wet:false}}
@@ -379,13 +379,13 @@ a{color:var(--link)}
       "<br>12:00 temp: "+tp(r.temp_12pm_f)+"<br>PM: "+(r.pm_conditions?esc(r.pm_conditions)+", "+rn(r.pm_rain_in):"&mdash;")+"<br>17:00 temp: "+tp(r.temp_5pm_f)}
 
   function render(){
-    var items=[],nrain=0,groups={},top=0;
+    var items=[],nrain=0,nlike=0,groups={},top=0;
     markerLayer.clearLayers();markers=[];
     SITES.forEach(function(s,i){
-      var l=LIVE[s.name],o=outlook(FC[s.name]),raw=ALERTS[s.name],known=Array.isArray(raw),r24=RAIN24[s.name];
+      var l=LIVE[s.name],o=outlook(FC[s.name],!!(LIVE[s.name]&&bad(label(LIVE[s.name].weather_code,LIVE[s.name].is_day)))),raw=ALERTS[s.name],known=Array.isArray(raw),r24=RAIN24[s.name];
       var al=known?raw.map(function(a){return{event:a.event,v:lvl(a),until:t24(a.ends||a.expires)}}).sort(function(a,b){return b.v-a.v}):[];
       var bn=banFor(s),sm=approach(s),sev=Math.max(al.length?al[0].v:0,sm?sm.lvl:0),t=l?Math.round(l.temperature_2m)+"°":"?",c=l?label(l.weather_code,l.is_day):"",b=bad(c);
-      if(b)nrain++;
+      if(b||o.raining)nrain++;else if(o.likely)nlike++;
       al.forEach(function(a){if(a.v>=2){var g=groups[a.event]||(groups[a.event]={v:a.v,sites:[]});g.sites.push(s.name);top=Math.max(top,a.v)}});
       if(sm){var sk=sm.tvs?"Possible tornado signature approaching":"Rotating storm approaching",g2=groups[sk]||(groups[sk]={v:sm.lvl,sites:[]});g2.sites.push(s.name+(sm.eta>0?" (~"+sm.eta+" min)":""));top=Math.max(top,sm.lvl)}
 
@@ -418,7 +418,7 @@ a{color:var(--link)}
     SITES.forEach(function(s){var a=ALERTS[s.name];if(Array.isArray(a)){checked++;count+=a.length}else missing++});
     var p=[lastLive?"Weather updated "+lastLive+" CT"+(liveFail?" (latest refresh failed)":""):"Live weather unavailable"];
     p.push(checked?(count?count+" active alert"+(count===1?"":"s"):"No active alerts")+(missing?" ("+missing+" site"+(missing===1?"":"s")+" could not be checked)":""):"Alerts unavailable");
-    if(nrain)p.push(nrain+" of "+SITES.length+" sites "+(nrain===1?"has":"have")+" rain or storms now");
+    if(nrain)p.push(nrain+" of "+SITES.length+" sites "+(nrain===1?"has":"have")+" rain or storms now"+(nlike?", "+nlike+" more likely this hour":""));else if(nlike)p.push("Rain likely this hour at "+nlike+" of "+SITES.length+" sites");
     var nb=SITES.filter(function(s){return banFor(s)}).length;if(nb)p.push(nb+" site"+(nb===1?"":"s")+" in a burn-ban county");
     var nu=SITES.filter(function(s){return !COUNTY[ckey(s)]}).length;if(BANS.length&&nu)p.push("Burn ban not checked for "+nu+" site"+(nu===1?"":"s")+" (county lookup failed)");
     drawBanNote();
