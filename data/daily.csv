@@ -1,56 +1,56 @@
-date,site,overnight_rain_in,temp_8am_f,am_conditions,am_rain_in,temp_12pm_f,pm_conditions,pm_rain_in,temp_5pm_f,,model_overnight_rain_in,model_am_rain_in,model_pm_rain_in
-2026-10-19,131-24.04 Site D,,50,Sunny,,67,Sunny,,73,,0.0,0.0,0.0
-2026-10-19,Bexley Road,,52,Sunny,,68,Sunny,,74,,0.0,0.0,0.0
-2026-10-19,Buck Creek Road,,48,Sunny,,70,Sunny,,76,,0.0,0.0,0.0
-2026-10-20,131-24.04 Site D,,51,Sunny,,72,Sunny,,75,,0.0,0.0,0.0
-2026-10-20,162-19A Perry Industrial Bridge,,50,Sunny,,74,Sunny,,78,,0.0,0.0,0.0
-2026-10-20,Bexley Road,,53,Sunny,,72,Sunny,,75,,0.0,0.0,0.0
-2026-10-20,Buck Creek Road,,50,Sunny,,74,Sunny,,78,,0.0,0.0,0.0
-2026-10-21,131-24.04 Site D,,48,Sunny,,75,Sunny,,78,,0.0,0.0,0.0
-2026-10-21,162-19A Perry Industrial Bridge,,46,Sunny,,78,Sunny,,82,,0.0,0.0,0.0
-2026-10-21,Bexley Road,,48,Sunny,,75,Sunny,,78,,0.0,0.0,0.0
-2026-10-21,Buck Creek Road,,46,Sunny,,77,Sunny,,81,,0.0,0.0,0.0
-2026-10-22,131-24.04 Site D,,50,Sunny,,77,Sunny,,80,,0.0,0.0,0.0
-2026-10-22,162-19A Perry Industrial Bridge,,49,Sunny,,80,Sunny,,83,,0.0,0.0,0.0
-2026-10-22,Bexley Road,,51,Sunny,,78,Sunny,,79,,0.0,0.0,0.0
-2026-10-22,Buck Creek Road,,49,Sunny,,80,Sunny,,83,,0.0,0.0,0.0
-2026-10-23,131-24.04 Site D,,50,Sunny,,76,Sunny,,80,,0.0,0.0,0.0
-2026-10-23,162-19A Perry Industrial Bridge,,49,Sunny,,81,Sunny,,83,,0.0,0.0,0.0
-2026-10-23,Bexley Road,,50,Sunny,,77,Sunny,,81,,0.0,0.0,0.0
-2026-10-23,Buck Creek Road,,48,Sunny,,80,Sunny,,83,,0.0,0.0,0.0
-2026-10-24,131-24.04 Site D,,50,Sunny,,73,Sunny,,76,,0.0,0.0,0.0
-2026-10-24,162-19A Perry Industrial Bridge,,47,Partly cloudy,,77,Sunny,,78,,0.0,0.0,0.0
-2026-10-24,Bexley Road,,53,Sunny,,74,Sunny,,76,,0.0,0.0,0.0
-2026-10-24,Buck Creek Road,,48,Sunny,,77,Sunny,,78,,0.0,0.0,0.0
-2026-10-25,131-24.04 Site D,0.0,60,Sunny,0.0,75,Sunny,0.0,73,,0.0,0.0,0.0
-2026-10-25,162-19A Perry Industrial Bridge,0.0,60,Sunny,0.0,78,Sunny,0.0,75,,0.0,0.0,0.0
-2026-10-25,Bexley Road,0.0,60,Sunny,0.0,77,Sunny,0.0,74,,0.0,0.0,0.0
-2026-10-25,Buck Creek Road,0.0,59,Sunny,0.0,78,Sunny,0.0,75,,0.0,0.0,0.0
-2026-10-26,131-24.04 Site D,0.0,60,Partly cloudy,0.0,75,Cloudy,0.0,72,,0.0,0.0,0.0
-2026-10-26,162-19A Perry Industrial Bridge,0.0,61,Cloudy,0.0,78,Cloudy,0.0,75,,0.0,0.0,0.0
-2026-10-26,Bexley Road,0.0,62,Cloudy,0.0,77,Partly cloudy,0.0,73,,0.0,0.0,0.0
-2026-10-26,Buck Creek Road,0.0,60,Cloudy,0.0,78,Cloudy,0.0,75,,0.0,0.0,0.0
-2026-10-27,131-24.04 Site D,0.0,60,Sunny,0.0,75,Sunny,0.0,69,,0.0,0.0,0.0
-2026-10-27,162-19A Perry Industrial Bridge,0.0,61,Sunny,0.0,79,Sunny,0.0,74,,0.0,0.0,0.0
-2026-10-27,Bexley Road,0.0,61,Sunny,0.0,77,Sunny,0.0,71,,0.0,0.0,0.0
-2026-10-27,Buck Creek Road,0.0,60,Sunny,0.0,78,Sunny,0.0,73,,0.0,0.0,0.0
-2026-10-28,131-24.04 Site D,0.0,59,Sunny,0.0,79,Sunny,0.0,74,,0.0,0.0,0.0
-2026-10-28,162-19A Perry Industrial Bridge,0.0,60,Sunny,0.0,80,Sunny,0.0,77,,0.0,0.0,0.0
-2026-10-28,Bexley Road,0.0,60,Sunny,0.0,80,Sunny,0.0,74,,0.0,0.0,0.0
-2026-10-28,Buck Creek Road,0.0,60,Sunny,0.0,80,Sunny,0.0,78,,0.0,0.0,0.0
-2026-10-29,131-24.04 Site D,0.0,61,Sunny,0.0,78,Sunny,0.0,74,,0.0,0.0,0.0
-2026-10-29,162-19A Perry Industrial Bridge,0.0,60,Sunny,0.0,80,Sunny,0.0,77,,0.0,0.0,0.0
-2026-10-29,Bexley Road,0.0,62,Sunny,0.0,79,Sunny,0.0,75,,0.0,0.0,0.0
-2026-10-29,Buck Creek Road,0.0,59,Sunny,0.0,79,Sunny,0.0,77,,0.0,0.0,0.0
-2026-10-30,131-24.04 Site D,0.0,66,Sunny,0.0,80,Sunny,0.0,75,,0.0,0.0,0.0
-2026-10-30,162-19A Perry Industrial Bridge,0.0,67,Sunny,0.0,82,Partly cloudy,0.0,77,,0.0,0.0,0.0
-2026-10-30,Bexley Road,0.0,68,Partly cloudy,0.0,81,Partly cloudy,0.0,77,,0.0,0.0,0.0
-2026-10-30,Buck Creek Road,0.0,67,Partly cloudy,0.0,82,Partly cloudy,0.0,77,,0.0,0.0,0.0
-2026-10-31,131-24.04 Site D,0.0,70,Cloudy,0.0,80,Cloudy,0.0,79,,0.0,0.0,0.0
-2026-10-31,162-19A Perry Industrial Bridge,0.0,72,Cloudy,0.0,81,Rain,0.08,74,,0.0,0.0,0.02
-2026-10-31,Bexley Road,0.0,72,Cloudy,0.0,81,Cloudy,0.0,77,,0.0,0.0,0.0
-2026-10-31,Buck Creek Road,0.0,72,Cloudy,0.0,81,Rain,0.04,74,,0.0,0.0,0.02
-2026-11-01,131-24.04 Site D,,70,,,,,,,,0.04,,
-2026-11-01,162-19A Perry Industrial Bridge,,72,,,,,,,,0.06,,
-2026-11-01,Bexley Road,,71,,,,,,,,0.03,,
-2026-11-01,Buck Creek Road,,71,,,,,,,,0.02,,
+date,site,overnight_rain_in,temp_8am_f,am_conditions,am_rain_in,temp_12pm_f,pm_conditions,pm_rain_in,temp_5pm_f,radar_pending,,model_overnight_rain_in,model_am_rain_in,model_pm_rain_in
+2026-10-19,131-24.04 Site D,,50,Sunny,,67,Sunny,,73,,,0.0,0.0,0.0
+2026-10-19,Bexley Road,,52,Sunny,,68,Sunny,,74,,,0.0,0.0,0.0
+2026-10-19,Buck Creek Road,,48,Sunny,,70,Sunny,,76,,,0.0,0.0,0.0
+2026-10-20,131-24.04 Site D,,51,Sunny,,72,Sunny,,75,,,0.0,0.0,0.0
+2026-10-20,162-19A Perry Industrial Bridge,,50,Sunny,,74,Sunny,,78,,,0.0,0.0,0.0
+2026-10-20,Bexley Road,,53,Sunny,,72,Sunny,,75,,,0.0,0.0,0.0
+2026-10-20,Buck Creek Road,,50,Sunny,,74,Sunny,,78,,,0.0,0.0,0.0
+2026-10-21,131-24.04 Site D,,48,Sunny,,75,Sunny,,78,,,0.0,0.0,0.0
+2026-10-21,162-19A Perry Industrial Bridge,,46,Sunny,,78,Sunny,,82,,,0.0,0.0,0.0
+2026-10-21,Bexley Road,,48,Sunny,,75,Sunny,,78,,,0.0,0.0,0.0
+2026-10-21,Buck Creek Road,,46,Sunny,,77,Sunny,,81,,,0.0,0.0,0.0
+2026-10-22,131-24.04 Site D,,50,Sunny,,77,Sunny,,80,,,0.0,0.0,0.0
+2026-10-22,162-19A Perry Industrial Bridge,,49,Sunny,,80,Sunny,,83,,,0.0,0.0,0.0
+2026-10-22,Bexley Road,,51,Sunny,,78,Sunny,,79,,,0.0,0.0,0.0
+2026-10-22,Buck Creek Road,,49,Sunny,,80,Sunny,,83,,,0.0,0.0,0.0
+2026-10-23,131-24.04 Site D,,50,Sunny,,76,Sunny,,80,,,0.0,0.0,0.0
+2026-10-23,162-19A Perry Industrial Bridge,,49,Sunny,,81,Sunny,,83,,,0.0,0.0,0.0
+2026-10-23,Bexley Road,,50,Sunny,,77,Sunny,,81,,,0.0,0.0,0.0
+2026-10-23,Buck Creek Road,,48,Sunny,,80,Sunny,,83,,,0.0,0.0,0.0
+2026-10-24,131-24.04 Site D,,50,Sunny,,73,Sunny,,76,,,0.0,0.0,0.0
+2026-10-24,162-19A Perry Industrial Bridge,,47,Partly cloudy,,77,Sunny,,78,,,0.0,0.0,0.0
+2026-10-24,Bexley Road,,53,Sunny,,74,Sunny,,76,,,0.0,0.0,0.0
+2026-10-24,Buck Creek Road,,48,Sunny,,77,Sunny,,78,,,0.0,0.0,0.0
+2026-10-25,131-24.04 Site D,0.0,60,Sunny,0.0,75,Sunny,0.0,73,,,0.0,0.0,0.0
+2026-10-25,162-19A Perry Industrial Bridge,0.0,60,Sunny,0.0,78,Sunny,0.0,75,,,0.0,0.0,0.0
+2026-10-25,Bexley Road,0.0,60,Sunny,0.0,77,Sunny,0.0,74,,,0.0,0.0,0.0
+2026-10-25,Buck Creek Road,0.0,59,Sunny,0.0,78,Sunny,0.0,75,,,0.0,0.0,0.0
+2026-10-26,131-24.04 Site D,0.0,60,Partly cloudy,0.0,75,Cloudy,0.0,72,,,0.0,0.0,0.0
+2026-10-26,162-19A Perry Industrial Bridge,0.0,61,Cloudy,0.0,78,Cloudy,0.0,75,,,0.0,0.0,0.0
+2026-10-26,Bexley Road,0.0,62,Cloudy,0.0,77,Partly cloudy,0.0,73,,,0.0,0.0,0.0
+2026-10-26,Buck Creek Road,0.0,60,Cloudy,0.0,78,Cloudy,0.0,75,,,0.0,0.0,0.0
+2026-10-27,131-24.04 Site D,0.0,60,Sunny,0.0,75,Sunny,0.0,69,,,0.0,0.0,0.0
+2026-10-27,162-19A Perry Industrial Bridge,0.0,61,Sunny,0.0,79,Sunny,0.0,74,,,0.0,0.0,0.0
+2026-10-27,Bexley Road,0.0,61,Sunny,0.0,77,Sunny,0.0,71,,,0.0,0.0,0.0
+2026-10-27,Buck Creek Road,0.0,60,Sunny,0.0,78,Sunny,0.0,73,,,0.0,0.0,0.0
+2026-10-28,131-24.04 Site D,0.0,59,Sunny,0.0,79,Sunny,0.0,74,,,0.0,0.0,0.0
+2026-10-28,162-19A Perry Industrial Bridge,0.0,60,Sunny,0.0,80,Sunny,0.0,77,,,0.0,0.0,0.0
+2026-10-28,Bexley Road,0.0,60,Sunny,0.0,80,Sunny,0.0,74,,,0.0,0.0,0.0
+2026-10-28,Buck Creek Road,0.0,60,Sunny,0.0,80,Sunny,0.0,78,,,0.0,0.0,0.0
+2026-10-29,131-24.04 Site D,0.0,61,Sunny,0.0,78,Sunny,0.0,74,,,0.0,0.0,0.0
+2026-10-29,162-19A Perry Industrial Bridge,0.0,60,Sunny,0.0,80,Sunny,0.0,77,,,0.0,0.0,0.0
+2026-10-29,Bexley Road,0.0,62,Sunny,0.0,79,Sunny,0.0,75,,,0.0,0.0,0.0
+2026-10-29,Buck Creek Road,0.0,59,Sunny,0.0,79,Sunny,0.0,77,,,0.0,0.0,0.0
+2026-10-30,131-24.04 Site D,0.0,66,Sunny,0.0,80,Sunny,0.0,75,,,0.0,0.0,0.0
+2026-10-30,162-19A Perry Industrial Bridge,0.0,67,Sunny,0.0,82,Partly cloudy,0.0,77,,,0.0,0.0,0.0
+2026-10-30,Bexley Road,0.0,68,Partly cloudy,0.0,81,Partly cloudy,0.0,77,,,0.0,0.0,0.0
+2026-10-30,Buck Creek Road,0.0,67,Partly cloudy,0.0,82,Partly cloudy,0.0,77,,,0.0,0.0,0.0
+2026-10-31,131-24.04 Site D,0.0,70,Cloudy,0.0,80,Cloudy,0.0,79,,,0.0,0.0,0.0
+2026-10-31,162-19A Perry Industrial Bridge,0.0,72,Cloudy,0.0,81,Rain,0.08,74,,,0.0,0.0,0.02
+2026-10-31,Bexley Road,0.0,72,Cloudy,0.0,81,Cloudy,0.0,77,,,0.0,0.0,0.0
+2026-10-31,Buck Creek Road,0.0,72,Cloudy,0.0,81,Rain,0.04,74,,,0.0,0.0,0.02
+2026-11-01,131-24.04 Site D,0.08,70,,,,,,,overnight,,0.04,,
+2026-11-01,162-19A Perry Industrial Bridge,0.2,72,,,,,,,overnight,,0.06,,
+2026-11-01,Bexley Road,0.16,71,,,,,,,overnight,,0.03,,
+2026-11-01,Buck Creek Road,0.16,71,,,,,,,overnight,,0.02,,
