@@ -19,7 +19,9 @@ Rain amounts (and the Rain/Snow call) come from the NOAA radar-and-gauge estimat
 (Stage IV, via Iowa State's Mesonet). The same periods from the Open-Meteo weather
 model are kept in separate model_* columns, after a blank column, for comparison.
 Radar data arrives about an hour late and can be revised, so each run recomputes the
-last three days; a radar value stays blank until its whole period is available.
+last three days. While some hours of a period are still missing, the radar value holds the
+hours that are in and the period is listed in radar_pending (shown as a "+" on the page);
+a later run replaces it with the final total.
 Temperatures and cloud cover (Sunny / Partly cloudy / Cloudy) are from the weather model.
 
 Each run fills in whatever parts of the recent days are complete, so it is
@@ -45,6 +47,7 @@ JSON_PATH = os.path.join(DATA_DIR, "daily.json")
 CSV_PATH = os.path.join(DATA_DIR, "daily.csv")
 FIELDS = ["date", "site", "overnight_rain_in", "temp_8am_f", "am_conditions",
           "am_rain_in", "temp_12pm_f", "pm_conditions", "pm_rain_in", "temp_5pm_f",
+          "radar_pending",   # periods whose radar total is still missing its latest hour(s)
           "",   # blank separator column: everything to its right is weather-model data
           "model_overnight_rain_in", "model_am_rain_in", "model_pm_rain_in"]
 MODEL_RAIN = {"overnight_rain_in": "model_overnight_rain_in", "am_rain_in": "model_am_rain_in",
@@ -147,6 +150,13 @@ def col(H, keys, field):
     return None if any(v is None for v in vals) else vals
 
 
+def colsum(H, keys, field):
+    """Sum of the hours that are available. Returns (total, pending) or None when no hour is available yet."""
+    vals = [H.get(k, {}).get(field) for k in keys]
+    got = [v for v in vals if v is not None]
+    return (round(sum(got), 2), len(got) < len(vals)) if got else None
+
+
 def classify(precip, cloud, codes):
     if sum(precip) >= RAIN_MIN or any(p >= RAIN_MIN for p in precip):
         return "Snow" if any(c in SNOW_CODES for c in codes) else "Rain"
@@ -155,52 +165,61 @@ def classify(precip, cloud, codes):
 
 
 def window(H, R, d, rain_hours, cloud_hours):
-    """Returns (model_rain, radar_rain or None, conditions). Rain uses hourly totals stamped at the END
-    of each hour; cloud/codes are readings at the hour. The Rain/Snow call uses radar when it is complete."""
+    """Returns (model_rain, radar_rain or None, radar_pending, conditions). Rain uses hourly totals stamped at
+    the END of each hour; cloud/codes are readings at the hour. The Rain/Snow call uses radar when any is in."""
     keys = stamps(at(d, rain_hours[0]), at(d, rain_hours[1]))
     p = col(H, keys, "p")
-    rp = col(R, keys, "p")
+    rad = colsum(R, keys, "p")
     c = col(H, stamps(at(d, cloud_hours[0]), at(d, cloud_hours[1])), "c")
     w = col(H, keys, "w") or []
     if p is None or c is None:
         return None
-    use = rp if rp is not None else p
-    return round(sum(p), 2), (round(sum(rp), 2) if rp is not None else None), classify(use, c, w)
+    use = [R[k]["p"] for k in keys if R.get(k, {}).get("p") is not None] if rad else p
+    return round(sum(p), 2), (rad[0] if rad else None), (rad[1] if rad else True), classify(use, c, w)
 
 
 def compute_day(H, R, d, now):
     """Return only the fields whose time windows have fully passed."""
     rec = {}
+    pending = []
     prev = d - timedelta(days=1)
     if now >= at(d, 8):
         keys = stamps(at(prev, 18), at(d, 8))                # 17:01 yesterday -> 08:00
         p = col(H, keys, "p")
         if p is not None:
             rec["model_overnight_rain_in"] = round(sum(p), 2)
-        rp = col(R, keys, "p")
-        if rp is not None:
-            rec["overnight_rain_in"] = round(sum(rp), 2)
+        rad = colsum(R, keys, "p")
+        if rad:
+            rec["overnight_rain_in"] = rad[0]
+        if not rad or rad[1]:
+            pending.append("overnight")
         t = col(H, stamps(at(d, 8), at(d, 8)), "t")
         if t is not None:
             rec["temp_8am_f"] = round(t[0])
     if now >= at(d, 12):
         am = window(H, R, d, (9, 12), (8, 11))               # 08:01 -> 11:59
         if am:
-            rec["model_am_rain_in"], radar, rec["am_conditions"] = am
+            rec["model_am_rain_in"], radar, pend, rec["am_conditions"] = am
             if radar is not None:
                 rec["am_rain_in"] = radar
+            if pend:
+                pending.append("am")
         t = col(H, stamps(at(d, 12), at(d, 12)), "t")
         if t is not None:
             rec["temp_12pm_f"] = round(t[0])
     if now >= at(d, 17):
         pm = window(H, R, d, (13, 17), (12, 16))             # 12:01 -> 16:59
         if pm:
-            rec["model_pm_rain_in"], radar, rec["pm_conditions"] = pm
+            rec["model_pm_rain_in"], radar, pend, rec["pm_conditions"] = pm
             if radar is not None:
                 rec["pm_rain_in"] = radar
+            if pend:
+                pending.append("pm")
         t = col(H, stamps(at(d, 17), at(d, 17)), "t")
         if t is not None:
             rec["temp_5pm_f"] = round(t[0])
+    if rec:
+        rec["radar_pending"] = ",".join(pending)             # empty once every finished period is final
     return rec
 
 
