@@ -610,5 +610,29 @@
 "pm_rain_in": 0.02,
 "pm_conditions": "Rain",
 "temp_5pm_f": 74
+},
+{
+"date": "2026-11-01",
+"site": "131-24.04 Site D",
+"overnight_rain_in": 0.04,
+"temp_8am_f": 70
+},
+{
+"date": "2026-11-01",
+"site": "162-19A Perry Industrial Bridge",
+"overnight_rain_in": 0.06,
+"temp_8am_f": 71
+},
+{
+"date": "2026-11-01",
+"site": "Bexley Road",
+"overnight_rain_in": 0.03,
+"temp_8am_f": 71
+},
+{
+"date": "2026-11-01",
+"site": "Buck Creek Road",
+"overnight_rain_in": 0.02,
+"temp_8am_f": 71
 }
 ]
