@@ -132,7 +132,7 @@ a{color:var(--link)}
     <tbody id="rows"></tbody>
   </table></div>
   <div class="bar"><span id="count"></span><button id="more" hidden>Show 100 more</button></div>
-  <details class="about"><summary>About this data</summary><p class="note">Each day&rsquo;s record fills in as it happens, at about 08:00, 12:00 and 17:00 Central time, and only for sites marked for history. Overnight rain covers the previous day from 17:01 to 08:00. Conditions are the average cloud cover for the period (Sunny, Partly cloudy or Cloudy), or Rain if any rain fell during it. The past-24-hour rain total is a NOAA radar-and-gauge estimate for each site&rsquo;s location (via Iowa State&rsquo;s Mesonet); a + after it means the latest hour is still being processed, and when it is unavailable the page shows a weather-model total instead. The history log&rsquo;s rain amounts and conditions come from hourly weather model data, not from a rain gauge, so they are estimates. Warnings and watches come from the National Weather Service and refresh every 2 minutes. Storm tracks come from the National Weather Service radar storm-tracking data (via Iowa State&rsquo;s Mesonet) and mark radar-detected rotation and its projected path; a rotation or tornado-signature flag is a radar indication, not a confirmed tornado, and some storms are missed or false-alarmed. All of this is a convenience, not a substitute for official alerts, so always follow local emergency instructions. The page refreshes itself, so it can stay open on a screen.</p></details>
+  <details class="about"><summary>About this data</summary><p class="note">Each day&rsquo;s record fills in as it happens, at about 08:00, 12:00 and 17:00 Central time, and only for sites marked for history. Overnight rain covers the previous day from 17:01 to 08:00. Conditions are the average cloud cover for the period (Sunny, Partly cloudy or Cloudy), or Rain if any rain fell during it. The past-24-hour rain total is a NOAA radar-and-gauge estimate for each site&rsquo;s location (via Iowa State&rsquo;s Mesonet); a + after it means the latest hour is still being processed, and when it is unavailable the page shows a weather-model total instead. The history log uses the same radar estimate for its rain amounts and for the Rain call; a value with a * is a weather-model estimate shown until the radar value arrives (about an hour or two after each period), and the log re-checks the last three days so late or revised radar data is picked up. Temperatures and cloud cover come from the weather model. In the downloadable CSV, the columns after the blank one are the weather-model rain amounts for comparison. None of these are gauge readings, so they are estimates. Warnings and watches come from the National Weather Service and refresh every 2 minutes. Storm tracks come from the National Weather Service radar storm-tracking data (via Iowa State&rsquo;s Mesonet) and mark radar-detected rotation and its projected path; a rotation or tornado-signature flag is a radar indication, not a confirmed tornado, and some storms are missed or false-alarmed. All of this is a convenience, not a substitute for official alerts, so always follow local emergency instructions. The page refreshes itself, so it can stay open on a screen.</p></details>
   <p class="note" id="banNote" hidden></p>
   <p class="note"><a href="data/daily.csv">Download all records (CSV)</a></p>
 </main>
@@ -386,9 +386,9 @@ a{color:var(--link)}
     if(!site.history)return"<hr style='margin:6px 0'><span style='color:#5b6b78'>History logging is off for this site.</span>";
     var td=todayStr(),r=READ.filter(function(x){return x.site===site.name&&x.date===td})[0];
     if(!r)return"<hr style='margin:6px 0'><b>Today&rsquo;s record</b><br>Not recorded yet.";
-    var rn=function(v){return v==null?"&mdash;":v.toFixed(2)+" in"},tp=function(v){return v==null?"&mdash;":Math.round(v)+"°F"};
-    return"<hr style='margin:6px 0'><b>Today&rsquo;s record</b><br>Overnight rain: "+rn(r.overnight_rain_in)+"<br>08:00 temp: "+tp(r.temp_8am_f)+"<br>AM: "+(r.am_conditions?esc(r.am_conditions)+", "+rn(r.am_rain_in):"&mdash;")+
-      "<br>12:00 temp: "+tp(r.temp_12pm_f)+"<br>PM: "+(r.pm_conditions?esc(r.pm_conditions)+", "+rn(r.pm_rain_in):"&mdash;")+"<br>17:00 temp: "+tp(r.temp_5pm_f)}
+    var rn=function(o){return o==null?"&mdash;":o.v.toFixed(2)+" in"+(o.m?"*":"")},tp=function(v){return v==null?"&mdash;":Math.round(v)+"°F"};
+    return"<hr style='margin:6px 0'><b>Today&rsquo;s record</b><br>Overnight rain: "+rn(rainOf(r,"overnight_rain_in","model_overnight_rain_in"))+"<br>08:00 temp: "+tp(r.temp_8am_f)+"<br>AM: "+(r.am_conditions?esc(r.am_conditions)+", "+rn(rainOf(r,"am_rain_in","model_am_rain_in")):"&mdash;")+
+      "<br>12:00 temp: "+tp(r.temp_12pm_f)+"<br>PM: "+(r.pm_conditions?esc(r.pm_conditions)+", "+rn(rainOf(r,"pm_rain_in","model_pm_rain_in")):"&mdash;")+"<br>17:00 temp: "+tp(r.temp_5pm_f)}
 
   function render(){
     var items=[],nrain=0,nlike=0,groups={},top=0;
@@ -485,7 +485,9 @@ a{color:var(--link)}
   var hs=$("hs"),hf=$("hf"),ht=$("ht"),SHOW=100;
   function fmtDate(d){return new Date(d+"T12:00:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric"})}
   function none(l){return'<td data-l="'+l+'" class="none">&mdash;</td>'}
-  function rainCell(v,l){return v==null?none(l):'<td data-l="'+l+'"'+(v>=0.01?' class="bad"':"")+">"+v.toFixed(2)+" in</td>"}
+  // rain value for a period: the radar estimate when logged, otherwise the weather-model value marked with *
+  function rainOf(r,k,mk){return r[k]!=null?{v:r[k],m:false}:(r[mk]!=null?{v:r[mk],m:true}:null)}
+  function rainCell(o,l){return o==null?none(l):'<td data-l="'+l+'"'+(o.v>=0.01?' class="bad"':"")+(o.m?' title="Weather-model estimate; the radar value is not in yet"':"")+">"+o.v.toFixed(2)+" in"+(o.m?"*":"")+"</td>"}
   function tempCell(v,l){return v==null?none(l):'<td data-l="'+l+'"><b>'+Math.round(v)+"°F</b></td>"}
   function condCell(c,l){return c?'<td data-l="'+l+'"'+(bad(c)?' class="bad"':"")+">"+emoji(c)+" "+esc(c)+"</td>":none(l)}
   function drawHistory(){
@@ -494,7 +496,7 @@ a{color:var(--link)}
     rows.sort(function(a,b){return a.date<b.date?1:a.date>b.date?-1:(a.site<b.site?-1:1)});
     var any=SITES.some(function(s){return s.history});
     $("rows").innerHTML=rows.slice(0,SHOW).map(function(r){
-      return'<tr><td class="h">'+fmtDate(r.date)+'</td><td class="h">'+esc(r.site)+"</td>"+rainCell(r.overnight_rain_in,"Overnight rain")+tempCell(r.temp_8am_f,"08:00 temp")+condCell(r.am_conditions,"AM conditions")+rainCell(r.am_rain_in,"AM rain")+tempCell(r.temp_12pm_f,"12:00 temp")+condCell(r.pm_conditions,"PM conditions")+rainCell(r.pm_rain_in,"PM rain")+tempCell(r.temp_5pm_f,"17:00 temp")+"</tr>"}).join("")||
+      return'<tr><td class="h">'+fmtDate(r.date)+'</td><td class="h">'+esc(r.site)+"</td>"+rainCell(rainOf(r,"overnight_rain_in","model_overnight_rain_in"),"Overnight rain")+tempCell(r.temp_8am_f,"08:00 temp")+condCell(r.am_conditions,"AM conditions")+rainCell(rainOf(r,"am_rain_in","model_am_rain_in"),"AM rain")+tempCell(r.temp_12pm_f,"12:00 temp")+condCell(r.pm_conditions,"PM conditions")+rainCell(rainOf(r,"pm_rain_in","model_pm_rain_in"),"PM rain")+tempCell(r.temp_5pm_f,"17:00 temp")+"</tr>"}).join("")||
       '<tr><td colspan="10" class="none">'+(any?(onlyToday?"No records for today yet. Pick dates above to look at earlier days.":"No records yet. Each day fills in as the morning and afternoon pass."):"No sites are set up for history yet. Add <b>, history</b> to the end of a site&rsquo;s line in sites.txt.")+"</td></tr>";
     $("count").textContent=onlyToday?"Showing today only. Pick dates above to see earlier days.":(rows.length?"Showing "+Math.min(SHOW,rows.length)+" of "+rows.length+" entries":"");
     $("more").hidden=rows.length<=SHOW}
