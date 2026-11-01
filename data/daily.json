@@ -729,15 +729,15 @@
 "temp_8am_f": 70,
 "model_overnight_rain_in": 0.04,
 "overnight_rain_in": 0.08,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-01",
 "site": "162-19A Perry Industrial Bridge",
-"temp_8am_f": 72,
+"temp_8am_f": 71,
 "model_overnight_rain_in": 0.06,
 "overnight_rain_in": 0.2,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-01",
@@ -745,7 +745,7 @@
 "temp_8am_f": 71,
 "model_overnight_rain_in": 0.03,
 "overnight_rain_in": 0.16,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-01",
@@ -753,6 +753,6 @@
 "temp_8am_f": 71,
 "model_overnight_rain_in": 0.02,
 "overnight_rain_in": 0.16,
-"radar_pending": "overnight"
+"radar_pending": ""
 }
 ]
