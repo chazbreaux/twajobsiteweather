@@ -232,8 +232,9 @@ a{color:var(--link)}
       for(var j=1;j<n;j++){if(!wet(j))return{text:"Rain this hour"+chance(0)+", easing around "+hr(h.time[j]),short:"Raining, easing ~"+hr(h.time[j]),wet:true,raining:true}}
       return{text:"Rain this hour"+chance(0)+" and continuing",short:"Raining, continuing",wet:true,raining:true}}
     for(var i=0;i<n;i++){if(wet(i)){
+      var strong=pr[i]!=null&&pr[i]>=60;
       var when=i===0?"this hour":"around "+hr(h.time[i]);
-      return{text:"Rain expected "+when+chance(i),short:(i===0?"Rain likely now":"Rain ~"+hr(h.time[i]))+(pr[i]!=null?" ("+pr[i]+"%)":""),wet:true,likely:i===0}}}
+      return{text:(i===0&&!strong?"Chance of rain ":"Rain expected ")+when+chance(i),short:(i===0?(strong?"Rain likely now":"Rain chance now"):"Rain ~"+hr(h.time[i]))+(pr[i]!=null?" ("+pr[i]+"%)":""),wet:true,likely:i===0&&strong}}}
     var mx=-1,mi=-1;for(var k=0;k<n;k++){if(pr[k]!=null&&pr[k]>mx){mx=pr[k];mi=k}}
     if(mx>=20)return{text:"Dry for now. Highest chance "+mx+"% around "+hr(h.time[mi]),short:"Low chance ~"+hr(h.time[mi])+" ("+mx+"%)",wet:false};
     return{text:"Dry for the next "+n+" hours",short:"Dry",wet:false}}
