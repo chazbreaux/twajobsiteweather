@@ -964,16 +964,16 @@
 "site": "131-24.04 Site D",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 66,
-"radar_pending": "overnight"
+"temp_8am_f": 64,
+"radar_pending": ""
 },
 {
 "date": "2026-11-02",
 "site": "162-19A Perry Industrial Bridge",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 68,
-"radar_pending": "overnight"
+"temp_8am_f": 67,
+"radar_pending": ""
 },
 {
 "date": "2026-11-02",
@@ -981,7 +981,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 68,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-02",
@@ -989,6 +989,6 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 67,
-"radar_pending": "overnight"
+"radar_pending": ""
 }
 ]
