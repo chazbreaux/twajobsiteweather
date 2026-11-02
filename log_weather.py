@@ -26,7 +26,8 @@ Temperatures and cloud cover (Sunny / Partly cloudy / Cloudy) are from the weath
 
 Each run fills in whatever parts of the recent days are complete, so it is
 safe to run any time, and a missed run is caught up by the next one.
-Results are saved to data/daily.json and data/daily.csv.
+Results are saved to data/daily.json, data/daily.csv and data/daily.xlsx
+(the Excel file has one sheet per site).
 """
 import csv
 import json
@@ -36,6 +37,8 @@ import sys
 import time
 import urllib.parse
 import urllib.request
+import zipfile
+from xml.sax.saxutils import escape as xesc
 from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
@@ -53,6 +56,7 @@ FIELDS = ["date", "site", "overnight_rain_in", "temp_8am_f", "am_conditions",
 MODEL_RAIN = {"overnight_rain_in": "model_overnight_rain_in", "am_rain_in": "model_am_rain_in",
               "pm_rain_in": "model_pm_rain_in"}
 RADAR_URL = "https://mesonet.agron.iastate.edu/json/stage4.py"
+XLSX_PATH = os.path.join(DATA_DIR, "daily.xlsx")
 RECHECK_DAYS = 3                # days recomputed on every run so late/revised radar data is picked up
 
 RAIN_MIN = 0.01                 # inches; anything at or above this counts as rain
@@ -237,6 +241,89 @@ def load_records():
     return recs
 
 
+# (record key, column heading, style, width) for the Excel sheets; style 0 plain, 2 = 0.00, 3 = date
+XLSX_COLS = [("date", "Date", 3, 12), ("overnight_rain_in", "Overnight rain (in)", 2, 12), ("temp_8am_f", "8:00 temp (F)", 0, 10),
+             ("am_conditions", "AM conditions", 0, 15), ("am_rain_in", "AM rain (in)", 2, 10), ("temp_12pm_f", "12:00 temp (F)", 0, 10),
+             ("pm_conditions", "PM conditions", 0, 15), ("pm_rain_in", "PM rain (in)", 2, 10), ("temp_5pm_f", "17:00 temp (F)", 0, 10),
+             ("radar_pending", "Radar still updating", 0, 14), (None, "", 0, 3),
+             ("model_overnight_rain_in", "MODEL overnight rain (in)", 2, 14), ("model_am_rain_in", "MODEL AM rain (in)", 2, 12),
+             ("model_pm_rain_in", "MODEL PM rain (in)", 2, 12)]
+
+
+def col_letter(i):
+    return chr(ord("A") + i)
+
+
+def sheet_xml(rows):
+    def cell(ref, v, style):
+        if v is None or v == "":
+            return ""
+        if style == 3:
+            v = (datetime.strptime(v, "%Y-%m-%d") - datetime(1899, 12, 30)).days
+        if isinstance(v, (int, float)):
+            return '<c r="%s" s="%d"><v>%s</v></c>' % (ref, style, v)
+        return '<c r="%s" t="inlineStr"><is><t>%s</t></is></c>' % (ref, xesc(str(v)))
+    out = ['<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+           '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+           '<sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>'
+           "<cols>" + "".join('<col min="%d" max="%d" width="%s" customWidth="1"/>' % (i + 1, i + 1, c[3]) for i, c in enumerate(XLSX_COLS)) + "</cols><sheetData>"]
+    out.append('<row r="1">' + "".join(cell("%s1" % col_letter(i), c[1], 1) for i, c in enumerate(XLSX_COLS)) + "</row>")
+    for n, rec in enumerate(rows, start=2):
+        out.append('<row r="%d">' % n + "".join(cell("%s%d" % (col_letter(i), n), rec.get(c[0]) if c[0] else None, c[2])
+                                                   for i, c in enumerate(XLSX_COLS)) + "</row>")
+    out.append("</sheetData></worksheet>")
+    return "".join(out)
+
+
+def write_xlsx(recs, order):
+    """One sheet per site, oldest day first. Built with the standard library so nothing needs installing."""
+    names = [n for n in order if any(r["site"] == n for r in recs)]
+    names += sorted({r["site"] for r in recs} - set(names))
+    used, sheets = set(), []
+    for n in names:
+        base = re.sub(r"[\\/*?:\[\]]", "-", n)[:31] or "Site"
+        t, k = base, 2
+        while t.lower() in used:
+            t = base[:28] + " %d" % k
+            k += 1
+        used.add(t.lower())
+        sheets.append((t, [r for r in recs if r["site"] == n]))
+    if not sheets:
+        return
+    styles = ('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+              '<numFmts count="1"><numFmt numFmtId="164" formatCode="yyyy\\-mm\\-dd"/></numFmts>'
+              '<fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts>'
+              '<fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills>'
+              '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>'
+              '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'
+              '<cellXfs count="4"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'
+              '<xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/>'
+              '<xf numFmtId="2" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>'
+              '<xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/></cellXfs>'
+              '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>')
+    wb = ('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" '
+          'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>' +
+          "".join('<sheet name="%s" sheetId="%d" r:id="rId%d"/>' % (xesc(t, {'"': "&quot;"}), i + 1, i + 1) for i, (t, _) in enumerate(sheets)) + "</sheets></workbook>")
+    rels = ('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+            "".join('<Relationship Id="rId%d" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet%d.xml"/>' % (i + 1, i + 1) for i in range(len(sheets))) +
+            '<Relationship Id="rId%d" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>' % (len(sheets) + 1))
+    ctypes = ('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+              '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/>'
+              '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'
+              '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>' +
+              "".join('<Override PartName="/xl/worksheets/sheet%d.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>' % (i + 1) for i in range(len(sheets))) + "</Types>")
+    root = ('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+            '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>')
+    with zipfile.ZipFile(XLSX_PATH, "w", zipfile.ZIP_DEFLATED) as z:
+        z.writestr("[Content_Types].xml", ctypes)
+        z.writestr("_rels/.rels", root)
+        z.writestr("xl/workbook.xml", wb)
+        z.writestr("xl/_rels/workbook.xml.rels", rels)
+        z.writestr("xl/styles.xml", styles)
+        for i, (_, rows) in enumerate(sheets):
+            z.writestr("xl/worksheets/sheet%d.xml" % (i + 1), sheet_xml(rows))
+
+
 def save_records(recs):
     os.makedirs(DATA_DIR, exist_ok=True)
     recs.sort(key=lambda r: (r["date"], r["site"]))
@@ -246,6 +333,10 @@ def save_records(recs):
         w = csv.DictWriter(f, fieldnames=FIELDS, restval="")
         w.writeheader()
         w.writerows(recs)
+    try:
+        write_xlsx(recs, [x["name"] for x in load_sites() if x["history"]])
+    except Exception as e:   # the Excel copy is a convenience; never let it stop the log from saving
+        print("Could not write daily.xlsx: %s" % e, file=sys.stderr)
 
 
 def main(now=None, backfill=None):
