@@ -31,6 +31,7 @@ h2{margin:28px 0 10px;font-size:1.3rem}
   #map{min-height:0}
   .cards{overflow:auto;min-height:0}
 }
+@media (min-width:700px) and (max-width:1099px){#map{flex:none;height:60vh;min-height:420px}#expand{display:inline-block}}
 @media (min-width:1600px){body{font-size:18px}.cards .cardsite .tmp{font-size:1.75em}}
 button,select,input{font:inherit;color:inherit;padding:7px 12px;border:1px solid var(--line);border-radius:6px;background:var(--card)}
 button{cursor:pointer;font-weight:600}
@@ -63,7 +64,7 @@ button{cursor:pointer;font-weight:600}
 #expand,#showall{display:none}
 .mapfull{overflow:hidden}
 .mapfull .mapcol{position:fixed;inset:0;z-index:1500;background:var(--bg);padding:8px}
-.mapfull #map{height:auto;min-height:0;flex:1}
+.mapfull #map{height:auto;min-height:0;flex:1 1 auto}
 .leaflet-popup-content{font:14px/1.45 system-ui,sans-serif;color:#16212b}
 .filters{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px;align-items:end}
 label{display:block;font-size:.85rem;color:var(--mut);margin-bottom:3px}
@@ -96,7 +97,7 @@ input[type=date]{min-height:42px}
   .hero{padding:8px 14px 12px}.hero img{height:48px;margin:0 auto}h1{font-size:1.45rem}.clock{display:none}
   .hero .in{flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:4px}
   main{padding:12px 12px 40px}
-  #map{height:68vh;min-height:420px}#expand,#showall{display:inline-block}
+  #map{flex:none;height:68vh;min-height:420px}#expand,#showall{display:inline-block}
   .cardsite{padding:8px 10px}.cards .cardsite .tmp{font-size:1.4em}.cards .cardsite.mini .tmp{font-size:1.2em}
   .filters{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
   .filters>div:first-child{grid-column:1/-1}
