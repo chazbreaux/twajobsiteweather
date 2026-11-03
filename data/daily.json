@@ -1028,24 +1028,24 @@
 "site": "131-24.04 Site D",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 71,
-"radar_pending": "overnight"
+"temp_8am_f": 70,
+"radar_pending": ""
 },
 {
 "date": "2026-11-03",
 "site": "162-19A Perry Industrial Bridge",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 70,
-"radar_pending": "overnight"
+"temp_8am_f": 69,
+"radar_pending": ""
 },
 {
 "date": "2026-11-03",
 "site": "Bexley Road",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 72,
-"radar_pending": "overnight"
+"temp_8am_f": 70,
+"radar_pending": ""
 },
 {
 "date": "2026-11-03",
@@ -1053,6 +1053,6 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 69,
-"radar_pending": "overnight"
+"radar_pending": ""
 }
 ]
