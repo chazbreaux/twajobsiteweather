@@ -63,6 +63,7 @@ RAIN_MIN = 0.01                 # inches; anything at or above this counts as ra
 SUNNY_BELOW, CLOUDY_FROM = 25, 70   # average cloud cover (%) cut-offs
 SNOW_CODES = {71, 73, 75, 77, 85, 86}
 FLAG = re.compile(r",\s*(history|log|yes)\s*$", re.I)
+PROJECT = re.compile(r",\s*project\s*=\s*[^,]+?\s*(?=,|$)", re.I)
 
 
 def load_sites():
@@ -72,6 +73,7 @@ def load_sites():
             line = line.strip()
             if not line or line.startswith("#"):
                 continue
+            line = PROJECT.sub("", line)          # optional ", project=NAME" is used by the web page only
             history = bool(FLAG.search(line))
             line = FLAG.sub("", line)
             try:
