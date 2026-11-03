@@ -965,7 +965,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 64,
-"radar_pending": "pm",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Partly cloudy",
 "am_rain_in": 0.0,
@@ -973,7 +973,7 @@
 "model_pm_rain_in": 0.0,
 "pm_conditions": "Partly cloudy",
 "pm_rain_in": 0.0,
-"temp_5pm_f": 74
+"temp_5pm_f": 71
 },
 {
 "date": "2026-11-02",
@@ -981,7 +981,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 67,
-"radar_pending": "pm",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
@@ -989,7 +989,7 @@
 "model_pm_rain_in": 0.0,
 "pm_conditions": "Partly cloudy",
 "pm_rain_in": 0.0,
-"temp_5pm_f": 74
+"temp_5pm_f": 73
 },
 {
 "date": "2026-11-02",
@@ -997,7 +997,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 68,
-"radar_pending": "pm",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
@@ -1005,7 +1005,7 @@
 "model_pm_rain_in": 0.0,
 "pm_conditions": "Cloudy",
 "pm_rain_in": 0.0,
-"temp_5pm_f": 73
+"temp_5pm_f": 72
 },
 {
 "date": "2026-11-02",
@@ -1013,7 +1013,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 67,
-"radar_pending": "pm",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
@@ -1021,6 +1021,38 @@
 "model_pm_rain_in": 0.0,
 "pm_conditions": "Partly cloudy",
 "pm_rain_in": 0.0,
-"temp_5pm_f": 75
+"temp_5pm_f": 73
+},
+{
+"date": "2026-11-03",
+"site": "131-24.04 Site D",
+"model_overnight_rain_in": 0.0,
+"overnight_rain_in": 0.0,
+"temp_8am_f": 70,
+"radar_pending": "overnight"
+},
+{
+"date": "2026-11-03",
+"site": "162-19A Perry Industrial Bridge",
+"model_overnight_rain_in": 0.0,
+"overnight_rain_in": 0.0,
+"temp_8am_f": 69,
+"radar_pending": "overnight"
+},
+{
+"date": "2026-11-03",
+"site": "Bexley Road",
+"model_overnight_rain_in": 0.0,
+"overnight_rain_in": 0.0,
+"temp_8am_f": 71,
+"radar_pending": "overnight"
+},
+{
+"date": "2026-11-03",
+"site": "Buck Creek Road",
+"model_overnight_rain_in": 0.0,
+"overnight_rain_in": 0.0,
+"temp_8am_f": 69,
+"radar_pending": "overnight"
 }
 ]
