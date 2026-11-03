@@ -11,3 +11,14 @@ Poplarville, 30.835765, -89.530476
 Sumrall, 31.416736, -89.545598
 131-24.04 Site D, 31.379180, -88.522846, history
 162-19A Perry Industrial Bridge, 31.207569, -88.996457, history
+Hickory Grove Church Bridge, 31.293805, -89.013270, history
+Ellis Odom Bridge, 31.422285, -88.913663, history
+131-24.03 Site C, 31,328603, -88.613194, history
+131-24.03 Site B, 31.328579, -88.641613, history
+131-24.03 Site A, 31.317977, -88.677035, history
+131-24.07 St. Ellen, 31.027489, -88.640886, history
+112-25 Site B, 31.369289, -88.554586, history
+112-25 Site A, 31.365064, -88.563763, history
+131-24.04 Site C, 31.201097, -88.583310, history
+131-24.04 Site A, 31.174590, -88.662859, history
+131-24.04 Site B, 31.206120, -88.669835. history
