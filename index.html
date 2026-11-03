@@ -58,6 +58,12 @@ button{cursor:pointer;font-weight:600}
 .showNames .pin small,.pin.act small{display:block}
 .pin.cl{cursor:pointer;border-style:dashed}
 .pin.bad{background:var(--bad);border-color:var(--bad);color:#fff}
+.pin.amber{background:var(--acc);border-color:var(--acc);color:#16212b}
+.pin.chip{padding:0 6px;border-width:2px;border-radius:10px}.pin.chip b{font-size:14px}
+#expand,#showall{display:none}
+.mapfull{overflow:hidden}
+.mapfull .mapcol{position:fixed;inset:0;z-index:1500;background:var(--bg);padding:8px}
+.mapfull #map{height:auto;min-height:0;flex:1}
 .leaflet-popup-content{font:14px/1.45 system-ui,sans-serif;color:#16212b}
 .filters{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px;align-items:end}
 label{display:block;font-size:.85rem;color:var(--mut);margin-bottom:3px}
@@ -90,7 +96,7 @@ input[type=date]{min-height:42px}
   .hero{padding:8px 14px 12px}.hero img{height:48px;margin:0 auto}h1{font-size:1.45rem}.clock{display:none}
   .hero .in{flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:4px}
   main{padding:12px 12px 40px}
-  #map{height:50vh;min-height:360px}
+  #map{height:68vh;min-height:420px}#expand,#showall{display:inline-block}
   .cardsite{padding:8px 10px}.cards .cardsite .tmp{font-size:1.4em}.cards .cardsite.mini .tmp{font-size:1.2em}
   .filters{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
   .filters>div:first-child{grid-column:1/-1}
@@ -121,6 +127,8 @@ a{color:var(--link)}
         <label style="margin:0"><input type="checkbox" id="radar" checked style="width:auto"> Rain radar</label>
         <label style="margin:0"><input type="checkbox" id="storms" checked style="width:auto"> Storm tracks &amp; warnings</label>
         <button id="play">Play last 50 minutes</button>
+        <button id="expand">Expand map</button>
+        <button id="showall">Show all sites</button>
         <span id="radarTime"></span>
       </div>
     </div>
@@ -218,7 +226,7 @@ a{color:var(--link)}
     var moved=true;
     while(moved){moved=false;
       for(var a=0;a<cl.length&&!moved;a++)for(var b=a+1;b<cl.length&&!moved;b++){
-        var A=cl[a],B=cl[b],wa=A.m.length>1?140:(PINS[A.m[0]].act?96:66),wb=B.m.length>1?140:(PINS[B.m[0]].act?96:66);
+        var A=cl[a],B=cl[b],wa=A.m.length>1?150:(PINS[A.m[0]].act?96:46),wb=B.m.length>1?150:(PINS[B.m[0]].act?96:46);
         if(Math.abs(A.x-B.x)<(wa+wb)/2&&Math.abs(A.y-B.y)<28){
           var n=A.m.length+B.m.length;A.x=(A.x*A.m.length+B.x*B.m.length)/n;A.y=(A.y*A.m.length+B.y*B.m.length)/n;A.m=A.m.concat(B.m);cl.splice(b,1);moved=true}}}
     cl.forEach(function(c){
@@ -226,15 +234,34 @@ a{color:var(--link)}
       var ps=c.m.map(function(i){return PINS[i]}),ts=ps.map(function(p){return p.tnum}).filter(function(v){return v!=null}),
         lat=ps.reduce(function(a,p){return a+p.lat},0)/ps.length,lon=ps.reduce(function(a,p){return a+p.lon},0)/ps.length,
         lo=Math.min.apply(null,ts),hi=Math.max.apply(null,ts);
-      var na=ps.filter(function(p){return p.act}).length;
-      var html='<div class="pin cl'+(na?" bad":"")+'"><b>'+ps.length+' sites</b>'+(ts.length?" "+(lo===hi?lo:lo+"&ndash;"+hi)+"°":"")+(na?" &#127783;&#65039;"+na:"")+"</div>";
+      var na=ps.filter(function(p){return p.act}).length,nr=ps.filter(function(p){return p.col==="r"}).length;
+      var html='<div class="pin cl'+(nr?" bad":(na?" amber":""))+'"><b>'+ps.length+' sites</b>'+(ts.length?" "+(lo===hi?lo:lo+"&ndash;"+hi)+"°":"")+(na?(nr?" &#127783;&#65039;":" &#9888;&#65039;")+na:"")+"</div>";
       var m=L.marker([lat,lon],{icon:L.divIcon({className:"",html:html,iconSize:[0,0]}),title:ps.map(function(p){return p.name}).join(", "),zIndexOffset:na?500:0});
       m.on("click",function(){map.fitBounds(ps.map(function(p){return[p.lat,p.lon]}),{padding:[80,80],maxZoom:15})});
       markerLayer.addLayer(m)});
     var want=PENDPOP!=null?PENDPOP:OPENPOP;
     if(want!=null&&markers[want]){markers[want].openPopup();PENDPOP=null}
     REDRAW=false}
-  function showOnMap(i){var s=SITES[i];if(!s)return;PENDPOP=i;map.once("moveend",drawPins);map.flyTo([s.lat,s.lon],13);window.scrollTo({top:$("map").offsetTop-12,behavior:"smooth"})}
+  // On a phone the map starts on the main cluster (the nearest 75% of sites) so the pins have room; the button shows every site.
+  // TVs, computers and tablets always fit every site.
+  var MAPALL=false;
+  function fitSites(pad){
+    var pts=SITES.map(function(x){return[x.lat,x.lon]});
+    if(!pts.length)return;
+    if(pts.length===1){map.setView(pts[0],10);return}
+    if(window.innerWidth<700&&!MAPALL&&pts.length>=5){
+      var med=function(a){a=a.slice().sort(function(x,y){return x-y});return a[Math.floor(a.length/2)]},
+        mla=med(pts.map(function(q){return q[0]})),mlo=med(pts.map(function(q){return q[1]})),k=Math.cos(mla*Math.PI/180);
+      var d=pts.map(function(q){return{q:q,d:Math.hypot(q[0]-mla,(q[1]-mlo)*k)}}).sort(function(a,b){return a.d-b.d});
+      pts=d.slice(0,Math.max(3,Math.ceil(pts.length*0.75))).map(function(x){return x.q})}
+    map.fitBounds(pts,{padding:[pad,pad],maxZoom:11})}
+  $("showall").onclick=function(){MAPALL=!MAPALL;this.textContent=MAPALL?"Zoom to main cluster":"Show all sites";fitSites(60)};
+  function setMapFull(on){document.body.classList.toggle("mapfull",on);$("expand").textContent=on?"Close map":"Expand map";
+    setTimeout(function(){map.invalidateSize();
+      fitSites(on?40:60);drawPins()},60)}
+  $("expand").onclick=function(){setMapFull(!document.body.classList.contains("mapfull"))};
+  document.addEventListener("keydown",function(e){if(e.key==="Escape"&&document.body.classList.contains("mapfull"))setMapFull(false)});
+  function showOnMap(i){if(document.body.classList.contains("mapfull"))setMapFull(false);var s=SITES[i];if(!s)return;PENDPOP=i;map.once("moveend",drawPins);map.flyTo([s.lat,s.lon],13);window.scrollTo({top:$("map").offsetTop-12,behavior:"smooth"})}
   map.on("zoomend",function(){drawPins()});
   var RAD="https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/";
   function rurl(n){return RAD+n+"/{z}/{x}/{y}.png?b="+Math.floor(Date.now()/300000)}
@@ -461,7 +488,11 @@ a{color:var(--link)}
         (o.text?"<br>"+esc(o.text):"")+(r24!=null?"<br>Rain in the last 24 h: "+(r24>=0.01?r24.toFixed(2)+" in"+rmark:"none")+(rd?" (radar estimate"+(rd.pend?", latest hour still updating":"")+")":""):"")+
         al.map(function(a){return"<div style='color:#b03a2e;font-weight:700'>⚠️ "+esc(a.event)+(a.until?" until "+esc(a.until):"")+"</div>"}).join("")+
         (sm?"<div style='color:#b03a2e;font-weight:700'>&#127786;&#65039; "+esc(sm.long)+"</div>":"")+(al.length?"<div><a href='#' data-detail='"+i+"'>View alert details</a></div>":"")+(bn?"<div style='color:#6b3500;font-weight:700'>Burn ban in effect through "+esc(bn.end)+"</div>":"")+(known?"":"<div>Alerts unavailable</div>")+loggedToday(s));
-      PINS[i]={lat:s.lat,lon:s.lon,html:pin.replace('class="pin','class="pin'+(act?" act":"")),popup:popup,sev:sev,act:act,name:s.name,tnum:l?Math.round(l.temperature_2m):null};
+      // red = rain or a warning, amber = a watch/statement or rain expected, plain small chip = nothing to report
+      var col=(b||o.raining||sev>=3)?"r":(act?"a":"");
+      var phtml=act?'<div class="pin act'+(col==="r"?" bad":" amber")+'"><b>'+t+"</b> "+(l?emoji(c):"")+(sev>=2?" ⚠️":"")+(bn?" &#128293;":"")+"<small>"+esc(s.name)+"</small></div>"
+        :'<div class="pin chip"><b>'+t+"</b>"+(bn?" &#128293;":"")+"<small>"+esc(s.name)+"</small></div>";
+      PINS[i]={lat:s.lat,lon:s.lon,html:phtml,popup:popup,sev:sev,act:act,col:col,name:s.name,tnum:l?Math.round(l.temperature_2m):null};
 
       var chips=(bn&&!al.length&&!sm?'<div class="al burn">&#128293; Burn ban in effect through '+esc(bn.end)+"</div>":"")+(sm?'<div class="al s'+sm.lvl+'">&#127786;&#65039; '+esc(sm.text)+"</div>":"")+al.slice(0,2).map(function(a){return'<div class="al s'+Math.min(a.v,3)+'">⚠️ '+esc(a.event)+(a.until?" <span style='font-weight:400'>until "+esc(a.until)+"</span>":"")+"</div>"}).join("")+
         (al.length>2?'<div class="fc">+'+(al.length-2)+" more alert"+(al.length-2===1?"":"s")+"</div>":"")+(al.length?'<div class="fc">Details &rsaquo;</div>':"")+(known?"":'<div class="fc">Alerts unavailable</div>');
@@ -511,8 +542,7 @@ a{color:var(--link)}
     drawPins();drawOverlays();
     var key=SITES.map(function(s){return s.name+s.lat+s.lon}).join(";");
     if(key!==siteKey&&SITES.length){siteKey=key;map.invalidateSize();
-      var pts=SITES.map(function(s){return[s.lat,s.lon]});
-      if(pts.length===1)map.setView(pts[0],10);else map.fitBounds(pts,{padding:[60,60],maxZoom:11})}
+      fitSites(60)}
     if(!started){started=true;if(window.innerWidth>=1100&&SITES.length)$("play").click()}
   }
 
