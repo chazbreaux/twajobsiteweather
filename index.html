@@ -25,30 +25,38 @@ h2{margin:28px 0 10px;font-size:1.3rem}
 .mapcol{display:flex;flex-direction:column;min-width:0}
 #map{height:56vh;min-height:340px;flex:1;border:1px solid var(--line);border-radius:8px}
 .bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:8px;color:var(--mut);font-size:.92rem}
-.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;align-content:start}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(170px*var(--ts,1)),1fr));gap:calc(10px*var(--ts,1));align-content:start;font-size:calc(1em*var(--ts,1))}
 @media (min-width:1100px){
   .dash{grid-template-columns:minmax(0,1fr) minmax(420px,42%);grid-template-rows:minmax(0,1fr);height:max(560px,calc(100vh - 170px))}
   #map{min-height:0}
   .cards{overflow:auto;min-height:0}
 }
-@media (min-width:1600px){body{font-size:18px}.cardsite .tmp{font-size:2rem}}
+@media (min-width:1600px){body{font-size:18px}.cards .cardsite .tmp{font-size:1.75em}}
 button,select,input{font:inherit;color:inherit;padding:7px 12px;border:1px solid var(--line);border-radius:6px;background:var(--card)}
 button{cursor:pointer;font-weight:600}
 .cardsite{text-align:left;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--acc);border-radius:8px;padding:9px 11px;line-height:1.3;min-width:0;display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch}
 .cardsite.bad,.cardsite.s3{border-left-color:var(--bad)}
 .cardsite.s3{border-color:var(--bad);outline:2px solid var(--bad)}
 .cardsite .n{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cardsite .tmp{font-size:1.55rem;font-weight:700}
+.cardsite .tmp{font-weight:700}
 .t{font-size:.78rem;color:var(--mut)}
 .rr{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
-.rr .k{display:block;font-size:.68rem;color:var(--mut);text-transform:uppercase;letter-spacing:.03em}
-.rr .v{display:block;font-size:.85rem;font-weight:600;line-height:1.25}.rr .v.wet{color:var(--bad)}
-.fc{font-size:.82rem;margin-top:3px;color:var(--mut)}.fc.wet{color:var(--bad);font-weight:600}
-.al{margin-top:5px;padding:3px 7px;border-radius:5px;font-size:.8rem;font-weight:700;line-height:1.25}
+.rr .k{display:block;color:var(--mut);text-transform:uppercase;letter-spacing:.03em}
+.rr .v{display:block;font-weight:600;line-height:1.25}.rr .v.wet{color:var(--bad)}
+.fc{margin-top:3px;color:var(--mut)}.fc.wet{color:var(--bad);font-weight:600}
+.al{margin-top:5px;padding:3px 7px;border-radius:5px;font-weight:700;line-height:1.25}
+/* tile text sizes scale together (--ts) so every site can fit on a TV without scrolling */
+.cards .cardsite .tmp{font-size:1.55em}.cards .t{font-size:.78em}.cards .rr .k{font-size:.68em}.cards .rr .v{font-size:.85em}.cards .fc{font-size:.82em}.cards .al{font-size:.8em}
+.cards .cardsite.mini{padding:.5em .7em;border-left-color:var(--line)}
+.cards .mini .mr{display:flex;align-items:baseline;gap:.5em;flex-wrap:wrap}
+.cards .mini .tmp{font-size:1.2em}.cards .mini .t{margin:0}
+.cards .cardsite.pj{border-style:dashed}
+.cards .grph{grid-column:1/-1;text-align:left;font-weight:700;color:var(--mut);background:transparent;border:0;padding:.2em .4em}
 .al.s3{background:var(--bad);color:#fff}.al.s2{background:var(--acc);color:#16212b}.al.s1{border:1px solid var(--line)}
 .pin{position:absolute;transform:translate(-50%,-50%);background:var(--card);color:var(--ink);border:2px solid var(--ink);border-radius:12px;padding:1px 8px;text-align:center;white-space:nowrap;line-height:1.25;box-shadow:0 1px 5px rgba(0,0,0,.4)}
 .pin b{font-size:15px}.pin small{display:none;font-size:11px;font-weight:600;max-width:130px;overflow:hidden;text-overflow:ellipsis}
-.showNames .pin small{display:block}
+.showNames .pin small,.pin.act small{display:block}
+.pin.cl{cursor:pointer;border-style:dashed}
 .pin.bad{background:var(--bad);border-color:var(--bad);color:#fff}
 .leaflet-popup-content{font:14px/1.45 system-ui,sans-serif;color:#16212b}
 .filters{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px;align-items:end}
@@ -83,7 +91,7 @@ input[type=date]{min-height:42px}
   .hero .in{flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:4px}
   main{padding:12px 12px 40px}
   #map{height:50vh;min-height:360px}
-  .cardsite{padding:8px 10px}.cardsite .tmp{font-size:1.4rem}
+  .cardsite{padding:8px 10px}.cards .cardsite .tmp{font-size:1.4em}.cards .cardsite.mini .tmp{font-size:1.2em}
   .filters{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
   .filters>div:first-child{grid-column:1/-1}
   .filters>div{min-width:0}
@@ -131,7 +139,7 @@ a{color:var(--link)}
       <th>12:00 temp</th><th>PM conditions<div class="t">12:00 to 16:59</div></th><th>PM rain<div class="t">12:01 to 16:59</div></th><th>17:00 temp</th></tr></thead>
     <tbody id="rows"></tbody>
   </table></div>
-  <div class="bar"><span id="count"></span><button id="more" hidden>Show 100 more</button></div>
+  <div class="bar"><span id="count"></span><button id="more" hidden>Show 20 more</button></div>
   <details class="about"><summary>About this data</summary><p class="note">Each day&rsquo;s record fills in as it happens, at about 08:00, 12:00 and 17:00 Central time, and only for sites marked for history. Overnight rain covers the previous day from 17:01 to 08:00. Conditions are the average cloud cover for the period (Sunny, Partly cloudy or Cloudy), or Rain if any rain fell during it. The past-24-hour rain total is a NOAA radar-and-gauge estimate for each site&rsquo;s location (via Iowa State&rsquo;s Mesonet); a + after it means the latest hour is still being processed, and when it is unavailable the page shows a weather-model total instead. The history log uses the same radar estimate for its rain amounts and for the Rain call; a value with a + is still missing its latest radar hour or two and may rise a little, and a value with a * is a weather-model estimate shown only until the first radar hours arrive. The log re-checks the last three days, so partial values are finalized and late or revised radar data is picked up. Temperatures and cloud cover come from the weather model. In the downloadable CSV, the columns after the blank one are the weather-model rain amounts for comparison. None of these are gauge readings, so they are estimates. Warnings and watches come from the National Weather Service and refresh every 2 minutes. Storm tracks come from the National Weather Service radar storm-tracking data (via Iowa State&rsquo;s Mesonet) and mark radar-detected rotation and its projected path; a rotation or tornado-signature flag is a radar indication, not a confirmed tornado, and some storms are missed or false-alarmed. All of this is a convenience, not a substitute for official alerts, so always follow local emergency instructions. The page refreshes itself, so it can stay open on a screen.</p></details>
   <p class="note" id="banNote" hidden></p>
   <p class="note"><a href="data/daily.csv">Download all records (CSV)</a> &nbsp;&middot;&nbsp; <a href="data/daily.xlsx">Download for Excel (one sheet per site)</a></p>
@@ -163,13 +171,16 @@ a{color:var(--link)}
     if(code>=51&&code<=57)return"Drizzle"; if(code===61)return"Light rain"; if(code===63)return"Rainy"; if(code===65)return"Heavy rain";
     if(code===66||code===67)return"Freezing rain"; if(code>=71&&code<=77)return"Snowy"; if(code>=80&&code<=82)return"Rain showers";
     if(code===85||code===86)return"Snow showers"; if(code>=95)return"Thunderstorms"; return"Unknown"}
-  var FLAG=/,\s*(history|log|yes)\s*$/i;
+  var FLAG=/,\s*(history|log|yes)\s*$/i,PRJ=/,\s*project\s*=\s*([^,]+?)\s*(?=,|$)/i,PROJ_RE=/^(\d+-[\w.]+)(?=\s)/;
+  // a site belongs to a project if its line says ", project=NAME", or its name starts with a job number such as 131-24.03
+  function projOf(s){return s.project||((s.name.match(PROJ_RE)||[])[1])||""}
   function parseSites(t){
     return t.split(/\r?\n/).map(function(l){l=l.trim(); if(!l||l[0]==="#")return null;
+      var pm=l.match(PRJ),proj=pm?pm[1].trim():"";if(pm)l=l.replace(PRJ,"");
       var h=FLAG.test(l);l=l.replace(FLAG,"");
       var p=l.split(","); if(p.length<3)return null;
       var lon=parseFloat(p.pop()),lat=parseFloat(p.pop()),name=p.join(",").trim();
-      return(isNaN(lat)||isNaN(lon)||!name)?null:{name:name,lat:lat,lon:lon,history:h}}).filter(Boolean)}
+      return(isNaN(lat)||isNaN(lon)||!name)?null:{name:name,lat:lat,lon:lon,history:h,project:proj}}).filter(Boolean)}
   function getJSON(u){return fetch(u+"?t="+Date.now()).then(function(r){if(!r.ok)throw 0;return r.json()})}
   function getText(u){return fetch(u+"?t="+Date.now()).then(function(r){if(!r.ok)throw 0;return r.text()})}
 
@@ -187,8 +198,44 @@ a{color:var(--link)}
   var map=L.map("map",{zoomControl:true}).setView([37.5,-96],4);
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18,attribution:"&copy; OpenStreetMap contributors"}).addTo(map);
   var markerLayer=L.layerGroup().addTo(map),warnLayer=L.layerGroup().addTo(map),stormLayer=L.layerGroup().addTo(map);
-  function setNames(){$("map").classList.toggle("showNames",window.innerWidth>=700||map.getZoom()>=10)}
+  function setNames(){$("map").classList.toggle("showNames",map.getZoom()>=12)}   // names on every pin only when zoomed in; busy sites always show theirs
   map.on("zoomend",setNames);setNames();
+  // pins: quiet sites that would overlap are merged into one numbered pin; sites needing attention always get their own pin
+  var PINS=[],PENDPOP=null,OPENPOP=null,REDRAW=false;
+  map.on("popupclose",function(){if(!REDRAW)OPENPOP=null});
+  function pinMarker(p,i){
+    var m=L.marker([p.lat,p.lon],{icon:L.divIcon({className:"",html:p.html,iconSize:[0,0]}),title:p.name,zIndexOffset:p.sev*100+(p.act?1000:0)});
+    m.bindPopup(p.popup);m.on("popupopen",function(){OPENPOP=i});markerLayer.addLayer(m);markers[i]=m}
+  function drawPins(){
+    REDRAW=true;markerLayer.clearLayers();markers=[];
+    var z=map.getZoom(),cl=[];
+    PINS.forEach(function(p){if(p)p.pt=map.project([p.lat,p.lon],z)});
+    PINS.forEach(function(p,i){
+      if(!p)return;
+      if(p.sev>=2||z>=13){pinMarker(p,i);return}   // watches, warnings and storm approach always keep their own pin
+      cl.push({x:p.pt.x,y:p.pt.y,m:[i]})});
+    // merge quiet pins that would overlap, repeating until no merged pin overlaps another (a merged pin is wider)
+    var moved=true;
+    while(moved){moved=false;
+      for(var a=0;a<cl.length&&!moved;a++)for(var b=a+1;b<cl.length&&!moved;b++){
+        var A=cl[a],B=cl[b],wa=A.m.length>1?140:(PINS[A.m[0]].act?96:66),wb=B.m.length>1?140:(PINS[B.m[0]].act?96:66);
+        if(Math.abs(A.x-B.x)<(wa+wb)/2&&Math.abs(A.y-B.y)<28){
+          var n=A.m.length+B.m.length;A.x=(A.x*A.m.length+B.x*B.m.length)/n;A.y=(A.y*A.m.length+B.y*B.m.length)/n;A.m=A.m.concat(B.m);cl.splice(b,1);moved=true}}}
+    cl.forEach(function(c){
+      if(c.m.length===1){pinMarker(PINS[c.m[0]],c.m[0]);return}
+      var ps=c.m.map(function(i){return PINS[i]}),ts=ps.map(function(p){return p.tnum}).filter(function(v){return v!=null}),
+        lat=ps.reduce(function(a,p){return a+p.lat},0)/ps.length,lon=ps.reduce(function(a,p){return a+p.lon},0)/ps.length,
+        lo=Math.min.apply(null,ts),hi=Math.max.apply(null,ts);
+      var na=ps.filter(function(p){return p.act}).length;
+      var html='<div class="pin cl'+(na?" bad":"")+'"><b>'+ps.length+' sites</b>'+(ts.length?" "+(lo===hi?lo:lo+"&ndash;"+hi)+"°":"")+(na?" &#127783;&#65039;"+na:"")+"</div>";
+      var m=L.marker([lat,lon],{icon:L.divIcon({className:"",html:html,iconSize:[0,0]}),title:ps.map(function(p){return p.name}).join(", "),zIndexOffset:na?500:0});
+      m.on("click",function(){map.fitBounds(ps.map(function(p){return[p.lat,p.lon]}),{padding:[80,80],maxZoom:15})});
+      markerLayer.addLayer(m)});
+    var want=PENDPOP!=null?PENDPOP:OPENPOP;
+    if(want!=null&&markers[want]){markers[want].openPopup();PENDPOP=null}
+    REDRAW=false}
+  function showOnMap(i){var s=SITES[i];if(!s)return;PENDPOP=i;map.once("moveend",drawPins);map.flyTo([s.lat,s.lon],13);window.scrollTo({top:$("map").offsetTop-12,behavior:"smooth"})}
+  map.on("zoomend",function(){drawPins()});
   var RAD="https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/";
   function rurl(n){return RAD+n+"/{z}/{x}/{y}.png?b="+Math.floor(Date.now()/300000)}
   function radarLayer(n,op){return L.tileLayer(rurl(n),{opacity:op,zIndex:5,rname:n,attribution:"Radar: NOAA/NWS via Iowa Environmental Mesonet"})}
@@ -236,7 +283,7 @@ a{color:var(--link)}
       var when=i===0?"this hour":"around "+hr(h.time[i]);
       return{text:(i===0&&!strong?"Chance of rain ":"Rain expected ")+when+chance(i),short:(i===0?(strong?"Rain likely now":"Rain chance now"):"Rain ~"+hr(h.time[i]))+(pr[i]!=null?" ("+pr[i]+"%)":""),wet:true,likely:i===0&&strong}}}
     var mx=-1,mi=-1;for(var k=0;k<n;k++){if(pr[k]!=null&&pr[k]>mx){mx=pr[k];mi=k}}
-    if(mx>=20)return{text:"Dry for now. Highest chance "+mx+"% around "+hr(h.time[mi]),short:"Low chance ~"+hr(h.time[mi])+" ("+mx+"%)",wet:false};
+    if(mx>=40)return{text:"Dry for now. Highest chance "+mx+"% around "+hr(h.time[mi]),short:"Low chance ~"+hr(h.time[mi])+" ("+mx+"%)",wet:false};
     return{text:"Dry for the next "+n+" hours",short:"Dry",wet:false}}
 
   // ---- data loading ----
@@ -390,9 +437,16 @@ a{color:var(--link)}
     return"<hr style='margin:6px 0'><b>Today&rsquo;s record</b><br>Overnight rain: "+rn(rainOf(r,"overnight_rain_in","model_overnight_rain_in","overnight"))+"<br>08:00 temp: "+tp(r.temp_8am_f)+"<br>AM: "+(r.am_conditions?esc(r.am_conditions)+", "+rn(rainOf(r,"am_rain_in","model_am_rain_in","am")):"&mdash;")+
       "<br>12:00 temp: "+tp(r.temp_12pm_f)+"<br>PM: "+(r.pm_conditions?esc(r.pm_conditions)+", "+rn(rainOf(r,"pm_rain_in","model_pm_rain_in","pm")):"&mdash;")+"<br>17:00 temp: "+tp(r.temp_5pm_f)}
 
+  var EXP={};
+  // on a wide screen (the TV), shrink the tiles until every site fits without scrolling
+  function fitCards(){
+    var c=$("cards");c.style.removeProperty("--ts");
+    if(window.innerWidth<1100)return;
+    var ts=1;while(c.scrollHeight>c.clientHeight+2&&ts>0.5){ts=Math.round((ts-0.05)*100)/100;c.style.setProperty("--ts",ts)}}
+  var fitT=null;window.addEventListener("resize",function(){clearTimeout(fitT);fitT=setTimeout(fitCards,200)});
   function render(){
     var items=[],nrain=0,nlike=0,groups={},top=0;
-    markerLayer.clearLayers();markers=[];
+    PINS=[];
     SITES.forEach(function(s,i){
       var l=LIVE[s.name],o=outlook(FC[s.name],!!(LIVE[s.name]&&bad(label(LIVE[s.name].weather_code,LIVE[s.name].is_day)))),raw=ALERTS[s.name],known=Array.isArray(raw),r24=RAIN24[s.name],rd=RADAR[s.name],rmark="";if(rd){r24=rd.v;rmark=rd.pend?"+":""}
       var al=known?raw.map(function(a){return{event:a.event,v:lvl(a),until:t24(a.ends||a.expires)}}).sort(function(a,b){return b.v-a.v}):[];
@@ -402,12 +456,12 @@ a{color:var(--link)}
       if(sm){var sk=sm.tvs?"Possible tornado signature approaching":"Rotating storm approaching",g2=groups[sk]||(groups[sk]={v:sm.lvl,sites:[]});g2.sites.push(s.name+(sm.eta>0?" (~"+sm.eta+" min)":""));top=Math.max(top,sm.lvl)}
 
       var pin='<div class="pin'+(b||sev>=2?" bad":"")+'"><b>'+t+"</b> "+(l?emoji(c):"")+(sev>=2?" ⚠️":"")+(bn?" &#128293;":"")+"<small>"+esc(s.name)+"</small></div>";
-      var m=L.marker([s.lat,s.lon],{icon:L.divIcon({className:"",html:pin,iconSize:[0,0]}),title:s.name,zIndexOffset:sev*100});
-      m.bindPopup("<b>"+esc(s.name)+"</b><br>"+(l?"Now: "+t+" "+esc(c)+"<br>Wind "+Math.round(l.wind_speed_10m)+" mph":"Live weather unavailable")+
+      var act=sev>=1||!!sm||b||o.wet||o.raining;
+      var popup=("<b>"+esc(s.name)+"</b><br>"+(l?"Now: "+t+" "+esc(c)+"<br>Wind "+Math.round(l.wind_speed_10m)+" mph":"Live weather unavailable")+
         (o.text?"<br>"+esc(o.text):"")+(r24!=null?"<br>Rain in the last 24 h: "+(r24>=0.01?r24.toFixed(2)+" in"+rmark:"none")+(rd?" (radar estimate"+(rd.pend?", latest hour still updating":"")+")":""):"")+
         al.map(function(a){return"<div style='color:#b03a2e;font-weight:700'>⚠️ "+esc(a.event)+(a.until?" until "+esc(a.until):"")+"</div>"}).join("")+
         (sm?"<div style='color:#b03a2e;font-weight:700'>&#127786;&#65039; "+esc(sm.long)+"</div>":"")+(al.length?"<div><a href='#' data-detail='"+i+"'>View alert details</a></div>":"")+(bn?"<div style='color:#6b3500;font-weight:700'>Burn ban in effect through "+esc(bn.end)+"</div>":"")+(known?"":"<div>Alerts unavailable</div>")+loggedToday(s));
-      markerLayer.addLayer(m);markers[i]=m;
+      PINS[i]={lat:s.lat,lon:s.lon,html:pin.replace('class="pin','class="pin'+(act?" act":"")),popup:popup,sev:sev,act:act,name:s.name,tnum:l?Math.round(l.temperature_2m):null};
 
       var chips=(bn&&!al.length&&!sm?'<div class="al burn">&#128293; Burn ban in effect through '+esc(bn.end)+"</div>":"")+(sm?'<div class="al s'+sm.lvl+'">&#127786;&#65039; '+esc(sm.text)+"</div>":"")+al.slice(0,2).map(function(a){return'<div class="al s'+Math.min(a.v,3)+'">⚠️ '+esc(a.event)+(a.until?" <span style='font-weight:400'>until "+esc(a.until)+"</span>":"")+"</div>"}).join("")+
         (al.length>2?'<div class="fc">+'+(al.length-2)+" more alert"+(al.length-2===1?"":"s")+"</div>":"")+(al.length?'<div class="fc">Details &rsaquo;</div>':"")+(known?"":'<div class="fc">Alerts unavailable</div>');
@@ -415,10 +469,26 @@ a{color:var(--link)}
       var html='<button class="cardsite'+(sev>=3?" s3":"")+(b?" bad":"")+'" data-i="'+i+'"><div class="n">'+esc(s.name)+(bn?" &#128293;":"")+'</div><div class="tmp">'+(l?emoji(c)+" "+t:"?")+
         '</div><div class="t">'+(l?esc(c)+" &middot; wind "+Math.round(l.wind_speed_10m)+" mph":"No live data")+"</div>"+
         rr+chips+"</button>";
-      items.push({i:i,html:html,rank:sev>=3?4:sev===2?3:(b||o.wet)?2:sev===1?1:0});
+      var low=(o.short&&!o.wet&&o.short!=="Dry")?o.short:"";
+      var mini='<button class="cardsite mini" data-i="'+i+'"><div class="n">'+esc(s.name)+(bn?" &#128293;":"")+'</div><div class="mr"><span class="tmp">'+(l?emoji(c)+" "+t:"?")+'</span><span class="t">'+(l?esc(c)+" &middot; "+Math.round(l.wind_speed_10m)+" mph":"No live data")+"</span></div>"+
+        (r24!=null&&r24>=0.01?'<div class="t">Past 24 h '+r24.toFixed(2)+" in"+rmark+"</div>":"")+(low?'<div class="t">'+esc(low)+"</div>":"")+(bn?'<div class="t">&#128293; Burn ban through '+esc(bn.end)+"</div>":"")+"</button>";
+      items.push({i:i,html:html,mini:mini,act:act,proj:projOf(s),tnum:l?Math.round(l.temperature_2m):null,r24:r24,bn:!!bn,rank:sev>=3?4:sev===2?3:(b||o.wet)?2:sev===1?1:0});
     });
     items.sort(function(a,b){return b.rank-a.rank||a.i-b.i});
-    $("cards").innerHTML=items.map(function(x){return x.html}).join("");
+    // sites needing attention first, in full. Quiet sites follow as slim tiles, and quiet sites of the same project fold into one tile (tap to open it)
+    var out=items.filter(function(x){return x.act}).map(function(x){return x.html}),G={},seen={};
+    var quiet=items.filter(function(x){return !x.act}).sort(function(a,b){return a.i-b.i});
+    quiet.forEach(function(x){if(x.proj)(G[x.proj]=G[x.proj]||[]).push(x)});
+    quiet.forEach(function(x){
+      var g=x.proj&&G[x.proj].length>=2?G[x.proj]:null;
+      if(!g){out.push(x.mini);return}
+      if(seen[x.proj])return;seen[x.proj]=1;
+      if(EXP[x.proj]){out.push('<button class="grph" data-g="'+esc(x.proj)+'">&#9662; '+esc(x.proj)+" &middot; "+g.length+" sites</button>");g.forEach(function(m){out.push(m.mini)});return}
+      var ts=g.map(function(m){return m.tnum}).filter(function(v){return v!=null}),lo=Math.min.apply(null,ts),hi=Math.max.apply(null,ts),
+        rm=Math.max.apply(null,g.map(function(m){return m.r24||0})),nb=g.filter(function(m){return m.bn}).length;
+      out.push('<button class="cardsite mini pj" data-g="'+esc(x.proj)+'"><div class="n">&#9656; '+esc(x.proj)+(nb?" &#128293;":"")+'</div><div class="mr"><span class="tmp">'+(ts.length?(lo===hi?lo:lo+"&ndash;"+hi)+"°":"?")+'</span><span class="t">'+g.length+" sites &middot; all clear</span></div>"+
+        (rm>=0.01?'<div class="t">Past 24 h up to '+rm.toFixed(2)+" in</div>":"")+(nb?'<div class="t">&#128293; Burn ban at '+nb+" of "+g.length+"</div>":"")+"</button>")});
+    $("cards").innerHTML=out.join("");fitCards();
 
     var bn=$("banner"),ev=Object.keys(groups).sort(function(a,b){return groups[b].v-groups[a].v});
     if(ev.length){bn.hidden=false;bn.className="banner"+(top>=3?"":" s2");
@@ -438,7 +508,7 @@ a{color:var(--link)}
     $("status").textContent=SITES.length?p.join(" · "):"No sites found. Add some to sites.txt.";
     if(OPEN!=null&&!$("ov").hidden)fillDetail();
 
-    drawOverlays();
+    drawPins();drawOverlays();
     var key=SITES.map(function(s){return s.name+s.lat+s.lon}).join(";");
     if(key!==siteKey&&SITES.length){siteKey=key;map.invalidateSize();
       var pts=SITES.map(function(s){return[s.lat,s.lon]});
@@ -446,9 +516,11 @@ a{color:var(--link)}
     if(!started){started=true;if(window.innerWidth>=1100&&SITES.length)$("play").click()}
   }
 
-  $("cards").onclick=function(e){var b=e.target.closest("button");if(!b)return;var i=+b.dataset.i,s=SITES[i];if(!s)return;
+  $("cards").onclick=function(e){var b=e.target.closest("button");if(!b)return;
+    if(b.dataset.g!=null){EXP[b.dataset.g]=!EXP[b.dataset.g];render();return}
+    var i=+b.dataset.i,s=SITES[i];if(!s)return;
     var a=ALERTS[s.name];if(Array.isArray(a)&&a.length){showDetail(i);return}
-    map.flyTo([s.lat,s.lon],11);if(markers[i])markers[i].openPopup();window.scrollTo({top:$("map").offsetTop-12,behavior:"smooth"})};
+    showOnMap(i)};
 
   // ---- alert details sheet ----
   function fillDetail(){
@@ -477,12 +549,12 @@ a{color:var(--link)}
     if(e.target===$("ov")){closeDetail();return}
     var b=e.target.closest("[data-act]");if(!b)return;
     if(b.dataset.act==="close")closeDetail();
-    else{var i=OPEN,s=SITES[i];closeDetail();if(s){map.flyTo([s.lat,s.lon],11);if(markers[i])markers[i].openPopup();window.scrollTo({top:$("map").offsetTop-12,behavior:"smooth"})}}};
+    else{var i=OPEN;closeDetail();showOnMap(i)}};
   document.addEventListener("keydown",function(e){if(e.key==="Escape")closeDetail()});
   document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("[data-detail]");if(a){e.preventDefault();showDetail(+a.dataset.detail)}});
 
   // ---- history ----
-  var hs=$("hs"),hf=$("hf"),ht=$("ht"),SHOW=100;
+  var hs=$("hs"),hf=$("hf"),ht=$("ht"),SHOW=20;
   function fmtDate(d){return new Date(d+"T12:00:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric"})}
   function none(l){return'<td data-l="'+l+'" class="none">&mdash;</td>'}
   // rain value for a period: the radar estimate when logged, otherwise the weather-model value marked with *
@@ -491,17 +563,17 @@ a{color:var(--link)}
   function tempCell(v,l){return v==null?none(l):'<td data-l="'+l+'"><b>'+Math.round(v)+"°F</b></td>"}
   function condCell(c,l){return c?'<td data-l="'+l+'"'+(bad(c)?' class="bad"':"")+">"+emoji(c)+" "+esc(c)+"</td>":none(l)}
   function drawHistory(){
-    var today=todayStr(),onlyToday=window.innerWidth<700&&!hf.value&&!ht.value;   // phones: today only until a date is picked
+    var today=todayStr(),onlyToday=!hf.value&&!ht.value;   // today only until a date is picked, on every screen
     var rows=READ.filter(function(r){return(!hs.value||r.site===hs.value)&&(!hf.value||r.date>=hf.value)&&(!ht.value||r.date<=ht.value)&&(!onlyToday||r.date===today)});
     rows.sort(function(a,b){return a.date<b.date?1:a.date>b.date?-1:(a.site<b.site?-1:1)});
     var any=SITES.some(function(s){return s.history});
     $("rows").innerHTML=rows.slice(0,SHOW).map(function(r){
       return'<tr><td class="h">'+fmtDate(r.date)+'</td><td class="h">'+esc(r.site)+"</td>"+rainCell(rainOf(r,"overnight_rain_in","model_overnight_rain_in","overnight"),"Overnight rain")+tempCell(r.temp_8am_f,"08:00 temp")+condCell(r.am_conditions,"AM conditions")+rainCell(rainOf(r,"am_rain_in","model_am_rain_in","am"),"AM rain")+tempCell(r.temp_12pm_f,"12:00 temp")+condCell(r.pm_conditions,"PM conditions")+rainCell(rainOf(r,"pm_rain_in","model_pm_rain_in","pm"),"PM rain")+tempCell(r.temp_5pm_f,"17:00 temp")+"</tr>"}).join("")||
       '<tr><td colspan="10" class="none">'+(any?(onlyToday?"No records for today yet. Pick dates above to look at earlier days.":"No records yet. Each day fills in as the morning and afternoon pass."):"No sites are set up for history yet. Add <b>, history</b> to the end of a site&rsquo;s line in sites.txt.")+"</td></tr>";
-    $("count").textContent=onlyToday?"Showing today only. Pick dates above to see earlier days.":(rows.length?"Showing "+Math.min(SHOW,rows.length)+" of "+rows.length+" entries":"");
+    $("count").textContent=onlyToday?(rows.length?"Showing "+Math.min(SHOW,rows.length)+" of "+rows.length+" entries for today. Pick dates above to see earlier days.":"Showing today only. Pick dates above to see earlier days."):(rows.length?"Showing "+Math.min(SHOW,rows.length)+" of "+rows.length+" entries":"");
     $("more").hidden=rows.length<=SHOW}
-  [hs,hf,ht].forEach(function(e){e.onchange=function(){SHOW=100;drawHistory()}});
-  $("more").onclick=function(){SHOW+=100;drawHistory()};
+  [hs,hf,ht].forEach(function(e){e.onchange=function(){SHOW=20;drawHistory()}});
+  $("more").onclick=function(){SHOW+=20;drawHistory()};
   var wasNarrow=window.innerWidth<700;
   window.addEventListener("resize",function(){var n=window.innerWidth<700;if(n!==wasNarrow){wasNarrow=n;drawHistory()}});
 
