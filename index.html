@@ -24,6 +24,7 @@ h2{margin:28px 0 10px;font-size:1.3rem}
 .dash{display:grid;gap:14px}
 .mapcol{display:flex;flex-direction:column;min-width:0}
 #map{height:56vh;min-height:340px;flex:1;border:1px solid var(--line);border-radius:8px}
+#radarTime{font-weight:600}#radarTime.fut{color:var(--acc)}
 .bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:8px;color:var(--mut);font-size:.92rem}
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(170px*var(--ts,1)),1fr));gap:calc(10px*var(--ts,1));align-content:start;font-size:calc(1em*var(--ts,1))}
 @media (min-width:1100px){
@@ -64,7 +65,9 @@ button{cursor:pointer;font-weight:600}
 .pin.bad{background:var(--bad);border-color:var(--bad);color:#fff}
 .pin.amber{background:var(--acc);border-color:var(--acc);color:#16212b}
 .pin.rain{background:var(--rain);border-color:var(--rain);color:#fff}
-.lg i{display:inline-block;width:.8em;height:.8em;border-radius:50%;margin:0 .35em 0 .9em;vertical-align:-1px}
+#map{position:relative}
+.lg{position:absolute;right:8px;bottom:24px;z-index:800;pointer-events:none;display:flex;flex-direction:column;gap:3px;background:rgba(255,255,255,.88);color:#223;border-radius:6px;padding:5px 8px;font-size:.78rem;line-height:1.2;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+.lg i{display:inline-block;width:.8em;height:.8em;border-radius:50%;margin:0 .4em 0 0;vertical-align:-1px}
 .pin.chip{padding:0 6px;border-width:2px;border-radius:10px}.pin.chip b{font-size:14px}
 #expand,#showall{display:none}
 .mapfull{overflow:hidden}
@@ -128,15 +131,15 @@ a{color:var(--link)}
   <div id="banner" class="banner" hidden></div>
   <div class="dash">
     <div class="mapcol">
-      <div id="map" role="application" aria-label="Map of job sites with weather"></div>
+      <div id="map" role="application" aria-label="Map of job sites with weather"><div class="lg" aria-label="Color key"><span><i style="background:var(--bad)"></i>Warning</span><span><i style="background:var(--acc)"></i>Watch / advisory</span><span><i style="background:var(--rain)"></i>Rain</span><span><i style="background:var(--burn)"></i>Burn ban</span></div></div>
       <div class="bar">
         <label style="margin:0"><input type="checkbox" id="radar" checked style="width:auto"> Rain radar</label>
+        <label style="margin:0"><input type="checkbox" id="fcst" style="width:auto"> Future radar (forecast model)</label>
         <label style="margin:0"><input type="checkbox" id="storms" checked style="width:auto"> Storm tracks &amp; warnings</label>
         <button id="play">Play last 50 minutes</button>
         <button id="expand">Expand map</button>
         <button id="showall">Show all sites</button>
-        <span id="radarTime"></span>
-        <span class="lg"><i style="background:var(--bad)"></i>Warning<i style="background:var(--acc)"></i>Watch / advisory<i style="background:var(--rain)"></i>Rain<i style="background:var(--burn)"></i>Burn ban</span>
+        <span id="radarTime" aria-live="off"></span>
       </div>
     </div>
     <div class="cards" id="cards"></div>
@@ -156,7 +159,7 @@ a{color:var(--link)}
     <tbody id="rows"></tbody>
   </table></div>
   <div class="bar"><span id="count"></span><button id="more" hidden>Show 20 more</button></div>
-  <details class="about"><summary>About this data</summary><p class="note">Each day&rsquo;s record fills in as it happens, at about 08:00, 12:00 and 17:00 Central time, and only for sites marked for history. Overnight rain covers the previous day from 17:01 to 08:00. Conditions are the average cloud cover for the period (Sunny, Partly cloudy or Cloudy), or Rain if any rain fell during it. The past-24-hour rain total is a NOAA radar-and-gauge estimate for each site&rsquo;s location (via Iowa State&rsquo;s Mesonet); a + after it means the latest hour is still being processed, and when it is unavailable the page shows a weather-model total instead. The history log uses the same radar estimate for its rain amounts and for the Rain call; a value with a + is still missing its latest radar hour or two and may rise a little, and a value with a * is a weather-model estimate shown only until the first radar hours arrive. The log re-checks the last three days, so partial values are finalized and late or revised radar data is picked up. Temperatures and cloud cover come from the weather model. In the downloadable CSV, the columns after the blank one are the weather-model rain amounts for comparison. None of these are gauge readings, so they are estimates. Warnings and watches come from the National Weather Service and refresh every 2 minutes. Storm tracks come from the National Weather Service radar storm-tracking data (via Iowa State&rsquo;s Mesonet) and mark radar-detected rotation and its projected path; a rotation or tornado-signature flag is a radar indication, not a confirmed tornado, and some storms are missed or false-alarmed. All of this is a convenience, not a substitute for official alerts, so always follow local emergency instructions. The page refreshes itself, so it can stay open on a screen.</p></details>
+  <details class="about"><summary>About this data</summary><p class="note">Each day&rsquo;s record fills in as it happens, at about 08:00, 12:00 and 17:00 Central time, and only for sites marked for history. Overnight rain covers the previous day from 17:01 to 08:00. Conditions are the average cloud cover for the period (Sunny, Partly cloudy or Cloudy), or Rain if any rain fell during it. The past-24-hour rain total is a NOAA radar-and-gauge estimate for each site&rsquo;s location (via Iowa State&rsquo;s Mesonet); a + after it means the latest hour is still being processed, and when it is unavailable the page shows a weather-model total instead. The history log uses the same radar estimate for its rain amounts and for the Rain call; a value with a + is still missing its latest radar hour or two and may rise a little, and a value with a * is a weather-model estimate shown only until the first radar hours arrive. The log re-checks the last three days, so partial values are finalized and late or revised radar data is picked up. Temperatures and cloud cover come from the weather model. In the downloadable CSV, the columns after the blank one are the weather-model rain amounts for comparison. None of these are gauge readings, so they are estimates. Warnings and watches come from the National Weather Service and refresh every 2 minutes. Storm tracks come from the National Weather Service radar storm-tracking data (via Iowa State&rsquo;s Mesonet) and mark radar-detected rotation and its projected path; a rotation or tornado-signature flag is a radar indication, not a confirmed tornado, and some storms are missed or false-alarmed. Future radar (optional checkbox) is a computer-model forecast of what radar may look like over the next 3 hours (NOAA HRRR via Iowa State&rsquo;s Mesonet), not real radar; it is good for the general movement of rain areas but can miss or misplace individual storms. Times on the radar loop are Central time. All of this is a convenience, not a substitute for official alerts, so always follow local emergency instructions. The page refreshes itself, so it can stay open on a screen.</p></details>
   <p class="note" id="banNote" hidden></p>
   <p class="note"><a href="data/daily.csv">Download all records (CSV)</a> &nbsp;&middot;&nbsp; <a href="data/daily.xlsx">Download for Excel (one sheet per site)</a></p>
   </div>
@@ -291,18 +294,49 @@ a{color:var(--link)}
   function rurl(n){return RAD+n+"/{z}/{x}/{y}.png?b="+Math.floor(Date.now()/300000)}
   function radarLayer(n,op){return L.tileLayer(rurl(n),{opacity:op,zIndex:5,rname:n,attribution:"Radar: NOAA/NWS via Iowa Environmental Mesonet"})}
   var cur=radarLayer("nexrad-n0q-900913",0.65).addTo(map),frames=[],timer=null,idx=0;
-  function stop(){clearInterval(timer);timer=null;frames.forEach(function(f){f.setOpacity(0)});cur.setOpacity(0.65);$("play").textContent="Play last 50 minutes";$("radarTime").textContent=""}
-  $("play").onclick=function(){
-    if(timer){stop();return}
-    if(!$("radar").checked){$("radar").checked=true;map.addLayer(cur)}
-    if(!frames.length){for(var m=50;m>=5;m-=5){frames.push(radarLayer("nexrad-n0q-900913-m"+(m<10?"0"+m:m)+"m",0).addTo(map))}frames.push(cur)}
-    $("play").textContent="Stop";idx=0;
-    function step(){frames.forEach(function(f,i){f.setOpacity(i===idx?0.65:0)});
-      var ago=50-5*idx;$("radarTime").textContent=ago?ago+" min ago":"Now";idx=(idx+1)%frames.length}
-    step();timer=setInterval(step,700)};
+  var fcst=[],fInit=null,fBuilt=0,fErr=0,fOk=0;
+  function clk(t){return new Date(t).toLocaleTimeString("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"})}
+  function p2(n){return ("0"+n).slice(-2)}
+  function initStr(t){var d=new Date(t);return d.getUTCFullYear()+p2(d.getUTCMonth()+1)+p2(d.getUTCDate())+p2(d.getUTCHours())+"00"}
+  function playLabel(){return $("fcst").checked?"Play past + future":"Play last 50 minutes"}
+  function ensureFrames(){if(!frames.length){for(var m=50;m>=5;m-=5){frames.push(radarLayer("nexrad-n0q-900913-m"+(m<10?"0"+m:m)+"m",0).addTo(map))}frames.push(cur)}}
+  function seq(){var out=[],t5=Math.floor(Date.now()/300000)*300000;
+    frames.forEach(function(f,i){out.push(f===cur?{l:cur,t:Date.now(),now:true}:{l:f,t:t5-(50-5*i)*60000})});
+    fcst.forEach(function(f){out.push({l:f.l,t:f.t,fut:true})});return out}
+  function stop(){clearTimeout(timer);timer=null;frames.forEach(function(f){f.setOpacity(0)});fcst.forEach(function(f){f.l.setOpacity(0)});cur.setOpacity(0.65);$("play").textContent=playLabel();$("radarTime").textContent="";$("radarTime").className=""}
+  function loopStep(){var q=seq();if(idx>=q.length)idx=0;var it=q[idx];
+    q.forEach(function(x){x.l.setOpacity(x===it?0.65:0)});
+    $("radarTime").textContent=it.fut?"Forecast "+clk(it.t):(it.now?"Now "+clk(it.t):clk(it.t));$("radarTime").className=it.fut?"fut":"";
+    var d=(it.now||idx===q.length-1)?1800:700;idx=(idx+1)%q.length;timer=setTimeout(loopStep,d)}
+  function startLoop(){if(!$("radar").checked){$("radar").checked=true;map.addLayer(cur)}ensureFrames();clearTimeout(timer);$("play").textContent="Stop";idx=0;loopStep()}
+  $("play").onclick=function(){if(timer){stop();return}startLoop()};
   $("radar").onchange=function(){if(this.checked){map.addLayer(cur)}else{stop();map.removeLayer(cur)}};
+  // ---- future radar: NOAA HRRR model simulated reflectivity via Iowa Mesonet (a forecast, not observed radar) ----
+  function getInit(){
+    var est=Math.floor((Date.now()-50*60000)/3600000)*3600000-3600000;
+    return fetch("https://mesonet.agron.iastate.edu/data/gis/images/4326/hrrr/refd_1080.json",{cache:"no-store"}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){var t=Date.parse(j.model_init_utc);return isFinite(t)?t:est}).catch(function(){return est})}
+  function clearF(){fcst.forEach(function(f){map.removeLayer(f.l)});fcst=[]}
+  function failFuture(){clearF();stop();$("fcst").checked=false;try{localStorage.setItem("fc","0")}catch(e){}$("play").textContent=playLabel();$("radarTime").textContent="Future radar unavailable right now";$("radarTime").className="";setTimeout(function(){if(!timer)$("radarTime").textContent=""},8000)}
+  function buildFuture(){return getInit().then(function(ini){
+    if(!$("fcst").checked)return;
+    clearF();fInit=ini;fBuilt=Date.now();fErr=0;fOk=0;
+    var t5=Math.floor(Date.now()/300000)*300000;
+    [15,30,45,60,90,120,150,180].forEach(function(o){var v=t5+o*60000,fm=Math.round((v-ini)/900000)*15;if(fm<0||fm>1080)return;
+      var l=L.tileLayer(RAD+"hrrr::REFD-F"+("000"+fm).slice(-4)+"-"+initStr(ini)+"/{z}/{x}/{y}.png",{opacity:0,zIndex:5});
+      l.on("tileload",function(){fOk++});
+      l.on("tileerror",function(){fErr++;if(fErr>=12&&fOk===0&&$("fcst").checked)failFuture()});
+      l.addTo(map);fcst.push({l:l,t:v})});
+    if(!fcst.length)failFuture()})}
+  $("fcst").onchange=function(){
+    try{localStorage.setItem("fc",this.checked?"1":"0")}catch(e){}
+    if(this.checked){buildFuture().then(function(){if($("fcst").checked&&fcst.length)startLoop()})}
+    else{stop();clearF()}
+    $("play").textContent=timer?"Stop":playLabel()};
+  (function(){var want=/[?&#]future/i.test(location.search+location.hash);try{if(localStorage.getItem("fc")==="1")want=true;if(localStorage.getItem("fc")==="0"&&!/[?&#]future/i.test(location.search+location.hash))want=false}catch(e){}
+    if(want){$("fcst").checked=true;$("play").textContent=playLabel();buildFuture().then(function(){if($("fcst").checked&&fcst.length)startLoop()})}})();
   $("storms").onchange=function(){if(this.checked){map.addLayer(warnLayer);map.addLayer(stormLayer)}else{map.removeLayer(warnLayer);map.removeLayer(stormLayer)}};
-  function refreshRadar(){cur.setUrl(rurl(cur.options.rname));frames.forEach(function(f){if(f!==cur)f.setUrl(rurl(f.options.rname))})}
+  function refreshRadar(){cur.setUrl(rurl(cur.options.rname));frames.forEach(function(f){if(f!==cur)f.setUrl(rurl(f.options.rname))});
+    if($("fcst").checked&&Date.now()-fBuilt>15*60000)buildFuture()}
 
   // ---- state ----
   var SITES=[],READ=[],LIVE={},FC={},ALERTS={},markers=[],siteKey="",lastLive="",liveFail=false,started=false,OPEN=null,RAIN24={},RADAR={},BANS=[],BANUPD="",COUNTY={},STORMS=[],WARN=[],stormFail=false,warnFail=false;
@@ -572,7 +606,7 @@ a{color:var(--link)}
     var key=SITES.map(function(s){return s.name+s.lat+s.lon}).join(";");
     if(key!==siteKey&&SITES.length){siteKey=key;map.invalidateSize();
       fitSites(60)}
-    if(!started){started=true;if(window.innerWidth>=1100&&SITES.length)$("play").click()}
+    if(!started){started=true;if(window.innerWidth>=1100&&SITES.length&&!timer)startLoop()}
   }
 
   $("cards").onclick=function(e){var b=e.target.closest("button");if(!b)return;
