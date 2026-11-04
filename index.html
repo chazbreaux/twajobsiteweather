@@ -316,7 +316,7 @@ a{color:var(--link)}
     var est=Math.floor((Date.now()-50*60000)/3600000)*3600000-3600000;
     return fetch("https://mesonet.agron.iastate.edu/data/gis/images/4326/hrrr/refd_1080.json",{cache:"no-store"}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){var t=Date.parse(j.model_init_utc);return isFinite(t)?t:est}).catch(function(){return est})}
   // the model grid is ~3 km, so soften each forecast layer as one piece (no tile seams); blur follows the zoom level
-  function smoothF(){var z=map.getZoom(),c=map.getCenter(),mpp=156543*Math.cos(c.lat*Math.PI/180)/Math.pow(2,z),px=Math.min(40,Math.max(1,3000/mpp*0.6));
+  function smoothF(){var z=map.getZoom(),c=map.getCenter(),mpp=156543*Math.cos(c.lat*Math.PI/180)/Math.pow(2,z),px=Math.min(40,Math.max(1,3000/mpp*0.28));
     fcst.forEach(function(f){var e=f.l.getContainer&&f.l.getContainer();if(e){e.style.filter="blur("+px.toFixed(1)+"px)";e.style.imageRendering="auto"}})}
   map.on("zoomend",smoothF);
   function clearF(){fcst.forEach(function(f){map.removeLayer(f.l)});fcst=[]}
@@ -326,7 +326,7 @@ a{color:var(--link)}
     clearF();fInit=ini;fBuilt=Date.now();fErr=0;fOk=0;
     var t5=Math.floor(Date.now()/300000)*300000;
     [15,30,45,60,90,120,150,180].forEach(function(o){var v=t5+o*60000,fm=Math.round((v-ini)/900000)*15;if(fm<0||fm>1080)return;
-      var l=L.tileLayer(RAD+"hrrr::REFD-F"+("000"+fm).slice(-4)+"-"+initStr(ini)+"/{z}/{x}/{y}.png",{opacity:0,zIndex:5,maxNativeZoom:7});
+      var l=L.tileLayer(RAD+"hrrr::REFD-F"+("000"+fm).slice(-4)+"-"+initStr(ini)+"/{z}/{x}/{y}.png",{opacity:0,zIndex:5,maxNativeZoom:8});
       l.on("tileload",function(){fOk++});
       l.on("tileerror",function(){fErr++;if(fErr>=12&&fOk===0&&$("fcst").checked)failFuture()});
       l.addTo(map);fcst.push({l:l,t:v})});smoothF();
