@@ -294,7 +294,7 @@ a{color:var(--link)}
   function rurl(n){return RAD+n+"/{z}/{x}/{y}.png?b="+Math.floor(Date.now()/300000)}
   function radarLayer(n,op){return L.tileLayer(rurl(n),{opacity:op,zIndex:5,rname:n,attribution:"Radar: NOAA/NWS via Iowa Environmental Mesonet"})}
   var cur=radarLayer("nexrad-n0q-900913",0.65).addTo(map),frames=[],timer=null,idx=0;
-  var fcst=[],fInit=null,fBuilt=0,fErr=0,fOk=0;
+  var MOTION=null,fHyb=false,fcst=[],fInit=null,fBuilt=0,fErr=0,fOk=0;
   function clk(t){return new Date(t).toLocaleTimeString("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"})}
   function p2(n){return ("0"+n).slice(-2)}
   function initStr(t){var d=new Date(t);return d.getUTCFullYear()+p2(d.getUTCMonth()+1)+p2(d.getUTCDate())+p2(d.getUTCHours())+"00"}
@@ -302,11 +302,11 @@ a{color:var(--link)}
   function ensureFrames(){if(!frames.length){for(var m=50;m>=5;m-=5){frames.push(radarLayer("nexrad-n0q-900913-m"+(m<10?"0"+m:m)+"m",0).addTo(map))}frames.push(cur)}}
   function seq(){var out=[],t5=Math.floor(Date.now()/300000)*300000;
     frames.forEach(function(f,i){out.push(f===cur?{l:cur,t:Date.now(),now:true}:{l:f,t:t5-(50-5*i)*60000})});
-    fcst.forEach(function(f){out.push({l:f.l,t:f.t,fut:true})});return out}
+    fcst.forEach(function(f){out.push({l:f.l,t:f.t,fut:true,mod:f.mod})});return out}
   function stop(){clearTimeout(timer);timer=null;frames.forEach(function(f){f.setOpacity(0)});fcst.forEach(function(f){f.l.setOpacity(0)});cur.setOpacity(0.65);$("play").textContent=playLabel();$("radarTime").textContent="";$("radarTime").className=""}
   function loopStep(){var q=seq();if(idx>=q.length)idx=0;var it=q[idx];
     q.forEach(function(x){x.l.setOpacity(x===it?0.65:0)});
-    $("radarTime").textContent=it.fut?"Forecast "+clk(it.t):(it.now?"Now "+clk(it.t):clk(it.t));$("radarTime").className=it.fut?"fut":"";
+    $("radarTime").textContent=it.fut?(it.mod?"Model forecast ":"Forecast ")+clk(it.t):(it.now?"Now "+clk(it.t):clk(it.t));$("radarTime").className=it.fut?"fut":"";
     var d=(it.now||idx===q.length-1)?1800:700;idx=(idx+1)%q.length;timer=setTimeout(loopStep,d)}
   function startLoop(){if(!$("radar").checked){$("radar").checked=true;map.addLayer(cur)}ensureFrames();clearTimeout(timer);$("play").textContent="Stop";idx=0;loopStep()}
   $("play").onclick=function(){if(timer){stop();return}startLoop()};
@@ -331,7 +331,7 @@ a{color:var(--link)}
     setOpacity:function(o){this._op=o;if(this._cv)this._cv.style.opacity=o;return this},
     _soon:function(){var me=this;if(me._q)return;me._q=setTimeout(function(){me._q=0;me._draw()},80)},
     _tile:function(z,x,y){var k=z+"/"+x+"/"+y,im=this._im[k],me=this;
-      if(!im){im=this._im[k]=new Image();im.crossOrigin="anonymous";im.onload=function(){im.ok=1;me.fire("tileload");me._soon()};im.onerror=function(){im.bad=1;me.fire("tileerror")};im.src=this.options.base+k+".png"}
+      if(!im){im=this._im[k]=new Image();if(!this.options.raw)im.crossOrigin="anonymous";im.onload=function(){im.ok=1;me.fire("tileload");me._soon()};im.onerror=function(){im.bad=1;me.fire("tileerror")};im.src=this.options.base+k+".png"+(this.options.raw?"?b="+Math.floor(Date.now()/300000):"")}
       return im.ok?im:null},
     _pm:function(u){var o=new Float32Array(u.length);for(var i=0;i<u.length;i+=4){var f=u[i+3]/255;o[i]=u[i]*f;o[i+1]=u[i+1]*f;o[i+2]=u[i+2]*f;o[i+3]=u[i+3]}return o},
     _blur:function(a,w,h,r){var n=2*r+1,x,y,c,k,o,s,t=new Float32Array(a.length),u=new Float32Array(a.length),src=a;
@@ -345,10 +345,14 @@ a{color:var(--link)}
     _draw:function(){var m=this._map,cv=this._cv;if(!m||!cv)return;
       var sz=m.getSize(),pad=64,W=sz.x+2*pad,H=sz.y+2*pad,z=Math.round(m.getZoom());
       L.DomUtil.setPosition(cv,m.containerPointToLayerPoint([-pad,-pad]));
-      var pb=m.getPixelBounds(),ns=Math.min(z,8),k=Math.pow(2,ns-z),sx=(pb.min.x-pad)*k,sy=(pb.min.y-pad)*k,sw=W*k,sh=H*k,mx=Math.pow(2,ns);
+      var raw=this.options.raw,dx=0,dy=0;
+      if(raw){var mp=156543*Math.cos(m.getCenter().lat*Math.PI/180)/Math.pow(2,z);dx=this.options.shiftE*1000/mp;dy=-this.options.shiftN*1000/mp;   // observed radar slid along storm motion
+        pad=64+Math.ceil(Math.max(Math.abs(dx),Math.abs(dy)));W=sz.x+2*pad;H=sz.y+2*pad;L.DomUtil.setPosition(cv,m.containerPointToLayerPoint([-pad,-pad]))}
+      var pb=m.getPixelBounds(),ns=Math.min(z,raw?10:8),k=Math.pow(2,ns-z),sx=(pb.min.x-pad-dx)*k,sy=(pb.min.y-pad-dy)*k,sw=W*k,sh=H*k,mx=Math.pow(2,ns);
       var comp=document.createElement("canvas");comp.width=Math.max(1,Math.ceil(sw));comp.height=Math.max(1,Math.ceil(sh));var cc=comp.getContext("2d");
       for(var ty=Math.floor(sy/256);ty<=Math.floor((sy+sh)/256);ty++){if(ty<0||ty>=mx)continue;
         for(var tx=Math.floor(sx/256);tx<=Math.floor((sx+sw)/256);tx++){var im=this._tile(ns,((tx%mx)+mx)%mx,ty);if(im)cc.drawImage(im,Math.round(tx*256-sx),Math.round(ty*256-sy))}}
+      if(raw){if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H}var rg=cv.getContext("2d");rg.clearRect(0,0,W,H);rg.imageSmoothingEnabled=true;rg.drawImage(comp,0,0,sw,sh,0,0,W,H);return}
       var lat=m.getCenter().lat,cos=Math.cos(lat*Math.PI/180),cell=3000/(156543*cos/Math.pow(2,ns)),b=3000/(156543*cos/Math.pow(2,z));
       var ss=Math.max(1,cell/2),sm=document.createElement("canvas");sm.width=Math.max(2,Math.ceil(sw/ss));sm.height=Math.max(2,Math.ceil(sh/ss));
       var sg=sm.getContext("2d",{willReadFrequently:true});sg.imageSmoothingEnabled=true;sg.imageSmoothingQuality="high";sg.drawImage(comp,0,0,sw,sh,0,0,sm.width,sm.height);
@@ -390,12 +394,16 @@ a{color:var(--link)}
     if(!$("fcst").checked)return;
     clearF();fInit=ini;fBuilt=Date.now();fErr=0;fOk=0;var bid=++fBuild;
     var t5=Math.floor(Date.now()/300000)*300000;
-    [15,30,45,60,90,120,150,180].forEach(function(o){var v=t5+o*60000,fm=Math.round((v-ini)/900000)*15;if(fm<0||fm>1080)return;
+    fHyb=!!(SMOOTH&&MOTION);
+    if(fHyb){[15,30,45,60].forEach(function(o){var l=new SmoothLayer({opacity:0,zIndex:5,raw:true,base:RAD+"nexrad-n0q-900913/",shiftE:MOTION.e*1.852*o/60,shiftN:MOTION.n*1.852*o/60});
+      l.on("tileload",function(){if(bid===fBuild)fOk++});l.on("tileerror",function(){if(bid!==fBuild)return;fErr++;if(fErr>=12&&fOk===0&&$("fcst").checked)failFuture()});
+      l.addTo(map);fcst.push({l:l,t:t5+o*60000,sm:true})})}
+    (fHyb?[90,120,150,180]:[15,30,45,60,90,120,150,180]).forEach(function(o){var v=t5+o*60000,fm=Math.round((v-ini)/900000)*15;if(fm<0||fm>1080)return;
       var nm="hrrr::REFD-F"+("000"+fm).slice(-4)+"-"+initStr(ini),
         l=SMOOTH?new SmoothLayer({opacity:0,zIndex:5,base:RAD+nm+"/"}):L.tileLayer(RAD+nm+"/{z}/{x}/{y}.png",{opacity:0,zIndex:5,maxNativeZoom:8});
       l.on("tileload",function(){if(bid===fBuild)fOk++});
       l.on("tileerror",function(){if(bid!==fBuild)return;fErr++;if(fErr>=12&&fOk===0&&$("fcst").checked){if(SMOOTH){SMOOTH=false;buildFuture().then(function(){if($("fcst").checked&&fcst.length&&!timer)startLoop()})}else failFuture()}});
-      l.addTo(map);fcst.push({l:l,t:v,sm:SMOOTH})});smoothF();
+      l.addTo(map);fcst.push({l:l,t:v,sm:SMOOTH,mod:true})});smoothF();
     if(!fcst.length)failFuture()})}
   $("fcst").onchange=function(){
     try{localStorage.setItem("fc",this.checked?"1":"0")}catch(e){}
@@ -538,14 +546,19 @@ a{color:var(--link)}
   function nearSite(lat,lon){return SITES.some(function(s){return distKm(s.lat,s.lon,lat,lon)<=NEAR_KM})}
   function loadStorms(){
     return fetch("https://mesonet.agron.iastate.edu/geojson/nexrad_attr.py").then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){
-      var out=[];
+      var out=[],mv0=[];
       (j.features||[]).forEach(function(f){
         var p={},g=f.geometry&&f.geometry.coordinates;if(!g)return;
         Object.keys(f.properties||{}).forEach(function(k){p[k.toLowerCase()]=f.properties[k]});
+        var dr0=parseFloat(p.drct),sk0=parseFloat(p.sknt);
+        if(isFinite(dr0)&&sk0>=5&&nearSite(g[1],g[0])){var h0=(dr0+180)*Math.PI/180;mv0.push([sk0*Math.sin(h0),sk0*Math.cos(h0)])}   // every cell near a site gives a motion sample
         var tvs=p.tvs!=null&&!/^(none|no|0|)$/i.test(String(p.tvs).trim()),meso=parseInt(p.meso,10)||0;
         if(!(tvs||meso>=MESO_MIN)||!nearSite(g[1],g[0]))return;
         out.push({lat:g[1],lon:g[0],tvs:tvs,meso:meso,drct:parseFloat(p.drct),sknt:parseFloat(p.sknt)})});
-      STORMS=out;stormFail=false}).catch(function(){stormFail=true})}
+      STORMS=out;stormFail=false;
+      var med=function(a){a.sort(function(x,y){return x-y});return a[Math.floor(a.length/2)]};
+      MOTION=mv0.length>=2?{e:med(mv0.map(function(v){return v[0]})),n:med(mv0.map(function(v){return v[1]}))}:null;   // knots, toward east / north
+      if($("fcst")&&$("fcst").checked&&MOTION&&!fHyb&&SMOOTH)buildFuture().then(function(){if($("fcst").checked&&fcst.length&&!timer)startLoop()})}).catch(function(){stormFail=true})}
   function loadWarnings(){
     return fetch("https://api.weather.gov/alerts/active?status=actual&event="+encodeURIComponent("Tornado Warning,Severe Thunderstorm Warning")).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){
       WARN=(j.features||[]).filter(function(f){
