@@ -319,30 +319,41 @@ a{color:var(--link)}
   function smoothF(){var z=map.getZoom(),c=map.getCenter(),mpp=156543*Math.cos(c.lat*Math.PI/180)/Math.pow(2,z),px=Math.min(40,Math.max(1,3000/mpp*0.17));
     fcst.forEach(function(f){var e=f.l.getContainer&&f.l.getContainer();if(e&&f.sm){e.style.filter=""}else if(e){e.style.filter="blur("+px.toFixed(1)+"px) saturate(1.7) contrast(1.15)";e.style.imageRendering="auto"}})}
   map.on("zoomend",smoothF);
-  // smooth forecast layer: reads each model tile, rounds off the grid squares and fades weak edges so it looks like a continuous radar picture
-  var SMOOTH=!!(L.GridLayer&&L.GridLayer.extend),fBuild=0;
-  // SMOOTHDRAW-START
-  function smoothDraw(cv,img,z,x,y,lat){
-    var ns=Math.min(z,8),n=Math.pow(2,z-ns),sz=256/n,ox=(x%n)*sz,oy=(y%n)*sz;
-    var mpp=156543*Math.cos(lat*Math.PI/180)/Math.pow(2,z),b=3000/mpp,sm=Math.max(32,Math.min(256,Math.round(256/b*2)));
-    var a=document.createElement("canvas");a.width=a.height=sm;var c=a.getContext("2d");c.imageSmoothingQuality="high";c.drawImage(img,ox,oy,sz,sz,0,0,sm,sm);
-    var bl=Math.max(1,b*0.33),m=Math.ceil(bl*2.5),T=256+2*m,P=document.createElement("canvas");P.width=P.height=T;var pg=P.getContext("2d");pg.imageSmoothingEnabled=true;pg.imageSmoothingQuality="high";
-    pg.drawImage(a,0,0,sm,sm,m,m,256,256);   // edges are stretched outward so tiles join without light seams
-    pg.drawImage(a,0,0,1,sm,0,m,m,256);pg.drawImage(a,sm-1,0,1,sm,256+m,m,m,256);pg.drawImage(a,0,0,sm,1,m,0,256,m);pg.drawImage(a,0,sm-1,sm,1,m,256+m,256,m);
-    pg.drawImage(a,0,0,1,1,0,0,m,m);pg.drawImage(a,sm-1,0,1,1,256+m,0,m,m);pg.drawImage(a,0,sm-1,1,1,0,256+m,m,m);pg.drawImage(a,sm-1,sm-1,1,1,256+m,256+m,m,m);
-    var g=cv.getContext("2d");g.imageSmoothingEnabled=true;g.imageSmoothingQuality="high";
-    try{g.filter="blur("+bl.toFixed(1)+"px)"}catch(e){}
-    g.drawImage(P,-m,-m);
-    try{g.filter="none"}catch(e){}
-    var d=g.getImageData(0,0,256,256),q=d.data;
-    for(var i=3;i<q.length;i+=4){var al=(q[i]/255-0.3)/0.35;al=al<0?0:al>1?1:al;q[i]=Math.round(al*al*(3-2*al)*235)}
-    g.putImageData(d,0,0)}
-  // SMOOTHDRAW-END
-  var SmoothLayer=SMOOTH?L.GridLayer.extend({createTile:function(co,done){
-    var cv=document.createElement("canvas");cv.width=cv.height=256;var img=new Image();img.crossOrigin="anonymous";
-    img.onload=function(){try{smoothDraw(cv,img,co.z,co.x,co.y,map.unproject([co.x*256,(co.y+0.5)*256],co.z).lat);done(null,cv)}catch(e){done(e,cv)}};
-    img.onerror=function(){done(new Error("tile"),cv)};
-    var ns=Math.min(co.z,8),n=Math.pow(2,co.z-ns);img.src=this.options.base+ns+"/"+Math.floor(co.x/n)+"/"+Math.floor(co.y/n)+".png";return cv}}):null;
+  // smooth forecast layer: the model tiles for the whole view are joined first, then rounded off once (no tile seams), weak scattered echoes are dropped, and edges fade
+  var SMOOTH=!!(L.Layer&&L.Layer.extend&&L.DomUtil),fBuild=0;
+  // SMOOTHLAYER-START
+  var SmoothLayer=SMOOTH?L.Layer.extend({
+    initialize:function(o){L.setOptions(this,o);this._im={};this._op=o.opacity||0},
+    onAdd:function(m){var c=this._cv=L.DomUtil.create("canvas","leaflet-zoom-hide");c.style.position="absolute";c.style.pointerEvents="none";c.style.zIndex=5;c.style.opacity=this._op;
+      m.getPane("overlayPane").appendChild(c);m.on("moveend zoomend resize",this._draw,this);this._draw()},
+    onRemove:function(m){m.off("moveend zoomend resize",this._draw,this);L.DomUtil.remove(this._cv);this._cv=null},
+    getContainer:function(){return this._cv},
+    setOpacity:function(o){this._op=o;if(this._cv)this._cv.style.opacity=o;return this},
+    _soon:function(){var me=this;if(me._q)return;me._q=setTimeout(function(){me._q=0;me._draw()},80)},
+    _tile:function(z,x,y){var k=z+"/"+x+"/"+y,im=this._im[k],me=this;
+      if(!im){im=this._im[k]=new Image();im.crossOrigin="anonymous";im.onload=function(){im.ok=1;me.fire("tileload");me._soon()};im.onerror=function(){im.bad=1;me.fire("tileerror")};im.src=this.options.base+k+".png"}
+      return im.ok?im:null},
+    _draw:function(){var m=this._map,cv=this._cv;if(!m||!cv)return;
+      var sz=m.getSize(),pad=64,W=sz.x+2*pad,H=sz.y+2*pad,z=Math.round(m.getZoom());
+      L.DomUtil.setPosition(cv,m.containerPointToLayerPoint([-pad,-pad]));
+      var pb=m.getPixelBounds(),ns=Math.min(z,8),k=Math.pow(2,ns-z),sx=(pb.min.x-pad)*k,sy=(pb.min.y-pad)*k,sw=W*k,sh=H*k,mx=Math.pow(2,ns);
+      var comp=document.createElement("canvas");comp.width=Math.max(1,Math.ceil(sw));comp.height=Math.max(1,Math.ceil(sh));var cc=comp.getContext("2d");
+      for(var ty=Math.floor(sy/256);ty<=Math.floor((sy+sh)/256);ty++){if(ty<0||ty>=mx)continue;
+        for(var tx=Math.floor(sx/256);tx<=Math.floor((sx+sw)/256);tx++){var im=this._tile(ns,((tx%mx)+mx)%mx,ty);if(im)cc.drawImage(im,Math.round(tx*256-sx),Math.round(ty*256-sy))}}
+      var lat=m.getCenter().lat,cos=Math.cos(lat*Math.PI/180),cell=3000/(156543*cos/Math.pow(2,ns)),b=3000/(156543*cos/Math.pow(2,z));
+      var ss=Math.max(1,cell/2),sm=document.createElement("canvas");sm.width=Math.max(1,Math.ceil(sw/ss));sm.height=Math.max(1,Math.ceil(sh/ss));
+      var sg=sm.getContext("2d");sg.imageSmoothingEnabled=true;sg.imageSmoothingQuality="high";sg.drawImage(comp,0,0,sw,sh,0,0,sm.width,sm.height);
+      if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H}
+      var g=cv.getContext("2d",{willReadFrequently:true});g.clearRect(0,0,W,H);g.imageSmoothingEnabled=true;g.imageSmoothingQuality="high";
+      try{g.filter="blur("+Math.max(1,b*0.26).toFixed(1)+"px)"}catch(e){}
+      g.drawImage(sm,0,0,sm.width,sm.height,0,0,W,H);try{g.filter="none"}catch(e){}
+      var d,q;try{d=g.getImageData(0,0,W,H);q=d.data}catch(e){this.fire("tileerror");return}
+      for(var i=0;i<q.length;i+=4){var a=q[i+3];if(!a)continue;
+        if(q[i+2]>=q[i+1]-10&&q[i]<110){q[i+3]=0;continue}          // drop the faint light-blue / cyan echoes
+        var al=(a/255-0.3)/0.35;al=al<0?0:al>1?1:al;q[i+3]=Math.round(al*al*(3-2*al)*235)}
+      g.putImageData(d,0,0)}
+  }):null;
+  // SMOOTHLAYER-END
   function clearF(){fcst.forEach(function(f){map.removeLayer(f.l)});fcst=[]}
   function failFuture(){clearF();stop();$("fcst").checked=false;try{localStorage.setItem("fc","0")}catch(e){}$("play").textContent=playLabel();$("radarTime").textContent="Future radar unavailable right now";$("radarTime").className="";setTimeout(function(){if(!timer)$("radarTime").textContent=""},8000)}
   function buildFuture(){return getInit().then(function(ini){
