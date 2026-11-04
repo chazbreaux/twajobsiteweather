@@ -347,12 +347,31 @@ a{color:var(--link)}
       var g=cv.getContext("2d",{willReadFrequently:true});g.clearRect(0,0,W,H);g.imageSmoothingEnabled=true;g.imageSmoothingQuality="high";
       try{g.filter="blur("+Math.max(1,b*0.26).toFixed(1)+"px)"}catch(e){}
       g.drawImage(sm,0,0,sm.width,sm.height,0,0,W,H);try{g.filter="none"}catch(e){}
-      var d,q;try{d=g.getImageData(0,0,W,H);q=d.data}catch(e){this.fire("tileerror");return}
-      for(var i=0;i<q.length;i+=4){var a=q[i+3];if(!a)continue;
-        if(q[i+2]>=q[i+1]-10&&q[i]<110){q[i+3]=0;continue}          // drop the faint light-blue / cyan echoes
-        var al=(a/255-0.3)/0.35;al=al<0?0:al>1?1:al;q[i+3]=Math.round(al*al*(3-2*al)*235)}
+      // a second, heavier blur fills small gaps inside rain areas
+      var hv=this._hv||(this._hv=document.createElement("canvas"));hv.width=W;hv.height=H;
+      var hg=hv.getContext("2d",{willReadFrequently:true});hg.imageSmoothingEnabled=true;hg.imageSmoothingQuality="high";
+      try{hg.filter="blur("+Math.min(40,Math.max(2,b*0.26*2.4)).toFixed(1)+"px)"}catch(e){}
+      hg.drawImage(sm,0,0,sm.width,sm.height,0,0,W,H);try{hg.filter="none"}catch(e){}
+      var d,q,r;try{d=g.getImageData(0,0,W,H);q=d.data;r=hg.getImageData(0,0,W,H).data}catch(e){this.fire("tileerror");return}
+      var R=SmoothLayer.ramp;
+      for(var i=0;i<q.length;i+=4){
+        var A=(q[i+3]/255-0.3)/0.35;A=A<0?0:A>1?1:A;A=A*A*(3-2*A);
+        var B=(r[i+3]/255-0.5)/0.3;B=B<0?0:B>1?1:B;B=B*B*(3-2*B)*0.8;
+        var s2=q;if(B>A){A=B;s2=r}
+        if(A<0.02){q[i+3]=0;continue}
+        var cr=s2[i],cg=s2[i+1],cb=s2[i+2],mx=Math.max(cr,cg,cb),mn=Math.min(cr,cg,cb),dd=mx-mn;
+        if(dd<25||(cb>=cg-10&&cr<110)){q[i+3]=0;continue}                  // drop gray specks and faint light-blue echoes
+        var h=mx===cr?60*(((cg-cb)/dd+6)%6):(mx===cg?60*((cb-cr)/dd+2):60*((cr-cg)/dd+4)),lv;
+        if(h>=100){var t=(255-mx)/111;lv=0.15+0.25*(t<0?0:t>1?1:t)}
+        else if(h>=60)lv=0.4+0.1*(100-h)/40;else if(h>=40)lv=0.5+0.12*(60-h)/20;else if(h>=20)lv=0.62+0.13*(40-h)/20;
+        else if(h>=0)lv=0.75+0.13*(20-h)/20;else lv=0.9;
+        if(h>=270)lv=0.95;
+        var c=R[Math.max(0,Math.min(255,Math.round(lv*255)))];
+        q[i]=c[0];q[i+1]=c[1];q[i+2]=c[2];q[i+3]=Math.round(A*(lv<0.22?215:245))}
       g.putImageData(d,0,0)}
   }):null;
+  if(SmoothLayer){(function(){var st=[[0,[120,222,100]],[0.15,[120,222,100]],[0.30,[48,190,62]],[0.42,[16,140,46]],[0.5,[255,226,40]],[0.62,[255,150,30]],[0.78,[232,40,36]],[0.92,[160,20,52]],[1,[160,20,52]]],out=[];
+    for(var i=0;i<256;i++){var v=i/255,k=1;while(k<st.length-1&&st[k][0]<v)k++;var a=st[k-1],b=st[k],f=(v-a[0])/((b[0]-a[0])||1);out.push([0,1,2].map(function(j){return Math.round(a[1][j]+(b[1][j]-a[1][j])*f)}))}SmoothLayer.ramp=out})()}
   // SMOOTHLAYER-END
   function clearF(){fcst.forEach(function(f){map.removeLayer(f.l)});fcst=[]}
   function failFuture(){clearF();stop();$("fcst").checked=false;try{localStorage.setItem("fc","0")}catch(e){}$("play").textContent=playLabel();$("radarTime").textContent="Future radar unavailable right now";$("radarTime").className="";setTimeout(function(){if(!timer)$("radarTime").textContent=""},8000)}
