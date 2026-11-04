@@ -192,7 +192,9 @@ a{color:var(--link)}
     if(code===85||code===86)return"Snow showers"; if(code>=95)return"Thunderstorms"; return"Unknown"}
   var FLAG=/,\s*(history|log|yes)\s*$/i,PRJ=/,\s*project\s*=\s*([^,]+?)\s*(?=,|$)/i,PROJ_RE=/^(\d+-[\w.]+)(?=\s)/;
   // a site belongs to a project if its line says ", project=NAME", or its name starts with a job number such as 131-24.03
-  function nat(a,b){return String(a).localeCompare(String(b),undefined,{numeric:true,sensitivity:"base"})}   // 112-25 Site A before 112-25 Site B before 131-24.03 ...
+  // names that start with a letter come first (A to Z), then the numbered jobs in number order (112-25 Site A, 112-25 Site B, 131-24.03 ...)
+  function nat(a,b){a=String(a).trim();b=String(b).trim();var ka=/^\d/.test(a)?1:0,kb=/^\d/.test(b)?1:0;
+    return ka!==kb?ka-kb:a.localeCompare(b,undefined,{numeric:true,sensitivity:"base"})}
   function projOf(s){return s.project||((s.name.match(PROJ_RE)||[])[1])||""}
   function parseSites(t){
     return t.split(/\r?\n/).map(function(l){l=l.trim(); if(!l||l[0]==="#")return null;
