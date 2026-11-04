@@ -24,6 +24,7 @@ h2{margin:28px 0 10px;font-size:1.3rem}
 .dash{display:grid;gap:14px}
 .mapcol{display:flex;flex-direction:column;min-width:0}
 #map{height:56vh;min-height:340px;flex:1;border:1px solid var(--line);border-radius:8px}
+.fcsttile{image-rendering:auto;filter:blur(2px)}
 #radarTime{font-weight:600}#radarTime.fut{color:var(--acc)}
 .bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:8px;color:var(--mut);font-size:.92rem}
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(170px*var(--ts,1)),1fr));gap:calc(10px*var(--ts,1));align-content:start;font-size:calc(1em*var(--ts,1))}
@@ -322,7 +323,7 @@ a{color:var(--link)}
     clearF();fInit=ini;fBuilt=Date.now();fErr=0;fOk=0;
     var t5=Math.floor(Date.now()/300000)*300000;
     [15,30,45,60,90,120,150,180].forEach(function(o){var v=t5+o*60000,fm=Math.round((v-ini)/900000)*15;if(fm<0||fm>1080)return;
-      var l=L.tileLayer(RAD+"hrrr::REFD-F"+("000"+fm).slice(-4)+"-"+initStr(ini)+"/{z}/{x}/{y}.png",{opacity:0,zIndex:5});
+      var l=L.tileLayer(RAD+"hrrr::REFD-F"+("000"+fm).slice(-4)+"-"+initStr(ini)+"/{z}/{x}/{y}.png",{opacity:0,zIndex:5,maxNativeZoom:7,className:"fcsttile"});
       l.on("tileload",function(){fOk++});
       l.on("tileerror",function(){fErr++;if(fErr>=12&&fOk===0&&$("fcst").checked)failFuture()});
       l.addTo(map);fcst.push({l:l,t:v})});
