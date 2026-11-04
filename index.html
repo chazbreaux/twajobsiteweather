@@ -317,19 +317,44 @@ a{color:var(--link)}
     return fetch("https://mesonet.agron.iastate.edu/data/gis/images/4326/hrrr/refd_1080.json",{cache:"no-store"}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){var t=Date.parse(j.model_init_utc);return isFinite(t)?t:est}).catch(function(){return est})}
   // the model grid is ~3 km, so soften each forecast layer as one piece (no tile seams); blur follows the zoom level
   function smoothF(){var z=map.getZoom(),c=map.getCenter(),mpp=156543*Math.cos(c.lat*Math.PI/180)/Math.pow(2,z),px=Math.min(40,Math.max(1,3000/mpp*0.17));
-    fcst.forEach(function(f){var e=f.l.getContainer&&f.l.getContainer();if(e){e.style.filter="blur("+px.toFixed(1)+"px) saturate(1.7) contrast(1.15)";e.style.imageRendering="auto"}})}
+    fcst.forEach(function(f){var e=f.l.getContainer&&f.l.getContainer();if(e&&f.sm){e.style.filter=""}else if(e){e.style.filter="blur("+px.toFixed(1)+"px) saturate(1.7) contrast(1.15)";e.style.imageRendering="auto"}})}
   map.on("zoomend",smoothF);
+  // smooth forecast layer: reads each model tile, rounds off the grid squares and fades weak edges so it looks like a continuous radar picture
+  var SMOOTH=!!(L.GridLayer&&L.GridLayer.extend),fBuild=0;
+  // SMOOTHDRAW-START
+  function smoothDraw(cv,img,z,x,y,lat){
+    var ns=Math.min(z,8),n=Math.pow(2,z-ns),sz=256/n,ox=(x%n)*sz,oy=(y%n)*sz;
+    var mpp=156543*Math.cos(lat*Math.PI/180)/Math.pow(2,z),b=3000/mpp,sm=Math.max(32,Math.min(256,Math.round(256/b*1.5)));
+    var a=document.createElement("canvas");a.width=a.height=sm;var c=a.getContext("2d");c.imageSmoothingQuality="high";c.drawImage(img,ox,oy,sz,sz,0,0,sm,sm);
+    var bl=Math.max(1,b*0.55),m=Math.ceil(bl*2.5),T=256+2*m,P=document.createElement("canvas");P.width=P.height=T;var pg=P.getContext("2d");pg.imageSmoothingEnabled=true;pg.imageSmoothingQuality="high";
+    pg.drawImage(a,0,0,sm,sm,m,m,256,256);   // edges are stretched outward so tiles join without light seams
+    pg.drawImage(a,0,0,1,sm,0,m,m,256);pg.drawImage(a,sm-1,0,1,sm,256+m,m,m,256);pg.drawImage(a,0,0,sm,1,m,0,256,m);pg.drawImage(a,0,sm-1,sm,1,m,256+m,256,m);
+    pg.drawImage(a,0,0,1,1,0,0,m,m);pg.drawImage(a,sm-1,0,1,1,256+m,0,m,m);pg.drawImage(a,0,sm-1,1,1,0,256+m,m,m);pg.drawImage(a,sm-1,sm-1,1,1,256+m,256+m,m,m);
+    var g=cv.getContext("2d");g.imageSmoothingEnabled=true;g.imageSmoothingQuality="high";
+    try{g.filter="blur("+bl.toFixed(1)+"px)"}catch(e){}
+    g.drawImage(P,-m,-m);
+    try{g.filter="none"}catch(e){}
+    var d=g.getImageData(0,0,256,256),q=d.data;
+    for(var i=3;i<q.length;i+=4){var al=(q[i]/255-0.3)/0.35;al=al<0?0:al>1?1:al;q[i]=Math.round(al*al*(3-2*al)*235)}
+    g.putImageData(d,0,0)}
+  // SMOOTHDRAW-END
+  var SmoothLayer=SMOOTH?L.GridLayer.extend({createTile:function(co,done){
+    var cv=document.createElement("canvas");cv.width=cv.height=256;var img=new Image();img.crossOrigin="anonymous";
+    img.onload=function(){try{smoothDraw(cv,img,co.z,co.x,co.y,map.unproject([co.x*256,(co.y+0.5)*256],co.z).lat);done(null,cv)}catch(e){done(e,cv)}};
+    img.onerror=function(){done(new Error("tile"),cv)};
+    var ns=Math.min(co.z,8),n=Math.pow(2,co.z-ns);img.src=this.options.base+ns+"/"+Math.floor(co.x/n)+"/"+Math.floor(co.y/n)+".png";return cv}}):null;
   function clearF(){fcst.forEach(function(f){map.removeLayer(f.l)});fcst=[]}
   function failFuture(){clearF();stop();$("fcst").checked=false;try{localStorage.setItem("fc","0")}catch(e){}$("play").textContent=playLabel();$("radarTime").textContent="Future radar unavailable right now";$("radarTime").className="";setTimeout(function(){if(!timer)$("radarTime").textContent=""},8000)}
   function buildFuture(){return getInit().then(function(ini){
     if(!$("fcst").checked)return;
-    clearF();fInit=ini;fBuilt=Date.now();fErr=0;fOk=0;
+    clearF();fInit=ini;fBuilt=Date.now();fErr=0;fOk=0;var bid=++fBuild;
     var t5=Math.floor(Date.now()/300000)*300000;
     [15,30,45,60,90,120,150,180].forEach(function(o){var v=t5+o*60000,fm=Math.round((v-ini)/900000)*15;if(fm<0||fm>1080)return;
-      var l=L.tileLayer(RAD+"hrrr::REFD-F"+("000"+fm).slice(-4)+"-"+initStr(ini)+"/{z}/{x}/{y}.png",{opacity:0,zIndex:5,maxNativeZoom:8});
-      l.on("tileload",function(){fOk++});
-      l.on("tileerror",function(){fErr++;if(fErr>=12&&fOk===0&&$("fcst").checked)failFuture()});
-      l.addTo(map);fcst.push({l:l,t:v})});smoothF();
+      var nm="hrrr::REFD-F"+("000"+fm).slice(-4)+"-"+initStr(ini),
+        l=SMOOTH?new SmoothLayer({opacity:0,zIndex:5,base:RAD+nm+"/"}):L.tileLayer(RAD+nm+"/{z}/{x}/{y}.png",{opacity:0,zIndex:5,maxNativeZoom:8});
+      l.on("tileload",function(){if(bid===fBuild)fOk++});
+      l.on("tileerror",function(){if(bid!==fBuild)return;fErr++;if(fErr>=12&&fOk===0&&$("fcst").checked){if(SMOOTH){SMOOTH=false;buildFuture().then(function(){if($("fcst").checked&&fcst.length&&!timer)startLoop()})}else failFuture()}});
+      l.addTo(map);fcst.push({l:l,t:v,sm:SMOOTH})});smoothF();
     if(!fcst.length)failFuture()})}
   $("fcst").onchange=function(){
     try{localStorage.setItem("fc",this.checked?"1":"0")}catch(e){}
