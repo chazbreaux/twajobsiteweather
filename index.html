@@ -333,6 +333,15 @@ a{color:var(--link)}
     _tile:function(z,x,y){var k=z+"/"+x+"/"+y,im=this._im[k],me=this;
       if(!im){im=this._im[k]=new Image();im.crossOrigin="anonymous";im.onload=function(){im.ok=1;me.fire("tileload");me._soon()};im.onerror=function(){im.bad=1;me.fire("tileerror")};im.src=this.options.base+k+".png"}
       return im.ok?im:null},
+    _pm:function(u){var o=new Float32Array(u.length);for(var i=0;i<u.length;i+=4){var f=u[i+3]/255;o[i]=u[i]*f;o[i+1]=u[i+1]*f;o[i+2]=u[i+2]*f;o[i+3]=u[i+3]}return o},
+    _blur:function(a,w,h,r){var n=2*r+1,x,y,c,k,o,s,t=new Float32Array(a.length),u=new Float32Array(a.length),src=a;
+      for(var pass=0;pass<2;pass++){
+        for(y=0;y<h;y++)for(c=0;c<4;c++){o=y*w*4+c;s=0;for(k=-r;k<=r;k++)s+=src[o+Math.min(w-1,Math.max(0,k))*4];
+          for(x=0;x<w;x++){t[o+x*4]=s/n;s+=src[o+Math.min(w-1,x+r+1)*4]-src[o+Math.max(0,x-r)*4]}}
+        for(x=0;x<w;x++)for(c=0;c<4;c++){o=x*4+c;s=0;for(k=-r;k<=r;k++)s+=t[o+Math.min(h-1,Math.max(0,k))*w*4];
+          for(y=0;y<h;y++){u[o+y*w*4]=s/n;s+=t[o+Math.min(h-1,y+r+1)*w*4]-t[o+Math.max(0,y-r)*w*4]}}
+        src=u}
+      return u},
     _draw:function(){var m=this._map,cv=this._cv;if(!m||!cv)return;
       var sz=m.getSize(),pad=64,W=sz.x+2*pad,H=sz.y+2*pad,z=Math.round(m.getZoom());
       L.DomUtil.setPosition(cv,m.containerPointToLayerPoint([-pad,-pad]));
@@ -341,17 +350,19 @@ a{color:var(--link)}
       for(var ty=Math.floor(sy/256);ty<=Math.floor((sy+sh)/256);ty++){if(ty<0||ty>=mx)continue;
         for(var tx=Math.floor(sx/256);tx<=Math.floor((sx+sw)/256);tx++){var im=this._tile(ns,((tx%mx)+mx)%mx,ty);if(im)cc.drawImage(im,Math.round(tx*256-sx),Math.round(ty*256-sy))}}
       var lat=m.getCenter().lat,cos=Math.cos(lat*Math.PI/180),cell=3000/(156543*cos/Math.pow(2,ns)),b=3000/(156543*cos/Math.pow(2,z));
-      var ss=Math.max(1,cell/2),sm=document.createElement("canvas");sm.width=Math.max(1,Math.ceil(sw/ss));sm.height=Math.max(1,Math.ceil(sh/ss));
-      var sg=sm.getContext("2d");sg.imageSmoothingEnabled=true;sg.imageSmoothingQuality="high";sg.drawImage(comp,0,0,sw,sh,0,0,sm.width,sm.height);
+      var ss=Math.max(1,cell/2),sm=document.createElement("canvas");sm.width=Math.max(2,Math.ceil(sw/ss));sm.height=Math.max(2,Math.ceil(sh/ss));
+      var sg=sm.getContext("2d",{willReadFrequently:true});sg.imageSmoothingEnabled=true;sg.imageSmoothingQuality="high";sg.drawImage(comp,0,0,sw,sh,0,0,sm.width,sm.height);
       if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H}
       var g=cv.getContext("2d",{willReadFrequently:true});g.clearRect(0,0,W,H);g.imageSmoothingEnabled=true;g.imageSmoothingQuality="high";
-      try{g.filter="blur("+Math.max(1,b*0.26).toFixed(1)+"px)"}catch(e){}
-      g.drawImage(sm,0,0,sm.width,sm.height,0,0,W,H);try{g.filter="none"}catch(e){}
-      // a second, heavier blur fills small gaps inside rain areas
       var hv=this._hv||(this._hv=document.createElement("canvas"));hv.width=W;hv.height=H;
       var hg=hv.getContext("2d",{willReadFrequently:true});hg.imageSmoothingEnabled=true;hg.imageSmoothingQuality="high";
-      try{hg.filter="blur("+Math.min(40,Math.max(2,b*0.26*2.4)).toFixed(1)+"px)"}catch(e){}
-      hg.drawImage(sm,0,0,sm.width,sm.height,0,0,W,H);try{hg.filter="none"}catch(e){}
+      // the blur is done by hand on the small picture (phones' Safari ignores canvas blur filters), then stretched up smoothly
+      var sd;try{sd=sg.getImageData(0,0,sm.width,sm.height)}catch(e){this.fire("tileerror");return}
+      var rs=b*0.26/(W/sm.width),r1=Math.max(1,Math.round(rs*0.9)),r2=Math.max(2,Math.round(rs*0.9*2.4)),me=this;
+      function show(arr,ctx){var c=document.createElement("canvas");c.width=sm.width;c.height=sm.height;var id=new ImageData(sm.width,sm.height),o=id.data;
+        for(var i=0;i<o.length;i+=4){var a=arr[i+3];if(a>0.5){o[i]=Math.min(255,arr[i]*255/a);o[i+1]=Math.min(255,arr[i+1]*255/a);o[i+2]=Math.min(255,arr[i+2]*255/a);o[i+3]=Math.min(255,a)}}
+        c.getContext("2d").putImageData(id,0,0);ctx.drawImage(c,0,0,sm.width,sm.height,0,0,W,H)}
+      var pm=me._pm(sd.data);show(me._blur(pm,sm.width,sm.height,r1),g);show(me._blur(pm,sm.width,sm.height,r2),hg);
       var d,q,r;try{d=g.getImageData(0,0,W,H);q=d.data;r=hg.getImageData(0,0,W,H).data}catch(e){this.fire("tileerror");return}
       var R=SmoothLayer.ramp;
       for(var i=0;i<q.length;i+=4){
