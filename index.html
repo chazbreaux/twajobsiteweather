@@ -6,8 +6,8 @@
 <title>Job Site Weather</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
 <style>
-:root{color-scheme:light dark;--bg:#eef1f3;--card:#fff;--ink:#16212b;--mut:#5b6b78;--line:#cfd7dd;--acc:#f3a607;--bad:#c0392b;--field:#f6f8f9;--hero:#0f3c6f;--link:#0f3c6f}
-@media (prefers-color-scheme:dark){:root{--bg:#10171d;--card:#18222b;--ink:#e8eef2;--mut:#93a4b1;--line:#2c3a45;--bad:#ff6b5b;--field:#111a21;--link:#f3a607}}
+:root{color-scheme:light dark;--bg:#eef1f3;--card:#fff;--ink:#16212b;--mut:#5b6b78;--line:#cfd7dd;--acc:#f3a607;--bad:#c0392b;--field:#f6f8f9;--hero:#0f3c6f;--link:#0f3c6f;--rain:#2b7de0;--burn:#8e5bd0}
+@media (prefers-color-scheme:dark){:root{--bg:#10171d;--card:#18222b;--ink:#e8eef2;--mut:#93a4b1;--line:#2c3a45;--bad:#ff6b5b;--field:#111a21;--link:#f3a607;--rain:#5aa9ff;--burn:#b895f5}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
 main{max-width:2000px;margin:0 auto;padding:14px 16px 48px}
@@ -37,20 +37,21 @@ h2{margin:28px 0 10px;font-size:1.3rem}
 @media (min-width:1600px){body{font-size:18px}.cards .cardsite .tmp{font-size:1.75em}}
 button,select,input{font:inherit;color:inherit;padding:7px 12px;border:1px solid var(--line);border-radius:6px;background:var(--card)}
 button{cursor:pointer;font-weight:600}
-.cardsite{text-align:left;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--acc);border-radius:8px;padding:9px 11px;line-height:1.3;min-width:0;display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch}
-.cardsite.bad,.cardsite.s3{border-left-color:var(--bad)}
+.cardsite{text-align:left;background:var(--card);border:1px solid var(--line);border-left:5px solid transparent;position:relative;border-radius:8px;padding:9px 11px;line-height:1.3;min-width:0;display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch}
+/* left bar: one colour segment per thing going on at the site (red warning, amber watch/advisory, blue rain, purple burn ban) */
+.cardsite::before{content:"";position:absolute;left:-5px;top:-1px;bottom:-1px;width:5px;background:var(--bar,var(--line));border-radius:8px 0 0 8px}
 .cardsite.s3{border-color:var(--bad);outline:2px solid var(--bad)}
 .cardsite .n{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cardsite .tmp{font-weight:700}
 .t{font-size:.78rem;color:var(--mut)}
 .rr{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
 .rr .k{display:block;color:var(--mut);text-transform:uppercase;letter-spacing:.03em}
-.rr .v{display:block;font-weight:600;line-height:1.25}.rr .v.wet{color:var(--bad)}
-.fc{margin-top:3px;color:var(--mut)}.fc.wet{color:var(--bad);font-weight:600}
+.rr .v{display:block;font-weight:600;line-height:1.25}.rr .v.wet{color:var(--rain)}
+.fc{margin-top:3px;color:var(--mut)}.fc.wet{color:var(--rain);font-weight:600}
 .al{margin-top:5px;padding:3px 7px;border-radius:5px;font-weight:700;line-height:1.25}
 /* tile text sizes scale together (--ts) so every site can fit on a TV without scrolling */
 .cards .cardsite .tmp{font-size:1.55em}.cards .t{font-size:.78em}.cards .rr .k{font-size:.68em}.cards .rr .v{font-size:.85em}.cards .fc{font-size:.82em}.cards .al{font-size:.8em}
-.cards .cardsite.mini{padding:.5em .7em;border-left-color:var(--line)}
+.cards .cardsite.mini{padding:.5em .7em}
 .cards .mini .mr{display:flex;align-items:baseline;gap:.5em;flex-wrap:wrap}
 .cards .mini .tmp{font-size:1.2em}.cards .mini .t{margin:0}
 .cards .cardsite.pj{border-style:dashed}
@@ -62,6 +63,8 @@ button{cursor:pointer;font-weight:600}
 .pin.cl{cursor:pointer;border-style:dashed}
 .pin.bad{background:var(--bad);border-color:var(--bad);color:#fff}
 .pin.amber{background:var(--acc);border-color:var(--acc);color:#16212b}
+.pin.rain{background:var(--rain);border-color:var(--rain);color:#fff}
+.lg i{display:inline-block;width:.8em;height:.8em;border-radius:50%;margin:0 .35em 0 .9em;vertical-align:-1px}
 .pin.chip{padding:0 6px;border-width:2px;border-radius:10px}.pin.chip b{font-size:14px}
 #expand,#showall{display:none}
 .mapfull{overflow:hidden}
@@ -74,7 +77,7 @@ label{display:block;font-size:.85rem;color:var(--mut);margin-bottom:3px}
 table{border-collapse:collapse;width:100%;min-width:1100px}
 th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);font-size:.92rem;vertical-align:top}
 th{color:var(--mut);font-weight:600}tr:last-child td{border-bottom:0}
-td.bad{color:var(--bad)}td.none{color:var(--mut)}
+td.bad{color:var(--rain)}td.none{color:var(--mut)}
 .note{color:var(--mut);font-size:.88rem;margin-top:10px}
 details.about summary{cursor:pointer;color:var(--mut);font-weight:600;margin-top:12px}
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:flex-end;justify-content:center;z-index:2000}
@@ -133,6 +136,7 @@ a{color:var(--link)}
         <button id="expand">Expand map</button>
         <button id="showall">Show all sites</button>
         <span id="radarTime"></span>
+        <span class="lg"><i style="background:var(--bad)"></i>Warning<i style="background:var(--acc)"></i>Watch / advisory<i style="background:var(--rain)"></i>Rain<i style="background:var(--burn)"></i>Burn ban</span>
       </div>
     </div>
     <div class="cards" id="cards"></div>
@@ -188,6 +192,7 @@ a{color:var(--link)}
     if(code===85||code===86)return"Snow showers"; if(code>=95)return"Thunderstorms"; return"Unknown"}
   var FLAG=/,\s*(history|log|yes)\s*$/i,PRJ=/,\s*project\s*=\s*([^,]+?)\s*(?=,|$)/i,PROJ_RE=/^(\d+-[\w.]+)(?=\s)/;
   // a site belongs to a project if its line says ", project=NAME", or its name starts with a job number such as 131-24.03
+  function nat(a,b){return String(a).localeCompare(String(b),undefined,{numeric:true,sensitivity:"base"})}   // 112-25 Site A before 112-25 Site B before 131-24.03 ...
   function projOf(s){return s.project||((s.name.match(PROJ_RE)||[])[1])||""}
   function parseSites(t){
     return t.split(/\r?\n/).map(function(l){l=l.trim(); if(!l||l[0]==="#")return null;
@@ -233,17 +238,26 @@ a{color:var(--link)}
     var moved=true;
     while(moved){moved=false;
       for(var a=0;a<cl.length&&!moved;a++)for(var b=a+1;b<cl.length&&!moved;b++){
-        var A=cl[a],B=cl[b],wa=PS*(A.m.length>1?150:(PINS[A.m[0]].act?130:46)),wb=PS*(B.m.length>1?150:(PINS[B.m[0]].act?130:46)),
+        var A=cl[a],B=cl[b],wa=PS*(A.m.length>1?195:(PINS[A.m[0]].act?160:46)),wb=PS*(B.m.length>1?195:(PINS[B.m[0]].act?160:46)),
           ha=PS*(A.m.length>1?28:(PINS[A.m[0]].act?44:26)),hb=PS*(B.m.length>1?28:(PINS[B.m[0]].act?44:26));
         if(Math.abs(A.x-B.x)<(wa+wb)/2&&Math.abs(A.y-B.y)<(ha+hb)/2){
           var n=A.m.length+B.m.length;A.x=(A.x*A.m.length+B.x*B.m.length)/n;A.y=(A.y*A.m.length+B.y*B.m.length)/n;A.m=A.m.concat(B.m);cl.splice(b,1);moved=true}}}
+    // a merged pin that lands on a watch/warning pin (or on another merged pin) is nudged just below it, so neither is hidden
+    var solos=PINS.filter(function(p){return p&&(p.sev>=2||z>=13)&&p.pt}),multi=cl.filter(function(c){return c.m.length>1});
+    for(var t=0;t<10;t++){var hit=false;
+      multi.forEach(function(c,ci){
+        solos.forEach(function(q){var w=(195+160)*PS/2,h=(28+44)*PS/2;
+          if(Math.abs(c.x-q.pt.x)<w&&Math.abs(c.y-q.pt.y)<h){c.y=q.pt.y+h+1;hit=true}});
+        for(var k=0;k<ci;k++){var o=multi[k],w2=195*PS,h2=28*PS;
+          if(Math.abs(c.x-o.x)<w2&&Math.abs(c.y-o.y)<h2){c.y=o.y+h2+1;hit=true}}});
+      if(!hit)break}
     cl.forEach(function(c){
       if(c.m.length===1){pinMarker(PINS[c.m[0]],c.m[0]);return}
       var ps=c.m.map(function(i){return PINS[i]}),ts=ps.map(function(p){return p.tnum}).filter(function(v){return v!=null}),
-        lat=ps.reduce(function(a,p){return a+p.lat},0)/ps.length,lon=ps.reduce(function(a,p){return a+p.lon},0)/ps.length,
+        ll=map.unproject([c.x,c.y],z),lat=ll.lat,lon=ll.lng,
         lo=Math.min.apply(null,ts),hi=Math.max.apply(null,ts);
-      var na=ps.filter(function(p){return p.act}).length,nr=ps.filter(function(p){return p.col==="r"}).length;
-      var html='<div class="pin cl'+(nr?" bad":(na?" amber":""))+'"><b>'+ps.length+' sites</b>'+(ts.length?" "+(lo===hi?lo:lo+"&ndash;"+hi)+"°":"")+(na?(nr?" &#127783;&#65039;":" &#9888;&#65039;")+na:"")+"</div>";
+      var na=ps.filter(function(p){return p.act}).length,nr=ps.filter(function(p){return p.col==="r"}).length,nam=ps.filter(function(p){return p.col==="a"}).length;
+      var html='<div class="pin cl'+(nr?" bad":(nam?" amber":(na?" rain":"")))+'"><b>'+ps.length+' sites</b>'+(ts.length?" "+(lo===hi?lo:lo+"&ndash;"+hi)+"°":"")+(na?((nr||nam)?" &#9888;&#65039;":" &#127783;&#65039;")+na:"")+"</div>";
       var m=L.marker([lat,lon],{icon:L.divIcon({className:"",html:html,iconSize:[0,0]}),title:ps.map(function(p){return p.name}).join(", "),zIndexOffset:na?500:0});
       m.on("click",function(){map.fitBounds(ps.map(function(p){return[p.lat,p.lon]}),{padding:[80,80],maxZoom:15})});
       markerLayer.addLayer(m)});
@@ -497,36 +511,41 @@ a{color:var(--link)}
         al.map(function(a){return"<div style='color:#b03a2e;font-weight:700'>⚠️ "+esc(a.event)+(a.until?" until "+esc(a.until):"")+"</div>"}).join("")+
         (sm?"<div style='color:#b03a2e;font-weight:700'>&#127786;&#65039; "+esc(sm.long)+"</div>":"")+(al.length?"<div><a href='#' data-detail='"+i+"'>View alert details</a></div>":"")+(bn?"<div style='color:#6b3500;font-weight:700'>Burn ban in effect through "+esc(bn.end)+"</div>":"")+(known?"":"<div>Alerts unavailable</div>")+loggedToday(s));
       // red = rain or a warning, amber = a watch/statement or rain expected, plain small chip = nothing to report
-      var col=(b||o.raining||sev>=3)?"r":(act?"a":"");
-      var phtml=act?'<div class="pin act'+(col==="r"?" bad":" amber")+'"><b>'+t+"</b> "+(l?emoji(c):"")+(sev>=2?" ⚠️":"")+(bn?" &#128293;":"")+"<small>"+esc(s.name)+"</small></div>"
+      var has3=al.some(function(a){return a.v>=3})||(sm&&sm.lvl>=3),has12=al.some(function(a){return a.v<3})||(sm&&sm.lvl<3),hasRain=b||o.raining||o.wet;
+      var segs=[];if(has3)segs.push("var(--bad)");if(has12)segs.push("var(--acc)");if(hasRain)segs.push("var(--rain)");if(bn)segs.push("var(--burn)");
+      var bar=segs.length?' style="--bar:linear-gradient(to bottom,'+segs.map(function(c,k){return c+" "+(100*k/segs.length)+"% "+(100*(k+1)/segs.length)+"%"}).join(",")+')"':"";
+      var col=has3?"r":(has12?"a":(hasRain?"w":""));
+      var phtml=act?'<div class="pin act'+(col==="r"?" bad":(col==="a"?" amber":" rain"))+'"><b>'+t+"</b> "+(l?emoji(c):"")+(sev>=2?" ⚠️":"")+(bn?" &#128293;":"")+"<small>"+esc(s.name)+"</small></div>"
         :'<div class="pin chip"><b>'+t+"</b>"+(bn?" &#128293;":"")+"<small>"+esc(s.name)+"</small></div>";
       PINS[i]={lat:s.lat,lon:s.lon,html:phtml,popup:popup,sev:sev,act:act,col:col,name:s.name,tnum:l?Math.round(l.temperature_2m):null};
 
       var chips=(bn&&!al.length&&!sm?'<div class="al burn">&#128293; Burn ban in effect through '+esc(bn.end)+"</div>":"")+(sm?'<div class="al s'+sm.lvl+'">&#127786;&#65039; '+esc(sm.text)+"</div>":"")+al.slice(0,2).map(function(a){return'<div class="al s'+Math.min(a.v,3)+'">⚠️ '+esc(a.event)+(a.until?" <span style='font-weight:400'>until "+esc(a.until)+"</span>":"")+"</div>"}).join("")+
         (al.length>2?'<div class="fc">+'+(al.length-2)+" more alert"+(al.length-2===1?"":"s")+"</div>":"")+(al.length?'<div class="fc">Details &rsaquo;</div>':"")+(known?"":'<div class="fc">Alerts unavailable</div>');
       var rr=(o.text||r24!=null)?'<div class="rr"><div><span class="k">Past 24 h</span><span class="v">'+(r24==null?"&mdash;":r24>=0.01?r24.toFixed(2)+" in"+rmark:"None")+'</span></div><div><span class="k">Next 12 h</span><span class="v'+(o.wet?" wet":"")+'">'+(o.short?esc(o.short):"&mdash;")+"</span></div></div>":"";
-      var html='<button class="cardsite'+(sev>=3?" s3":"")+(b?" bad":"")+'" data-i="'+i+'"><div class="n">'+esc(s.name)+(bn?" &#128293;":"")+'</div><div class="tmp">'+(l?emoji(c)+" "+t:"?")+
+      var html='<button class="cardsite'+(sev>=3?" s3":"")+(b?" bad":"")+'"'+bar+' data-i="'+i+'"><div class="n">'+esc(s.name)+(bn?" &#128293;":"")+'</div><div class="tmp">'+(l?emoji(c)+" "+t:"?")+
         '</div><div class="t">'+(l?esc(c)+" &middot; wind "+Math.round(l.wind_speed_10m)+" mph":"No live data")+"</div>"+
         rr+chips+"</button>";
       var low=(o.short&&!o.wet&&o.short!=="Dry")?o.short:"";
-      var mini='<button class="cardsite mini" data-i="'+i+'"><div class="n">'+esc(s.name)+(bn?" &#128293;":"")+'</div><div class="mr"><span class="tmp">'+(l?emoji(c)+" "+t:"?")+'</span><span class="t">'+(l?esc(c)+" &middot; "+Math.round(l.wind_speed_10m)+" mph":"No live data")+"</span></div>"+
+      var mini='<button class="cardsite mini"'+bar+' data-i="'+i+'"><div class="n">'+esc(s.name)+(bn?" &#128293;":"")+'</div><div class="mr"><span class="tmp">'+(l?emoji(c)+" "+t:"?")+'</span><span class="t">'+(l?esc(c)+" &middot; "+Math.round(l.wind_speed_10m)+" mph":"No live data")+"</span></div>"+
         (r24!=null&&r24>=0.01?'<div class="t">Past 24 h '+r24.toFixed(2)+" in"+rmark+"</div>":"")+(low?'<div class="t">'+esc(low)+"</div>":"")+(bn?'<div class="t">&#128293; Burn ban through '+esc(bn.end)+"</div>":"")+"</button>";
-      items.push({i:i,html:html,mini:mini,act:act,proj:projOf(s),tnum:l?Math.round(l.temperature_2m):null,r24:r24,bn:!!bn,rank:sev>=3?4:sev===2?3:(b||o.wet)?2:sev===1?1:0});
+      items.push({i:i,name:s.name,html:html,mini:mini,act:act,proj:projOf(s),tnum:l?Math.round(l.temperature_2m):null,r24:r24,bn:!!bn,rank:sev>=3?4:sev===2?3:(b||o.wet)?2:sev===1?1:0});
     });
-    items.sort(function(a,b){return b.rank-a.rank||a.i-b.i});
+    items.sort(function(a,b){return b.rank-a.rank||nat(a.name,b.name)});   // most serious first, then alphabetical
     // sites needing attention first, in full. Quiet sites follow as slim tiles, and quiet sites of the same project fold into one tile (tap to open it)
-    var out=items.filter(function(x){return x.act}).map(function(x){return x.html}),G={},seen={};
-    var quiet=items.filter(function(x){return !x.act}).sort(function(a,b){return a.i-b.i});
+    var out=items.filter(function(x){return x.act}).map(function(x){return x.html}),G={},seen={},entries=[];
+    var quiet=items.filter(function(x){return !x.act}).sort(function(a,b){return nat(a.name,b.name)});
     quiet.forEach(function(x){if(x.proj)(G[x.proj]=G[x.proj]||[]).push(x)});
     quiet.forEach(function(x){
       var g=x.proj&&G[x.proj].length>=2?G[x.proj]:null;
-      if(!g){out.push(x.mini);return}
+      if(!g){entries.push({k:x.name,h:[x.mini]});return}
       if(seen[x.proj])return;seen[x.proj]=1;
-      if(EXP[x.proj]){out.push('<button class="grph" data-g="'+esc(x.proj)+'">&#9662; '+esc(x.proj)+" &middot; "+g.length+" sites</button>");g.forEach(function(m){out.push(m.mini)});return}
+      if(EXP[x.proj]){entries.push({k:x.proj,h:['<button class="grph" data-g="'+esc(x.proj)+'">&#9662; '+esc(x.proj)+" &middot; "+g.length+" sites</button>"].concat(g.map(function(m){return m.mini}))});return}
       var ts=g.map(function(m){return m.tnum}).filter(function(v){return v!=null}),lo=Math.min.apply(null,ts),hi=Math.max.apply(null,ts),
         rm=Math.max.apply(null,g.map(function(m){return m.r24||0})),nb=g.filter(function(m){return m.bn}).length;
-      out.push('<button class="cardsite mini pj" data-g="'+esc(x.proj)+'"><div class="n">&#9656; '+esc(x.proj)+(nb?" &#128293;":"")+'</div><div class="mr"><span class="tmp">'+(ts.length?(lo===hi?lo:lo+"&ndash;"+hi)+"°":"?")+'</span><span class="t">'+g.length+" sites &middot; all clear</span></div>"+
-        (rm>=0.01?'<div class="t">Past 24 h up to '+rm.toFixed(2)+" in</div>":"")+(nb?'<div class="t">&#128293; Burn ban at '+nb+" of "+g.length+"</div>":"")+"</button>")});
+      entries.push({k:x.proj,h:['<button class="cardsite mini pj"'+(nb?' style="--bar:var(--burn)"':"")+' data-g="'+esc(x.proj)+'"><div class="n">&#9656; '+esc(x.proj)+(nb?" &#128293;":"")+'</div><div class="mr"><span class="tmp">'+(ts.length?(lo===hi?lo:lo+"&ndash;"+hi)+"°":"?")+'</span><span class="t">'+g.length+" sites &middot; all clear</span></div>"+
+        (rm>=0.01?'<div class="t">Past 24 h up to '+rm.toFixed(2)+" in</div>":"")+(nb?'<div class="t">&#128293; Burn ban at '+nb+" of "+g.length+"</div>":"")+"</button>"]})});
+    entries.sort(function(a,b){return nat(a.k,b.k)});   // quiet sites and project tiles share one alphabetical list
+    entries.forEach(function(e){out=out.concat(e.h)});
     $("cards").innerHTML=out.join("");fitCards();
 
     var bn=$("banner"),ev=Object.keys(groups).sort(function(a,b){return groups[b].v-groups[a].v});
