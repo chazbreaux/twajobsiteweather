@@ -31,6 +31,8 @@ h2{margin:28px 0 10px;font-size:1.3rem}
   #map{min-height:0}
   .cards{overflow:auto;min-height:0}
 }
+@media (min-width:1600px){html .pin{transform:translate(-50%,-50%) scale(1.3)}}
+.tv #histsec{display:none}
 @media (min-width:700px) and (max-width:1099px){#map{flex:none;height:60vh;min-height:420px}#expand{display:inline-block}}
 @media (min-width:1600px){body{font-size:18px}.cards .cardsite .tmp{font-size:1.75em}}
 button,select,input{font:inherit;color:inherit;padding:7px 12px;border:1px solid var(--line);border-radius:6px;background:var(--card)}
@@ -136,6 +138,7 @@ a{color:var(--link)}
     <div class="cards" id="cards"></div>
   </div>
 
+  <div id="histsec">
   <h2>History</h2>
   <div class="filters">
     <div><label for="hs">Site</label><select id="hs"></select></div>
@@ -152,6 +155,7 @@ a{color:var(--link)}
   <details class="about"><summary>About this data</summary><p class="note">Each day&rsquo;s record fills in as it happens, at about 08:00, 12:00 and 17:00 Central time, and only for sites marked for history. Overnight rain covers the previous day from 17:01 to 08:00. Conditions are the average cloud cover for the period (Sunny, Partly cloudy or Cloudy), or Rain if any rain fell during it. The past-24-hour rain total is a NOAA radar-and-gauge estimate for each site&rsquo;s location (via Iowa State&rsquo;s Mesonet); a + after it means the latest hour is still being processed, and when it is unavailable the page shows a weather-model total instead. The history log uses the same radar estimate for its rain amounts and for the Rain call; a value with a + is still missing its latest radar hour or two and may rise a little, and a value with a * is a weather-model estimate shown only until the first radar hours arrive. The log re-checks the last three days, so partial values are finalized and late or revised radar data is picked up. Temperatures and cloud cover come from the weather model. In the downloadable CSV, the columns after the blank one are the weather-model rain amounts for comparison. None of these are gauge readings, so they are estimates. Warnings and watches come from the National Weather Service and refresh every 2 minutes. Storm tracks come from the National Weather Service radar storm-tracking data (via Iowa State&rsquo;s Mesonet) and mark radar-detected rotation and its projected path; a rotation or tornado-signature flag is a radar indication, not a confirmed tornado, and some storms are missed or false-alarmed. All of this is a convenience, not a substitute for official alerts, so always follow local emergency instructions. The page refreshes itself, so it can stay open on a screen.</p></details>
   <p class="note" id="banNote" hidden></p>
   <p class="note"><a href="data/daily.csv">Download all records (CSV)</a> &nbsp;&middot;&nbsp; <a href="data/daily.xlsx">Download for Excel (one sheet per site)</a></p>
+  </div>
 </main>
 
 <div id="ov" class="ov" hidden role="dialog" aria-modal="true" aria-label="Alert details"><div class="sheet" id="ovb"></div></div>
@@ -163,6 +167,8 @@ a{color:var(--link)}
   // ---- CUSTOMIZE HERE ----
   var CONFIG={company:"The Walker Associates",title:"Job Site Weather",accent:"#f3a607",logo:"logo.png",headerAlign:"left"}; // headerAlign: "left" or "center" // logo: name of an image file uploaded to the repository
   var $=function(i){return document.getElementById(i)};
+  // TV mode: open the page with ?tv on the end of its address to hide the History section (nobody can scroll a wall TV)
+  if(/[?&]tv(?:[=&]|$)/.test(location.search)||location.hash==="#tv")document.documentElement.classList.add("tv");
   var BASE=CONFIG.company+" | "+CONFIG.title;document.title=BASE;$("title").textContent=CONFIG.title;document.documentElement.style.setProperty("--acc",CONFIG.accent);
   if(CONFIG.headerAlign==="center")$("hero").classList.add("center");
   if(CONFIG.logo){$("logo").src=CONFIG.logo;$("logo").alt=CONFIG.company;$("logo").hidden=false}
@@ -217,7 +223,7 @@ a{color:var(--link)}
     m.bindPopup(p.popup);m.on("popupopen",function(){OPENPOP=i});markerLayer.addLayer(m);markers[i]=m}
   function drawPins(){
     REDRAW=true;markerLayer.clearLayers();markers=[];
-    var z=map.getZoom(),cl=[];
+    var z=map.getZoom(),cl=[],PS=window.innerWidth>=1600?1.3:1;   // pins are drawn 30% larger on very wide screens, so allow for that when deciding what overlaps
     PINS.forEach(function(p){if(p)p.pt=map.project([p.lat,p.lon],z)});
     PINS.forEach(function(p,i){
       if(!p)return;
@@ -227,8 +233,9 @@ a{color:var(--link)}
     var moved=true;
     while(moved){moved=false;
       for(var a=0;a<cl.length&&!moved;a++)for(var b=a+1;b<cl.length&&!moved;b++){
-        var A=cl[a],B=cl[b],wa=A.m.length>1?150:(PINS[A.m[0]].act?96:46),wb=B.m.length>1?150:(PINS[B.m[0]].act?96:46);
-        if(Math.abs(A.x-B.x)<(wa+wb)/2&&Math.abs(A.y-B.y)<28){
+        var A=cl[a],B=cl[b],wa=PS*(A.m.length>1?150:(PINS[A.m[0]].act?130:46)),wb=PS*(B.m.length>1?150:(PINS[B.m[0]].act?130:46)),
+          ha=PS*(A.m.length>1?28:(PINS[A.m[0]].act?44:26)),hb=PS*(B.m.length>1?28:(PINS[B.m[0]].act?44:26));
+        if(Math.abs(A.x-B.x)<(wa+wb)/2&&Math.abs(A.y-B.y)<(ha+hb)/2){
           var n=A.m.length+B.m.length;A.x=(A.x*A.m.length+B.x*B.m.length)/n;A.y=(A.y*A.m.length+B.y*B.m.length)/n;A.m=A.m.concat(B.m);cl.splice(b,1);moved=true}}}
     cl.forEach(function(c){
       if(c.m.length===1){pinMarker(PINS[c.m[0]],c.m[0]);return}
