@@ -24,7 +24,6 @@ h2{margin:28px 0 10px;font-size:1.3rem}
 .dash{display:grid;gap:14px}
 .mapcol{display:flex;flex-direction:column;min-width:0}
 #map{height:56vh;min-height:340px;flex:1;border:1px solid var(--line);border-radius:8px}
-.fcsttile{image-rendering:auto;filter:blur(2px)}
 #radarTime{font-weight:600}#radarTime.fut{color:var(--acc)}
 .bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:8px;color:var(--mut);font-size:.92rem}
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(170px*var(--ts,1)),1fr));gap:calc(10px*var(--ts,1));align-content:start;font-size:calc(1em*var(--ts,1))}
@@ -316,6 +315,10 @@ a{color:var(--link)}
   function getInit(){
     var est=Math.floor((Date.now()-50*60000)/3600000)*3600000-3600000;
     return fetch("https://mesonet.agron.iastate.edu/data/gis/images/4326/hrrr/refd_1080.json",{cache:"no-store"}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){var t=Date.parse(j.model_init_utc);return isFinite(t)?t:est}).catch(function(){return est})}
+  // the model grid is ~3 km, so soften each forecast layer as one piece (no tile seams); blur follows the zoom level
+  function smoothF(){var z=map.getZoom(),c=map.getCenter(),mpp=156543*Math.cos(c.lat*Math.PI/180)/Math.pow(2,z),px=Math.min(40,Math.max(1,3000/mpp*0.6));
+    fcst.forEach(function(f){var e=f.l.getContainer&&f.l.getContainer();if(e){e.style.filter="blur("+px.toFixed(1)+"px)";e.style.imageRendering="auto"}})}
+  map.on("zoomend",smoothF);
   function clearF(){fcst.forEach(function(f){map.removeLayer(f.l)});fcst=[]}
   function failFuture(){clearF();stop();$("fcst").checked=false;try{localStorage.setItem("fc","0")}catch(e){}$("play").textContent=playLabel();$("radarTime").textContent="Future radar unavailable right now";$("radarTime").className="";setTimeout(function(){if(!timer)$("radarTime").textContent=""},8000)}
   function buildFuture(){return getInit().then(function(ini){
@@ -323,10 +326,10 @@ a{color:var(--link)}
     clearF();fInit=ini;fBuilt=Date.now();fErr=0;fOk=0;
     var t5=Math.floor(Date.now()/300000)*300000;
     [15,30,45,60,90,120,150,180].forEach(function(o){var v=t5+o*60000,fm=Math.round((v-ini)/900000)*15;if(fm<0||fm>1080)return;
-      var l=L.tileLayer(RAD+"hrrr::REFD-F"+("000"+fm).slice(-4)+"-"+initStr(ini)+"/{z}/{x}/{y}.png",{opacity:0,zIndex:5,maxNativeZoom:7,className:"fcsttile"});
+      var l=L.tileLayer(RAD+"hrrr::REFD-F"+("000"+fm).slice(-4)+"-"+initStr(ini)+"/{z}/{x}/{y}.png",{opacity:0,zIndex:5,maxNativeZoom:7});
       l.on("tileload",function(){fOk++});
       l.on("tileerror",function(){fErr++;if(fErr>=12&&fOk===0&&$("fcst").checked)failFuture()});
-      l.addTo(map);fcst.push({l:l,t:v})});
+      l.addTo(map);fcst.push({l:l,t:v})});smoothF();
     if(!fcst.length)failFuture()})}
   $("fcst").onchange=function(){
     try{localStorage.setItem("fc",this.checked?"1":"0")}catch(e){}
