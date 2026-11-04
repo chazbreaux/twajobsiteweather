@@ -324,9 +324,9 @@ a{color:var(--link)}
   // SMOOTHDRAW-START
   function smoothDraw(cv,img,z,x,y,lat){
     var ns=Math.min(z,8),n=Math.pow(2,z-ns),sz=256/n,ox=(x%n)*sz,oy=(y%n)*sz;
-    var mpp=156543*Math.cos(lat*Math.PI/180)/Math.pow(2,z),b=3000/mpp,sm=Math.max(32,Math.min(256,Math.round(256/b*1.5)));
+    var mpp=156543*Math.cos(lat*Math.PI/180)/Math.pow(2,z),b=3000/mpp,sm=Math.max(32,Math.min(256,Math.round(256/b*2)));
     var a=document.createElement("canvas");a.width=a.height=sm;var c=a.getContext("2d");c.imageSmoothingQuality="high";c.drawImage(img,ox,oy,sz,sz,0,0,sm,sm);
-    var bl=Math.max(1,b*0.55),m=Math.ceil(bl*2.5),T=256+2*m,P=document.createElement("canvas");P.width=P.height=T;var pg=P.getContext("2d");pg.imageSmoothingEnabled=true;pg.imageSmoothingQuality="high";
+    var bl=Math.max(1,b*0.33),m=Math.ceil(bl*2.5),T=256+2*m,P=document.createElement("canvas");P.width=P.height=T;var pg=P.getContext("2d");pg.imageSmoothingEnabled=true;pg.imageSmoothingQuality="high";
     pg.drawImage(a,0,0,sm,sm,m,m,256,256);   // edges are stretched outward so tiles join without light seams
     pg.drawImage(a,0,0,1,sm,0,m,m,256);pg.drawImage(a,sm-1,0,1,sm,256+m,m,m,256);pg.drawImage(a,0,0,sm,1,m,0,256,m);pg.drawImage(a,0,sm-1,sm,1,m,256+m,256,m);
     pg.drawImage(a,0,0,1,1,0,0,m,m);pg.drawImage(a,sm-1,0,1,1,256+m,0,m,m);pg.drawImage(a,0,sm-1,1,1,0,256+m,m,m);pg.drawImage(a,sm-1,sm-1,1,1,256+m,256+m,m,m);
