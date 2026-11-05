@@ -335,7 +335,8 @@ a{color:var(--link)}
         for(var tx=Math.floor(sx/256);tx<=Math.floor((sx+sw)/256);tx++){var im=this._tile(ns,((tx%mx)+mx)%mx,ty);if(im)cc.drawImage(im,Math.round(tx*256-sx),Math.round(ty*256-sy))}}
       if(raw&&this.options.hide){var cd;try{cd=cc.getImageData(0,0,comp.width,comp.height)}catch(e){this.fire("tileerror");return}
         var pp=cd.data,grain=1000/(156543*Math.cos(m.getCenter().lat*Math.PI/180)/Math.pow(2,ns)),strong=0;
-        for(var j=0;j<pp.length;j+=4)if(pp[j+3]&&pp[j]>=200)strong++;                      // yellow, orange or red pixels = a real storm is in view
+        var cw0=comp.width,vx0=pad*k,vx1=(pad+sz.x)*k,vy0=pad*k,vy1=(pad+sz.y)*k;
+        for(var j=0;j<pp.length;j+=4){if(!pp[j+3]||pp[j]<200)continue;var q0=j/4,x9=q0%cw0,y9=(q0/cw0)|0;if(x9>=vx0&&x9<=vx1&&y9>=vy0&&y9<=vy1)strong++}   // yellow, orange or red pixels inside the visible map = a real storm is in view (not upwind off-screen)
         var quiet=!RAINMODE&&strong<Math.max(4,3*grain*grain);                                       // quiet scene: also hide the mid-green (about 25-30 dBZ) that is mostly night-time clutter
         for(var j=0;j<pp.length;j+=4){if(!pp[j+3])continue;var pr=pp[j],pg2=pp[j+1],pb2=pp[j+2];
           if((pb2>=pg2-10&&pr<110)||(!RAINMODE&&pr<40&&pg2>235&&pb2<40)||(quiet&&pr<60&&pb2<60&&pg2>=165))pp[j+3]=0}   // drop the light-blue and bright-green (under ~25 dBZ) pixels
