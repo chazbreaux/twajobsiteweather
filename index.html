@@ -24,7 +24,10 @@ h2{margin:28px 0 10px;font-size:1.3rem}
 .dash{display:grid;gap:14px}
 .mapcol{display:flex;flex-direction:column;min-width:0}
 #map{height:56vh;min-height:340px;flex:1;border:1px solid var(--line);border-radius:8px}
-#radarTime{font-weight:600}#radarTime.fut{color:var(--acc)}
+#radarTime{position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:850;pointer-events:none;white-space:nowrap;background:rgba(255,255,255,.92);color:#223;font-weight:700;font-size:.95rem;padding:4px 14px;border-radius:14px;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+@media(max-width:700px){#radarTime{font-size:.78rem;padding:3px 10px;top:6px}}
+#radarTime:empty{display:none}#radarTime.fut{background:#fff1d0;color:#8a4b00}
+.ls{display:none}
 .bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:8px;color:var(--mut);font-size:.92rem}
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(170px*var(--ts,1)),1fr));gap:calc(10px*var(--ts,1));align-content:start;font-size:calc(1em*var(--ts,1))}
 @media (min-width:1100px){
@@ -105,6 +108,7 @@ input[type=date]{min-height:42px}
   .hero{padding:8px 14px 12px}.hero img{height:48px;margin:0 auto}h1{font-size:1.45rem}.clock{display:none}
   .hero .in{flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:4px}
   main{padding:12px 12px 40px}
+  .bar{gap:6px 12px;font-size:.82rem}.bar button{padding:.4em .8em;font-size:.82rem;min-height:0}.lf{display:none}.ls{display:inline}
   #map{flex:none;height:68vh;min-height:420px}#expand,#showall{display:inline-block}
   .cardsite{padding:8px 10px}.cards .cardsite .tmp{font-size:1.4em}.cards .cardsite.mini .tmp{font-size:1.2em}
   .filters{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
@@ -131,15 +135,14 @@ a{color:var(--link)}
   <div id="banner" class="banner" hidden></div>
   <div class="dash">
     <div class="mapcol">
-      <div id="map" role="application" aria-label="Map of job sites with weather"><div class="lg" aria-label="Color key"><span><i style="background:var(--bad)"></i>Warning</span><span><i style="background:var(--acc)"></i>Watch / advisory</span><span><i style="background:var(--rain)"></i>Rain</span><span><i style="background:var(--burn)"></i>Burn ban</span></div></div>
+      <div id="map" role="application" aria-label="Map of job sites with weather"><div id="radarTime" aria-live="off"></div><div class="lg" aria-label="Color key"><span><i style="background:var(--bad)"></i>Warning</span><span><i style="background:var(--acc)"></i>Watch / advisory</span><span><i style="background:var(--rain)"></i>Rain</span><span><i style="background:var(--burn)"></i>Burn ban</span></div></div>
       <div class="bar">
         <label style="margin:0"><input type="checkbox" id="radar" checked style="width:auto"> Rain radar</label>
-        <label style="margin:0"><input type="checkbox" id="fcst" style="width:auto"> Future radar (next 90 min)</label>
-        <label style="margin:0"><input type="checkbox" id="storms" checked style="width:auto"> Storm tracks &amp; warnings</label>
+        <label style="margin:0"><input type="checkbox" id="fcst" style="width:auto"> <span class="lf">Future radar (next 90 min)</span><span class="ls">Future radar</span></label>
+        <label style="margin:0"><input type="checkbox" id="storms" checked style="width:auto"> <span class="lf">Storm tracks &amp; warnings</span><span class="ls">Storm tracks</span></label>
         <button id="play">Play last 50 minutes</button>
         <button id="expand">Expand map</button>
         <button id="showall">Show all sites</button>
-        <span id="radarTime" aria-live="off"></span>
       </div>
     </div>
     <div class="cards" id="cards"></div>
@@ -159,7 +162,7 @@ a{color:var(--link)}
     <tbody id="rows"></tbody>
   </table></div>
   <div class="bar"><span id="count"></span><button id="more" hidden>Show 20 more</button></div>
-  <details class="about"><summary>About this data</summary><p class="note">Each day&rsquo;s record fills in as it happens, at about 08:00, 12:00 and 17:00 Central time, and only for sites marked for history. Overnight rain covers the previous day from 17:01 to 08:00. Conditions are the average cloud cover for the period (Sunny, Partly cloudy or Cloudy), or Rain if any rain fell during it. The past-24-hour rain total is a NOAA radar-and-gauge estimate for each site&rsquo;s location (via Iowa State&rsquo;s Mesonet); a + after it means the latest hour is still being processed, and when it is unavailable the page shows a weather-model total instead. The history log uses the same radar estimate for its rain amounts and for the Rain call; a value with a + is still missing its latest radar hour or two and may rise a little, and a value with a * is a weather-model estimate shown only until the first radar hours arrive. The log re-checks the last three days, so partial values are finalized and late or revised radar data is picked up. Temperatures and cloud cover come from the weather model. In the downloadable CSV, the columns after the blank one are the weather-model rain amounts for comparison. None of these are gauge readings, so they are estimates. Warnings and watches come from the National Weather Service and refresh every 2 minutes. Storm tracks come from the National Weather Service radar storm-tracking data (via Iowa State&rsquo;s Mesonet) and mark radar-detected rotation and its projected path; a rotation or tornado-signature flag is a radar indication, not a confirmed tornado, and some storms are missed or false-alarmed. Future radar (optional checkbox) is an educated guess for the next 90 minutes: the latest real radar slid along the direction the storms are moving, so it assumes they keep the same speed and neither grow nor fade. When storm movement is not available it falls back to a NOAA weather-model forecast (HRRR via Iowa State&rsquo;s Mesonet). Either way it is a projection, not real radar, and it is least reliable for new storms forming or fading. Times on the radar loop are Central time. All of this is a convenience, not a substitute for official alerts, so always follow local emergency instructions. The page refreshes itself, so it can stay open on a screen.</p></details>
+  <details class="about"><summary>About this data</summary><p class="note">Each day&rsquo;s record fills in as it happens, at about 08:00, 12:00 and 17:00 Central time, and only for sites marked for history. Overnight rain covers the previous day from 17:01 to 08:00. Conditions are the average cloud cover for the period (Sunny, Partly cloudy or Cloudy), or Rain if any rain fell during it. The past-24-hour rain total is a NOAA radar-and-gauge estimate for each site&rsquo;s location (via Iowa State&rsquo;s Mesonet); a + after it means the latest hour is still being processed, and when it is unavailable the page shows a weather-model total instead. The history log uses the same radar estimate for its rain amounts and for the Rain call; a value with a + is still missing its latest radar hour or two and may rise a little, and a value with a * is a weather-model estimate shown only until the first radar hours arrive. The log re-checks the last three days, so partial values are finalized and late or revised radar data is picked up. Temperatures and cloud cover come from the weather model. In the downloadable CSV, the columns after the blank one are the weather-model rain amounts for comparison. None of these are gauge readings, so they are estimates. The radar hides its faintest echoes (the light-blue and bright-green returns, roughly under 25 dBZ), because on clear nights these are usually insects, birds or ground clutter rather than rain; this also hides very light drizzle. Warnings and watches come from the National Weather Service and refresh every 2 minutes. Storm tracks come from the National Weather Service radar storm-tracking data (via Iowa State&rsquo;s Mesonet) and mark radar-detected rotation and its projected path; a rotation or tornado-signature flag is a radar indication, not a confirmed tornado, and some storms are missed or false-alarmed. Future radar (optional checkbox) is an educated guess for the next 90 minutes: the latest real radar slid along the direction the storms are moving, so it assumes they keep the same speed and neither grow nor fade. When storm movement is not available it falls back to a NOAA weather-model forecast (HRRR via Iowa State&rsquo;s Mesonet). Either way it is a projection, not real radar, and it is least reliable for new storms forming or fading. Times on the radar loop are Central time. All of this is a convenience, not a substitute for official alerts, so always follow local emergency instructions. The page refreshes itself, so it can stay open on a screen.</p></details>
   <p class="note" id="banNote" hidden></p>
   <p class="note"><a href="data/daily.csv">Download all records (CSV)</a> &nbsp;&middot;&nbsp; <a href="data/daily.xlsx">Download for Excel (one sheet per site)</a></p>
   </div>
@@ -290,35 +293,6 @@ a{color:var(--link)}
   document.addEventListener("keydown",function(e){if(e.key==="Escape"&&document.body.classList.contains("mapfull"))setMapFull(false)});
   function showOnMap(i){if(document.body.classList.contains("mapfull"))setMapFull(false);var s=SITES[i];if(!s)return;PENDPOP=i;map.once("moveend",drawPins);map.flyTo([s.lat,s.lon],13);window.scrollTo({top:$("map").offsetTop-12,behavior:"smooth"})}
   map.on("zoomend",function(){drawPins()});
-  var RAD="https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/";
-  function rurl(n){return RAD+n+"/{z}/{x}/{y}.png?b="+Math.floor(Date.now()/300000)}
-  function radarLayer(n,op){return L.tileLayer(rurl(n),{opacity:op,zIndex:5,rname:n,attribution:"Radar: NOAA/NWS via Iowa Environmental Mesonet"})}
-  var cur=radarLayer("nexrad-n0q-900913",0.65).addTo(map),frames=[],timer=null,idx=0;
-  var MOTION=null,fHyb=false,fcst=[],fInit=null,fBuilt=0,fErr=0,fOk=0;
-  function clk(t){return new Date(t).toLocaleTimeString("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"})}
-  function p2(n){return ("0"+n).slice(-2)}
-  function initStr(t){var d=new Date(t);return d.getUTCFullYear()+p2(d.getUTCMonth()+1)+p2(d.getUTCDate())+p2(d.getUTCHours())+"00"}
-  function playLabel(){return $("fcst").checked?"Play past + future":"Play last 50 minutes"}
-  function ensureFrames(){if(!frames.length){for(var m=50;m>=5;m-=5){frames.push(radarLayer("nexrad-n0q-900913-m"+(m<10?"0"+m:m)+"m",0).addTo(map))}frames.push(cur)}}
-  function seq(){var out=[],t5=Math.floor(Date.now()/300000)*300000;
-    frames.forEach(function(f,i){out.push(f===cur?{l:cur,t:Date.now(),now:true}:{l:f,t:t5-(50-5*i)*60000})});
-    fcst.forEach(function(f){out.push({l:f.l,t:f.t,fut:true,mod:f.mod})});return out}
-  function stop(){clearTimeout(timer);timer=null;frames.forEach(function(f){f.setOpacity(0)});fcst.forEach(function(f){f.l.setOpacity(0)});cur.setOpacity(0.65);$("play").textContent=playLabel();$("radarTime").textContent="";$("radarTime").className=""}
-  function loopStep(){var q=seq();if(idx>=q.length)idx=0;var it=q[idx];
-    q.forEach(function(x){x.l.setOpacity(x===it?0.65:0)});
-    $("radarTime").textContent=it.fut?(it.mod?"Model forecast ":"Forecast ")+clk(it.t):(it.now?"Now "+clk(it.t):clk(it.t));$("radarTime").className=it.fut?"fut":"";
-    var d=(it.now||idx===q.length-1)?1800:700;idx=(idx+1)%q.length;timer=setTimeout(loopStep,d)}
-  function startLoop(){if(!$("radar").checked){$("radar").checked=true;map.addLayer(cur)}ensureFrames();clearTimeout(timer);$("play").textContent="Stop";idx=0;loopStep()}
-  $("play").onclick=function(){if(timer){stop();return}startLoop()};
-  $("radar").onchange=function(){if(this.checked){map.addLayer(cur)}else{stop();map.removeLayer(cur)}};
-  // ---- future radar: NOAA HRRR model simulated reflectivity via Iowa Mesonet (a forecast, not observed radar) ----
-  function getInit(){
-    var est=Math.floor((Date.now()-50*60000)/3600000)*3600000-3600000;
-    return fetch("https://mesonet.agron.iastate.edu/data/gis/images/4326/hrrr/refd_1080.json",{cache:"no-store"}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){var t=Date.parse(j.model_init_utc);return isFinite(t)?t:est}).catch(function(){return est})}
-  // the model grid is ~3 km, so soften each forecast layer as one piece (no tile seams); blur follows the zoom level
-  function smoothF(){var z=map.getZoom(),c=map.getCenter(),mpp=156543*Math.cos(c.lat*Math.PI/180)/Math.pow(2,z),px=Math.min(40,Math.max(1,3000/mpp*0.17));
-    fcst.forEach(function(f){var e=f.l.getContainer&&f.l.getContainer();if(e&&f.sm){e.style.filter=""}else if(e){e.style.filter="blur("+px.toFixed(1)+"px) saturate(1.7) contrast(1.15)";e.style.imageRendering="auto"}})}
-  map.on("zoomend",smoothF);
   // smooth forecast layer: the model tiles for the whole view are joined first, then rounded off once (no tile seams), weak scattered echoes are dropped, and edges fade
   var SMOOTH=!!(L.Layer&&L.Layer.extend&&L.DomUtil),fBuild=0;
   // SMOOTHLAYER-START
@@ -328,10 +302,11 @@ a{color:var(--link)}
       m.getPane("overlayPane").appendChild(c);m.on("moveend zoomend resize",this._draw,this);this._draw()},
     onRemove:function(m){m.off("moveend zoomend resize",this._draw,this);L.DomUtil.remove(this._cv);this._cv=null},
     getContainer:function(){return this._cv},
+    refresh:function(){this._im={};this._draw()},
     setOpacity:function(o){this._op=o;if(this._cv)this._cv.style.opacity=o;return this},
     _soon:function(){var me=this;if(me._q)return;me._q=setTimeout(function(){me._q=0;me._draw()},80)},
     _tile:function(z,x,y){var k=z+"/"+x+"/"+y,im=this._im[k],me=this;
-      if(!im){im=this._im[k]=new Image();if(!this.options.raw)im.crossOrigin="anonymous";im.onload=function(){im.ok=1;me.fire("tileload");me._soon()};im.onerror=function(){im.bad=1;me.fire("tileerror")};im.src=this.options.base+k+".png"+(this.options.raw?"?b="+Math.floor(Date.now()/300000):"")}
+      if(!im){im=this._im[k]=new Image();if(!this.options.raw||this.options.hide)im.crossOrigin="anonymous";im.onload=function(){im.ok=1;me.fire("tileload");me._soon()};im.onerror=function(){im.bad=1;me.fire("tileerror")};im.src=this.options.base+k+".png"+(this.options.raw?"?b="+Math.floor(Date.now()/300000):"")}
       return im.ok?im:null},
     _pm:function(u){var o=new Float32Array(u.length);for(var i=0;i<u.length;i+=4){var f=u[i+3]/255;o[i]=u[i]*f;o[i+1]=u[i+1]*f;o[i+2]=u[i+2]*f;o[i+3]=u[i+3]}return o},
     _blur:function(a,w,h,r){var n=2*r+1,x,y,c,k,o,s,t=new Float32Array(a.length),u=new Float32Array(a.length),src=a;
@@ -349,9 +324,13 @@ a{color:var(--link)}
       if(raw){var mp=156543*Math.cos(m.getCenter().lat*Math.PI/180)/Math.pow(2,z);dx=this.options.shiftE*1000/mp;dy=-this.options.shiftN*1000/mp;   // observed radar slid along storm motion
         pad=64+Math.ceil(Math.max(Math.abs(dx),Math.abs(dy)));W=sz.x+2*pad;H=sz.y+2*pad;L.DomUtil.setPosition(cv,m.containerPointToLayerPoint([-pad,-pad]))}
       var pb=m.getPixelBounds(),ns=Math.min(z,raw?10:8),k=Math.pow(2,ns-z),sx=(pb.min.x-pad-dx)*k,sy=(pb.min.y-pad-dy)*k,sw=W*k,sh=H*k,mx=Math.pow(2,ns);
-      var comp=document.createElement("canvas");comp.width=Math.max(1,Math.ceil(sw));comp.height=Math.max(1,Math.ceil(sh));var cc=comp.getContext("2d");
+      var comp=document.createElement("canvas");comp.width=Math.max(1,Math.ceil(sw));comp.height=Math.max(1,Math.ceil(sh));var cc=comp.getContext("2d",{willReadFrequently:true});
       for(var ty=Math.floor(sy/256);ty<=Math.floor((sy+sh)/256);ty++){if(ty<0||ty>=mx)continue;
         for(var tx=Math.floor(sx/256);tx<=Math.floor((sx+sw)/256);tx++){var im=this._tile(ns,((tx%mx)+mx)%mx,ty);if(im)cc.drawImage(im,Math.round(tx*256-sx),Math.round(ty*256-sy))}}
+      if(raw&&this.options.hide){var cd;try{cd=cc.getImageData(0,0,comp.width,comp.height)}catch(e){this.fire("tileerror");return}
+        var pp=cd.data;for(var j=0;j<pp.length;j+=4){if(!pp[j+3])continue;var pr=pp[j],pg2=pp[j+1],pb2=pp[j+2];
+          if((pb2>=pg2-10&&pr<110)||(pr<40&&pg2>235&&pb2<40))pp[j+3]=0}   // drop the light-blue and bright-green (roughly under 25 dBZ) pixels
+        cc.putImageData(cd,0,0)}
       if(raw){if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H}var rg=cv.getContext("2d");rg.clearRect(0,0,W,H);rg.imageSmoothingEnabled=true;rg.drawImage(comp,0,0,sw,sh,0,0,W,H);return}
       var lat=m.getCenter().lat,cos=Math.cos(lat*Math.PI/180),cell=3000/(156543*cos/Math.pow(2,ns)),b=3000/(156543*cos/Math.pow(2,z));
       var ss=Math.max(1,cell/2),sm=document.createElement("canvas");sm.width=Math.max(2,Math.ceil(sw/ss));sm.height=Math.max(2,Math.ceil(sh/ss));
@@ -388,6 +367,43 @@ a{color:var(--link)}
   if(SmoothLayer){(function(){var st=[[0,[120,222,100]],[0.15,[120,222,100]],[0.30,[48,190,62]],[0.42,[16,140,46]],[0.5,[255,226,40]],[0.62,[255,150,30]],[0.78,[232,40,36]],[0.92,[160,20,52]],[1,[160,20,52]]],out=[];
     for(var i=0;i<256;i++){var v=i/255,k=1;while(k<st.length-1&&st[k][0]<v)k++;var a=st[k-1],b=st[k],f=(v-a[0])/((b[0]-a[0])||1);out.push([0,1,2].map(function(j){return Math.round(a[1][j]+(b[1][j]-a[1][j])*f)}))}SmoothLayer.ramp=out})()}
   // SMOOTHLAYER-END
+  var RAD="https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/";
+  function rurl(n){return RAD+n+"/{z}/{x}/{y}.png?b="+Math.floor(Date.now()/300000)}
+  // light, scattered echoes (insects, birds, ground clutter, very faint haze) are hidden by default so only real rain shows; unticking the box shows everything
+  var HIDEF=SMOOTH&&(function(){try{return localStorage.getItem("hf")!=="0"}catch(e){return true}})(),hOk=0,hErr=0;
+  if(HIDEF&&map.attributionControl)map.attributionControl.addAttribution("Radar: NOAA/NWS via Iowa Environmental Mesonet");
+  function radarLayer(n,op){
+    if(!HIDEF)return L.tileLayer(rurl(n),{opacity:op,zIndex:5,rname:n,attribution:"Radar: NOAA/NWS via Iowa Environmental Mesonet"});
+    var l=new SmoothLayer({opacity:op,zIndex:5,raw:true,hide:true,rname:n,shiftE:0,shiftN:0,base:RAD+n+"/"});
+    l.on("tileload",function(){hOk++});
+    l.on("tileerror",function(){hErr++;if(hErr>=12&&hOk===0){try{localStorage.setItem("hf","0")}catch(e){}location.reload()}});   // if the filter cannot read the tiles, go back to the plain radar
+    return l}
+  var cur=radarLayer("nexrad-n0q-900913",0.65).addTo(map),frames=[],timer=null,idx=0;
+  var MOTION=null,fHyb=false,fcst=[],fInit=null,fBuilt=0,fErr=0,fOk=0;
+  function clk(t){return new Date(t).toLocaleTimeString("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"})}
+  function p2(n){return ("0"+n).slice(-2)}
+  function initStr(t){var d=new Date(t);return d.getUTCFullYear()+p2(d.getUTCMonth()+1)+p2(d.getUTCDate())+p2(d.getUTCHours())+"00"}
+  function playLabel(){var ph=window.innerWidth<700;return $("fcst").checked?(ph?"Play loop":"Play past + future"):(ph?"Play loop":"Play last 50 minutes")}
+  function ensureFrames(){if(!frames.length){for(var m=50;m>=5;m-=5){frames.push(radarLayer("nexrad-n0q-900913-m"+(m<10?"0"+m:m)+"m",0).addTo(map))}frames.push(cur)}}
+  function seq(){var out=[],t5=Math.floor(Date.now()/300000)*300000;
+    frames.forEach(function(f,i){out.push(f===cur?{l:cur,t:Date.now(),now:true}:{l:f,t:t5-(50-5*i)*60000})});
+    fcst.forEach(function(f){out.push({l:f.l,t:f.t,fut:true,mod:f.mod})});return out}
+  function stop(){clearTimeout(timer);timer=null;frames.forEach(function(f){f.setOpacity(0)});fcst.forEach(function(f){f.l.setOpacity(0)});cur.setOpacity(0.65);$("play").textContent=playLabel();$("radarTime").textContent="";$("radarTime").className=""}
+  function loopStep(){var q=seq();if(idx>=q.length)idx=0;var it=q[idx];
+    q.forEach(function(x){x.l.setOpacity(x===it?0.65:0)});
+    $("radarTime").textContent=it.fut?(it.mod?"Model forecast ":"Forecast ")+clk(it.t):(it.now?"Now "+clk(it.t):clk(it.t));$("radarTime").className=it.fut?"fut":"";
+    var d=(it.now||idx===q.length-1)?1800:700;idx=(idx+1)%q.length;timer=setTimeout(loopStep,d)}
+  function startLoop(){if(!$("radar").checked){$("radar").checked=true;map.addLayer(cur)}ensureFrames();clearTimeout(timer);$("play").textContent="Stop";idx=0;loopStep()}
+  $("play").onclick=function(){if(timer){stop();return}startLoop()};
+  $("radar").onchange=function(){if(this.checked){map.addLayer(cur)}else{stop();map.removeLayer(cur)}};
+  // ---- future radar: NOAA HRRR model simulated reflectivity via Iowa Mesonet (a forecast, not observed radar) ----
+  function getInit(){
+    var est=Math.floor((Date.now()-50*60000)/3600000)*3600000-3600000;
+    return fetch("https://mesonet.agron.iastate.edu/data/gis/images/4326/hrrr/refd_1080.json",{cache:"no-store"}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){var t=Date.parse(j.model_init_utc);return isFinite(t)?t:est}).catch(function(){return est})}
+  // the model grid is ~3 km, so soften each forecast layer as one piece (no tile seams); blur follows the zoom level
+  function smoothF(){var z=map.getZoom(),c=map.getCenter(),mpp=156543*Math.cos(c.lat*Math.PI/180)/Math.pow(2,z),px=Math.min(40,Math.max(1,3000/mpp*0.17));
+    fcst.forEach(function(f){var e=f.l.getContainer&&f.l.getContainer();if(e&&f.sm){e.style.filter=""}else if(e){e.style.filter="blur("+px.toFixed(1)+"px) saturate(1.7) contrast(1.15)";e.style.imageRendering="auto"}})}
+  map.on("zoomend",smoothF);
   function clearF(){fcst.forEach(function(f){map.removeLayer(f.l)});fcst=[]}
   function failFuture(){clearF();stop();$("fcst").checked=false;try{localStorage.setItem("fc","0")}catch(e){}$("play").textContent=playLabel();$("radarTime").textContent="Future radar unavailable right now";$("radarTime").className="";setTimeout(function(){if(!timer)$("radarTime").textContent=""},8000)}
   function buildFuture(){return getInit().then(function(ini){
@@ -411,9 +427,10 @@ a{color:var(--link)}
     else{stop();clearF()}
     $("play").textContent=timer?"Stop":playLabel()};
   (function(){var want=/[?&#]future/i.test(location.search+location.hash);try{if(localStorage.getItem("fc")==="1")want=true;if(localStorage.getItem("fc")==="0"&&!/[?&#]future/i.test(location.search+location.hash))want=false}catch(e){}
+    $("play").textContent=playLabel();
     if(want){$("fcst").checked=true;$("play").textContent=playLabel();buildFuture().then(function(){if($("fcst").checked&&fcst.length)startLoop()})}})();
   $("storms").onchange=function(){if(this.checked){map.addLayer(warnLayer);map.addLayer(stormLayer)}else{map.removeLayer(warnLayer);map.removeLayer(stormLayer)}};
-  function refreshRadar(){cur.setUrl(rurl(cur.options.rname));frames.forEach(function(f){if(f!==cur)f.setUrl(rurl(f.options.rname))});
+  function refreshRadar(){(frames.length?frames:[cur]).forEach(function(f){if(f.refresh)f.refresh();else f.setUrl(rurl(f.options.rname))});
     if($("fcst").checked&&Date.now()-fBuilt>15*60000)buildFuture()}
 
   // ---- state ----
@@ -730,7 +747,7 @@ a{color:var(--link)}
   document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("[data-detail]");if(a){e.preventDefault();showDetail(+a.dataset.detail)}});
 
   // ---- history ----
-  var hs=$("hs"),hf=$("hf"),ht=$("ht"),SHOW=20;
+  var hs=$("hs"),hf=$("hf"),ht=$("ht"),base=function(){return 20},SHOW=base();
   function fmtDate(d){return new Date(d+"T12:00:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric"})}
   function none(l){return'<td data-l="'+l+'" class="none">&mdash;</td>'}
   // rain value for a period: the radar estimate when logged, otherwise the weather-model value marked with *
@@ -748,7 +765,7 @@ a{color:var(--link)}
       '<tr><td colspan="10" class="none">'+(any?(onlyToday?"No records for today yet. Pick dates above to look at earlier days.":"No records yet. Each day fills in as the morning and afternoon pass."):"No sites are set up for history yet. Add <b>, history</b> to the end of a site&rsquo;s line in sites.txt.")+"</td></tr>";
     $("count").textContent=onlyToday?(rows.length?"Showing "+Math.min(SHOW,rows.length)+" of "+rows.length+" entries for today. Pick dates above to see earlier days.":"Showing today only. Pick dates above to see earlier days."):(rows.length?"Showing "+Math.min(SHOW,rows.length)+" of "+rows.length+" entries":"");
     $("more").hidden=rows.length<=SHOW}
-  [hs,hf,ht].forEach(function(e){e.onchange=function(){SHOW=20;drawHistory()}});
+  [hs,hf,ht].forEach(function(e){e.onchange=function(){SHOW=base();drawHistory()}});
   $("more").onclick=function(){SHOW+=20;drawHistory()};
   var wasNarrow=window.innerWidth<700;
   window.addEventListener("resize",function(){var n=window.innerWidth<700;if(n!==wasNarrow){wasNarrow=n;drawHistory()}});
