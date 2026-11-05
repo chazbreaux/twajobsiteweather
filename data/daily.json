@@ -1820,7 +1820,7 @@
 "temp_12pm_f": 79,
 "model_pm_rain_in": 0.77,
 "pm_conditions": "Rain",
-"pm_rain_in": 0.35,
+"pm_rain_in": 0.34,
 "temp_5pm_f": 74
 },
 {
@@ -1916,7 +1916,7 @@
 "temp_12pm_f": 74,
 "model_pm_rain_in": 0.04,
 "pm_conditions": "Rain",
-"pm_rain_in": 0.17,
+"pm_rain_in": 0.15,
 "temp_5pm_f": 73
 },
 {
@@ -1948,7 +1948,7 @@
 "temp_12pm_f": 75,
 "model_pm_rain_in": 0.0,
 "pm_conditions": "Rain",
-"pm_rain_in": 0.31,
+"pm_rain_in": 0.29,
 "temp_5pm_f": 73
 },
 {
@@ -1957,11 +1957,11 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 60,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Partly cloudy",
 "am_rain_in": 0.0,
-"temp_12pm_f": 75
+"temp_12pm_f": 76
 },
 {
 "date": "2026-11-05",
@@ -1969,11 +1969,11 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 60,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Partly cloudy",
 "am_rain_in": 0.0,
-"temp_12pm_f": 75
+"temp_12pm_f": 76
 },
 {
 "date": "2026-11-05",
@@ -1981,11 +1981,11 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 60,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Partly cloudy",
 "am_rain_in": 0.0,
-"temp_12pm_f": 75
+"temp_12pm_f": 76
 },
 {
 "date": "2026-11-05",
@@ -1993,11 +1993,11 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 60,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Partly cloudy",
 "am_rain_in": 0.0,
-"temp_12pm_f": 75
+"temp_12pm_f": 76
 },
 {
 "date": "2026-11-05",
@@ -2005,11 +2005,11 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 60,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Partly cloudy",
 "am_rain_in": 0.0,
-"temp_12pm_f": 74
+"temp_12pm_f": 76
 },
 {
 "date": "2026-11-05",
@@ -2017,11 +2017,11 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 61,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Partly cloudy",
 "am_rain_in": 0.0,
-"temp_12pm_f": 77
+"temp_12pm_f": 78
 },
 {
 "date": "2026-11-05",
@@ -2029,11 +2029,11 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 61,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Partly cloudy",
 "am_rain_in": 0.0,
-"temp_12pm_f": 77
+"temp_12pm_f": 79
 },
 {
 "date": "2026-11-05",
@@ -2041,11 +2041,11 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 61,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Partly cloudy",
 "am_rain_in": 0.0,
-"temp_12pm_f": 75
+"temp_12pm_f": 77
 },
 {
 "date": "2026-11-05",
@@ -2053,11 +2053,11 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.02,
 "temp_8am_f": 62,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Partly cloudy",
 "am_rain_in": 0.0,
-"temp_12pm_f": 76
+"temp_12pm_f": 78
 },
 {
 "date": "2026-11-05",
@@ -2065,43 +2065,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 61,
-"radar_pending": "am",
-"model_am_rain_in": 0.0,
-"am_conditions": "Sunny",
-"am_rain_in": 0.0,
-"temp_12pm_f": 72
-},
-{
-"date": "2026-11-05",
-"site": "Bexley Road",
-"model_overnight_rain_in": 0.0,
-"overnight_rain_in": 0.03,
-"temp_8am_f": 62,
-"radar_pending": "am",
-"model_am_rain_in": 0.0,
-"am_conditions": "Partly cloudy",
-"am_rain_in": 0.0,
-"temp_12pm_f": 76
-},
-{
-"date": "2026-11-05",
-"site": "Buck Creek Road",
-"model_overnight_rain_in": 0.0,
-"overnight_rain_in": 0.0,
-"temp_8am_f": 60,
-"radar_pending": "am",
-"model_am_rain_in": 0.0,
-"am_conditions": "Sunny",
-"am_rain_in": 0.0,
-"temp_12pm_f": 75
-},
-{
-"date": "2026-11-05",
-"site": "Ellis Odom Bridge",
-"model_overnight_rain_in": 0.0,
-"overnight_rain_in": 0.0,
-"temp_8am_f": 60,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Sunny",
 "am_rain_in": 0.0,
@@ -2109,14 +2073,50 @@
 },
 {
 "date": "2026-11-05",
+"site": "Bexley Road",
+"model_overnight_rain_in": 0.0,
+"overnight_rain_in": 0.03,
+"temp_8am_f": 62,
+"radar_pending": "",
+"model_am_rain_in": 0.0,
+"am_conditions": "Partly cloudy",
+"am_rain_in": 0.0,
+"temp_12pm_f": 79
+},
+{
+"date": "2026-11-05",
+"site": "Buck Creek Road",
+"model_overnight_rain_in": 0.0,
+"overnight_rain_in": 0.0,
+"temp_8am_f": 60,
+"radar_pending": "",
+"model_am_rain_in": 0.0,
+"am_conditions": "Sunny",
+"am_rain_in": 0.0,
+"temp_12pm_f": 76
+},
+{
+"date": "2026-11-05",
+"site": "Ellis Odom Bridge",
+"model_overnight_rain_in": 0.0,
+"overnight_rain_in": 0.0,
+"temp_8am_f": 60,
+"radar_pending": "",
+"model_am_rain_in": 0.0,
+"am_conditions": "Sunny",
+"am_rain_in": 0.0,
+"temp_12pm_f": 76
+},
+{
+"date": "2026-11-05",
 "site": "Hickory Grove Church Bridge",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 60,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Sunny",
 "am_rain_in": 0.0,
-"temp_12pm_f": 75
+"temp_12pm_f": 76
 }
 ]
