@@ -28,6 +28,7 @@ h2{margin:28px 0 10px;font-size:1.3rem}
 @media(max-width:700px){#radarTime{font-size:.78rem;padding:3px 10px;top:6px}}
 #radarTime:empty{display:none}#radarTime.fut{background:#fff1d0;color:#8a4b00}
 .ls{display:none}
+.tg,.bt{display:contents}
 .bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:8px;color:var(--mut);font-size:.92rem}
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(170px*var(--ts,1)),1fr));gap:calc(10px*var(--ts,1));align-content:start;font-size:calc(1em*var(--ts,1))}
 @media (min-width:1100px){
@@ -108,7 +109,7 @@ input[type=date]{min-height:42px}
   .hero{padding:8px 14px 12px}.hero img{height:48px;margin:0 auto}h1{font-size:1.45rem}.clock{display:none}
   .hero .in{flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:4px}
   main{padding:12px 12px 40px}
-  .bar{gap:6px 12px;font-size:.82rem}.bar button{padding:.4em .8em;font-size:.82rem;min-height:0}.lf{display:none}.ls{display:inline}
+  .bar{gap:6px 12px;font-size:.82rem}.bar button{padding:.4em .8em;font-size:.82rem;min-height:0}.lf{display:none}.ls{display:inline}.tg,.bt{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;width:100%}
   #map{flex:none;height:68vh;min-height:420px}#expand,#showall{display:inline-block}
   .cardsite{padding:8px 10px}.cards .cardsite .tmp{font-size:1.4em}.cards .cardsite.mini .tmp{font-size:1.2em}
   .filters{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
@@ -137,12 +138,16 @@ a{color:var(--link)}
     <div class="mapcol">
       <div id="map" role="application" aria-label="Map of job sites with weather"><div id="radarTime" aria-live="off"></div><div class="lg" aria-label="Color key"><span><i style="background:var(--bad)"></i>Warning</span><span><i style="background:var(--acc)"></i>Watch / advisory</span><span><i style="background:var(--rain)"></i>Rain</span><span><i style="background:var(--burn)"></i>Burn ban</span></div></div>
       <div class="bar">
+        <div class="tg">
         <label style="margin:0"><input type="checkbox" id="radar" checked style="width:auto"> Rain radar</label>
         <label style="margin:0"><input type="checkbox" id="fcst" style="width:auto"> <span class="lf">Future radar (next 90 min)</span><span class="ls">Future radar</span></label>
         <label style="margin:0"><input type="checkbox" id="storms" checked style="width:auto"> <span class="lf">Storm tracks &amp; warnings</span><span class="ls">Storm tracks</span></label>
+        </div>
+        <div class="bt">
         <button id="play">Play last 50 minutes</button>
         <button id="expand">Expand map</button>
         <button id="showall">Show all sites</button>
+        </div>
       </div>
     </div>
     <div class="cards" id="cards"></div>
@@ -303,6 +308,7 @@ a{color:var(--link)}
     onRemove:function(m){m.off("moveend zoomend resize",this._draw,this);L.DomUtil.remove(this._cv);this._cv=null},
     getContainer:function(){return this._cv},
     refresh:function(){this._im={};this._draw()},
+    _int:function(a,w,h){var s=new Int32Array((w+1)*(h+1));for(var y=0;y<h;y++){var row=0;for(var x=0;x<w;x++){row+=a[y*w+x];s[(y+1)*(w+1)+x+1]=s[y*(w+1)+x+1]+row}}return s},
     setOpacity:function(o){this._op=o;if(this._cv)this._cv.style.opacity=o;return this},
     _soon:function(){var me=this;if(me._q)return;me._q=setTimeout(function(){me._q=0;me._draw()},80)},
     _tile:function(z,x,y){var k=z+"/"+x+"/"+y,im=this._im[k],me=this;
@@ -330,6 +336,15 @@ a{color:var(--link)}
       if(raw&&this.options.hide){var cd;try{cd=cc.getImageData(0,0,comp.width,comp.height)}catch(e){this.fire("tileerror");return}
         var pp=cd.data;for(var j=0;j<pp.length;j+=4){if(!pp[j+3])continue;var pr=pp[j],pg2=pp[j+1],pb2=pp[j+2];
           if((pb2>=pg2-10&&pr<110)||(pr<40&&pg2>235&&pb2<40))pp[j+3]=0}   // drop the light-blue and bright-green (roughly under 25 dBZ) pixels
+        // coherent rain is solid; leftover noise is grainy, so clumps smaller than a few radar pixels are removed (strong echoes are always kept)
+        var cw=comp.width,ch=comp.height,rr=Math.max(1,Math.round(1000/(156543*Math.cos(m.getCenter().lat*Math.PI/180)/Math.pow(2,ns))*1.2)),op=new Uint8Array(cw*ch);
+        for(var u=0;u<op.length;u++)op[u]=pp[u*4+3]?1:0;
+        var S=this._int(op,cw,ch),er=new Uint8Array(cw*ch),x0,x1,y0,y1,xx,yy;
+        for(yy=0;yy<ch;yy++){y0=Math.max(0,yy-rr);y1=Math.min(ch-1,yy+rr);for(xx=0;xx<cw;xx++){x0=Math.max(0,xx-rr);x1=Math.min(cw-1,xx+rr);
+          er[yy*cw+xx]=(S[(y1+1)*(cw+1)+x1+1]-S[y0*(cw+1)+x1+1]-S[(y1+1)*(cw+1)+x0]+S[y0*(cw+1)+x0])===(x1-x0+1)*(y1-y0+1)?1:0}}
+        var S2=this._int(er,cw,ch);
+        for(yy=0;yy<ch;yy++){y0=Math.max(0,yy-rr);y1=Math.min(ch-1,yy+rr);for(xx=0;xx<cw;xx++){var q9=yy*cw+xx;if(!op[q9]||pp[q9*4]>=150)continue;x0=Math.max(0,xx-rr);x1=Math.min(cw-1,xx+rr);
+          if((S2[(y1+1)*(cw+1)+x1+1]-S2[y0*(cw+1)+x1+1]-S2[(y1+1)*(cw+1)+x0]+S2[y0*(cw+1)+x0])===0)pp[q9*4+3]=0}}
         cc.putImageData(cd,0,0)}
       if(raw){if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H}var rg=cv.getContext("2d");rg.clearRect(0,0,W,H);rg.imageSmoothingEnabled=true;rg.drawImage(comp,0,0,sw,sh,0,0,W,H);return}
       var lat=m.getCenter().lat,cos=Math.cos(lat*Math.PI/180),cell=3000/(156543*cos/Math.pow(2,ns)),b=3000/(156543*cos/Math.pow(2,z));
@@ -411,7 +426,7 @@ a{color:var(--link)}
     clearF();fInit=ini;fBuilt=Date.now();fErr=0;fOk=0;var bid=++fBuild;
     var t5=Math.floor(Date.now()/300000)*300000;
     fHyb=!!(SMOOTH&&MOTION);
-    if(fHyb){[15,30,45,60,75,90].forEach(function(o){var l=new SmoothLayer({opacity:0,zIndex:5,raw:true,base:RAD+"nexrad-n0q-900913/",shiftE:MOTION.e*1.852*o/60,shiftN:MOTION.n*1.852*o/60});
+    if(fHyb){[15,30,45,60,75,90].forEach(function(o){var l=new SmoothLayer({opacity:0,zIndex:5,raw:true,hide:HIDEF,base:RAD+"nexrad-n0q-900913/",shiftE:MOTION.e*1.852*o/60,shiftN:MOTION.n*1.852*o/60});
       l.on("tileload",function(){if(bid===fBuild)fOk++});l.on("tileerror",function(){if(bid!==fBuild)return;fErr++;if(fErr>=12&&fOk===0&&$("fcst").checked)failFuture()});
       l.addTo(map);fcst.push({l:l,t:t5+o*60000,sm:true})})}
     (fHyb?[]:[15,30,45,60,75,90]).forEach(function(o){var v=t5+o*60000,fm=Math.round((v-ini)/900000)*15;if(fm<0||fm>1080)return;
