@@ -390,13 +390,13 @@ a{color:var(--link)}
   var RAD="https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/";
   function rurl(n){return RAD+n+"/{z}/{x}/{y}.png?b="+Math.floor(Date.now()/300000)}
   // light, scattered echoes (insects, birds, ground clutter, very faint haze) are hidden by default so only real rain shows; unticking the box shows everything
-  var HIDEF=SMOOTH&&(function(){try{return localStorage.getItem("hf")!=="0"}catch(e){return true}})(),hOk=0,hErr=0;
+  var HIDEF=SMOOTH&&(function(){try{var t=parseInt(localStorage.getItem("hf0"),10);return !(t&&Date.now()-t<10*60000)}catch(e){return true}})(),hOk=0,hErr=0;
   if(HIDEF&&map.attributionControl)map.attributionControl.addAttribution("Radar: NOAA/NWS via Iowa Environmental Mesonet");
   function radarLayer(n,op){
     if(!HIDEF)return L.tileLayer(rurl(n),{opacity:op,zIndex:5,rname:n,attribution:"Radar: NOAA/NWS via Iowa Environmental Mesonet"});
     var l=new SmoothLayer({opacity:op,zIndex:5,raw:true,hide:true,rname:n,shiftE:0,shiftN:0,base:RAD+n+"/"});
     l.on("tileload",function(){hOk++});
-    l.on("tileerror",function(){hErr++;if(hErr>=12&&hOk===0){try{localStorage.setItem("hf","0")}catch(e){}location.reload()}});   // if the filter cannot read the tiles, go back to the plain radar
+    l.on("tileerror",function(){hErr++;if(hErr>=12&&hOk===0){try{localStorage.setItem("hf0",String(Date.now()))}catch(e){}location.reload()}});   // if the filter cannot read the tiles, go back to the plain radar
     return l}
   var cur=radarLayer("nexrad-n0q-900913",0.65).addTo(map),frames=[],timer=null,idx=0;
   var MOTION=null,fHyb=false,fcst=[],fInit=null,fBuilt=0,fErr=0,fOk=0;
