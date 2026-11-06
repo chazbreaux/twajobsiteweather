@@ -116,7 +116,7 @@ date,site,overnight_rain_in,temp_8am_f,am_conditions,am_rain_in,temp_12pm_f,pm_c
 2026-11-04,131-24.04 Site C,0.0,72,Cloudy,0.0,79,Rain,0.32,74,,,0.0,0.04,0.06
 2026-11-04,131-24.04 Site D,0.0,72,Rain,0.01,81,Rain,0.22,73,,,0.0,0.0,1.95
 2026-11-04,131-24.07 St. Ellen,0.0,73,Rain,0.01,80,Rain,0.45,75,,,0.0,0.0,0.1
-2026-11-04,162-19A Perry Industrial Bridge,0.01,74,Cloudy,0.0,76,Rain,0.18,73,,,0.0,0.2,0.03
+2026-11-04,162-19A Perry Industrial Bridge,0.02,74,Cloudy,0.0,76,Rain,0.18,73,,,0.0,0.2,0.03
 2026-11-04,Bexley Road,0.0,74,Rain,0.01,80,Rain,0.31,75,,,0.0,0.0,0.09
 2026-11-04,Buck Creek Road,0.01,74,Rain,0.01,74,Rain,0.17,73,,,0.0,0.0,0.04
 2026-11-04,Ellis Odom Bridge,0.01,73,Rain,0.14,77,Rain,0.05,73,,,0.0,0.3,0.0
@@ -135,17 +135,17 @@ date,site,overnight_rain_in,temp_8am_f,am_conditions,am_rain_in,temp_12pm_f,pm_c
 2026-11-05,Buck Creek Road,0.0,60,Sunny,0.0,76,Sunny,0.0,75,,,0.0,0.0,0.0
 2026-11-05,Ellis Odom Bridge,0.0,60,Sunny,0.0,76,Sunny,0.0,73,,,0.0,0.0,0.0
 2026-11-05,Hickory Grove Church Bridge,0.0,60,Sunny,0.0,76,Sunny,0.0,75,,,0.0,0.0,0.0
-2026-11-06,112-25 Site A,0.0,58,,,,,,,,,0.0,,
-2026-11-06,112-25 Site B,0.0,58,,,,,,,,,0.0,,
-2026-11-06,131-24.03 Site A,0.0,61,,,,,,,,,0.0,,
-2026-11-06,131-24.03 Site B,0.0,61,,,,,,,,,0.0,,
-2026-11-06,131-24.03 Site C,0.0,61,,,,,,,,,0.0,,
-2026-11-06,131-24.04 Site A,0.0,62,,,,,,,,,0.0,,
-2026-11-06,131-24.04 Site C,0.0,61,,,,,,,,,0.0,,
-2026-11-06,131-24.04 Site D,0.0,59,,,,,,,,,0.0,,
-2026-11-06,131-24.07 St. Ellen,0.0,61,,,,,,,,,0.0,,
-2026-11-06,162-19A Perry Industrial Bridge,0.0,60,,,,,,,,,0.0,,
-2026-11-06,Bexley Road,0.0,61,,,,,,,,,0.0,,
-2026-11-06,Buck Creek Road,0.0,60,,,,,,,,,0.0,,
-2026-11-06,Ellis Odom Bridge,0.0,59,,,,,,,,,0.0,,
-2026-11-06,Hickory Grove Church Bridge,0.0,60,,,,,,,,,0.0,,
+2026-11-06,112-25 Site A,0.0,58,Partly cloudy,0.0,75,,,,am,,0.0,0.0,
+2026-11-06,112-25 Site B,0.0,58,Partly cloudy,0.0,75,,,,am,,0.0,0.0,
+2026-11-06,131-24.03 Site A,0.0,61,Partly cloudy,0.0,77,,,,am,,0.0,0.0,
+2026-11-06,131-24.03 Site B,0.0,61,Partly cloudy,0.0,76,,,,am,,0.0,0.0,
+2026-11-06,131-24.03 Site C,0.0,61,Partly cloudy,0.0,76,,,,am,,0.0,0.0,
+2026-11-06,131-24.04 Site A,0.0,62,Partly cloudy,0.0,77,,,,am,,0.0,0.0,
+2026-11-06,131-24.04 Site C,0.0,61,Partly cloudy,0.0,76,,,,am,,0.0,0.0,
+2026-11-06,131-24.04 Site D,0.0,59,Partly cloudy,0.0,75,,,,am,,0.0,0.0,
+2026-11-06,131-24.07 St. Ellen,0.0,61,Partly cloudy,0.0,76,,,,am,,0.0,0.0,
+2026-11-06,162-19A Perry Industrial Bridge,0.0,60,Partly cloudy,0.0,75,,,,am,,0.0,0.0,
+2026-11-06,Bexley Road,0.0,61,Partly cloudy,0.0,76,,,,am,,0.0,0.0,
+2026-11-06,Buck Creek Road,0.0,60,Partly cloudy,0.0,77,,,,am,,0.0,0.0,
+2026-11-06,Ellis Odom Bridge,0.0,59,Partly cloudy,0.0,75,,,,am,,0.0,0.0,
+2026-11-06,Hickory Grove Church Bridge,0.0,60,Partly cloudy,0.0,76,,,,am,,0.0,0.0,
