@@ -2405,7 +2405,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 55,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Partly cloudy",
 "am_rain_in": 0.0,
@@ -2417,7 +2417,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 55,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Partly cloudy",
 "am_rain_in": 0.0,
@@ -2429,11 +2429,11 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 56,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Partly cloudy",
 "am_rain_in": 0.0,
-"temp_12pm_f": 67
+"temp_12pm_f": 68
 },
 {
 "date": "2026-11-07",
@@ -2441,7 +2441,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 56,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Partly cloudy",
 "am_rain_in": 0.0,
@@ -2453,11 +2453,11 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 55,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Partly cloudy",
 "am_rain_in": 0.0,
-"temp_12pm_f": 66
+"temp_12pm_f": 67
 },
 {
 "date": "2026-11-07",
@@ -2465,7 +2465,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 56,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Partly cloudy",
 "am_rain_in": 0.0,
@@ -2477,11 +2477,11 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 56,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Partly cloudy",
 "am_rain_in": 0.0,
-"temp_12pm_f": 67
+"temp_12pm_f": 68
 },
 {
 "date": "2026-11-07",
@@ -2489,11 +2489,11 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 55,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
-"am_conditions": "Cloudy",
+"am_conditions": "Partly cloudy",
 "am_rain_in": 0.0,
-"temp_12pm_f": 65
+"temp_12pm_f": 66
 },
 {
 "date": "2026-11-07",
@@ -2501,7 +2501,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 56,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Partly cloudy",
 "am_rain_in": 0.0,
@@ -2513,7 +2513,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 56,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Partly cloudy",
 "am_rain_in": 0.0,
@@ -2525,7 +2525,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 56,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Partly cloudy",
 "am_rain_in": 0.0,
@@ -2537,11 +2537,11 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 56,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Partly cloudy",
 "am_rain_in": 0.0,
-"temp_12pm_f": 67
+"temp_12pm_f": 68
 },
 {
 "date": "2026-11-07",
@@ -2549,11 +2549,11 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 55,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Partly cloudy",
 "am_rain_in": 0.0,
-"temp_12pm_f": 66
+"temp_12pm_f": 67
 },
 {
 "date": "2026-11-07",
@@ -2561,10 +2561,10 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 56,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
-"am_conditions": "Cloudy",
+"am_conditions": "Partly cloudy",
 "am_rain_in": 0.0,
-"temp_12pm_f": 67
+"temp_12pm_f": 68
 }
 ]
