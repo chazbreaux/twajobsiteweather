@@ -3077,11 +3077,15 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 57,
-"radar_pending": "",
+"radar_pending": "pm",
 "model_am_rain_in": 0.0,
 "am_conditions": "Sunny",
 "am_rain_in": 0.0,
-"temp_12pm_f": 77
+"temp_12pm_f": 77,
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 72
 },
 {
 "date": "2026-11-10",
@@ -3089,11 +3093,15 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 57,
-"radar_pending": "",
+"radar_pending": "pm",
 "model_am_rain_in": 0.0,
 "am_conditions": "Sunny",
 "am_rain_in": 0.0,
-"temp_12pm_f": 77
+"temp_12pm_f": 77,
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 72
 },
 {
 "date": "2026-11-10",
@@ -3101,11 +3109,15 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 59,
-"radar_pending": "",
+"radar_pending": "pm",
 "model_am_rain_in": 0.0,
 "am_conditions": "Sunny",
 "am_rain_in": 0.0,
-"temp_12pm_f": 78
+"temp_12pm_f": 78,
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 75
 },
 {
 "date": "2026-11-10",
@@ -3113,11 +3125,15 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 59,
-"radar_pending": "",
+"radar_pending": "pm",
 "model_am_rain_in": 0.0,
 "am_conditions": "Sunny",
 "am_rain_in": 0.0,
-"temp_12pm_f": 78
+"temp_12pm_f": 78,
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 75
 },
 {
 "date": "2026-11-10",
@@ -3125,11 +3141,15 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 59,
-"radar_pending": "",
+"radar_pending": "pm",
 "model_am_rain_in": 0.0,
 "am_conditions": "Sunny",
 "am_rain_in": 0.0,
-"temp_12pm_f": 78
+"temp_12pm_f": 78,
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 74
 },
 {
 "date": "2026-11-10",
@@ -3137,11 +3157,15 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 59,
-"radar_pending": "",
+"radar_pending": "pm",
 "model_am_rain_in": 0.0,
 "am_conditions": "Sunny",
 "am_rain_in": 0.0,
-"temp_12pm_f": 79
+"temp_12pm_f": 79,
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 75
 },
 {
 "date": "2026-11-10",
@@ -3149,11 +3173,15 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 58,
-"radar_pending": "",
+"radar_pending": "pm",
 "model_am_rain_in": 0.0,
 "am_conditions": "Sunny",
 "am_rain_in": 0.0,
-"temp_12pm_f": 79
+"temp_12pm_f": 79,
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 74
 },
 {
 "date": "2026-11-10",
@@ -3161,11 +3189,15 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 57,
-"radar_pending": "",
+"radar_pending": "pm",
 "model_am_rain_in": 0.0,
 "am_conditions": "Sunny",
 "am_rain_in": 0.0,
-"temp_12pm_f": 76
+"temp_12pm_f": 76,
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 72
 },
 {
 "date": "2026-11-10",
@@ -3173,11 +3205,15 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 58,
-"radar_pending": "",
+"radar_pending": "pm",
 "model_am_rain_in": 0.0,
 "am_conditions": "Sunny",
 "am_rain_in": 0.0,
-"temp_12pm_f": 78
+"temp_12pm_f": 78,
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 74
 },
 {
 "date": "2026-11-10",
@@ -3185,11 +3221,15 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 57,
-"radar_pending": "",
+"radar_pending": "pm",
 "model_am_rain_in": 0.0,
 "am_conditions": "Sunny",
 "am_rain_in": 0.0,
-"temp_12pm_f": 76
+"temp_12pm_f": 76,
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 73
 },
 {
 "date": "2026-11-10",
@@ -3197,11 +3237,15 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 58,
-"radar_pending": "",
+"radar_pending": "pm",
 "model_am_rain_in": 0.0,
 "am_conditions": "Sunny",
 "am_rain_in": 0.0,
-"temp_12pm_f": 77
+"temp_12pm_f": 77,
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 74
 },
 {
 "date": "2026-11-10",
@@ -3209,11 +3253,15 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 58,
-"radar_pending": "",
+"radar_pending": "pm",
 "model_am_rain_in": 0.0,
 "am_conditions": "Sunny",
 "am_rain_in": 0.0,
-"temp_12pm_f": 78
+"temp_12pm_f": 78,
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 74
 },
 {
 "date": "2026-11-10",
@@ -3221,11 +3269,15 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 58,
-"radar_pending": "",
+"radar_pending": "pm",
 "model_am_rain_in": 0.0,
 "am_conditions": "Sunny",
 "am_rain_in": 0.0,
-"temp_12pm_f": 77
+"temp_12pm_f": 77,
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 73
 },
 {
 "date": "2026-11-10",
@@ -3233,10 +3285,14 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 59,
-"radar_pending": "",
+"radar_pending": "pm",
 "model_am_rain_in": 0.0,
 "am_conditions": "Sunny",
 "am_rain_in": 0.0,
-"temp_12pm_f": 78
+"temp_12pm_f": 78,
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 74
 }
 ]
