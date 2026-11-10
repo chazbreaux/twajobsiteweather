@@ -3076,7 +3076,7 @@
 "site": "112-25 Site A",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 56,
+"temp_8am_f": 57,
 "radar_pending": "overnight"
 },
 {
@@ -3084,7 +3084,7 @@
 "site": "112-25 Site B",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 56,
+"temp_8am_f": 57,
 "radar_pending": "overnight"
 },
 {
@@ -3092,7 +3092,7 @@
 "site": "131-24.03 Site A",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 58,
+"temp_8am_f": 59,
 "radar_pending": "overnight"
 },
 {
@@ -3100,7 +3100,7 @@
 "site": "131-24.03 Site B",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 58,
+"temp_8am_f": 60,
 "radar_pending": "overnight"
 },
 {
@@ -3108,7 +3108,7 @@
 "site": "131-24.03 Site C",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 58,
+"temp_8am_f": 59,
 "radar_pending": "overnight"
 },
 {
@@ -3116,7 +3116,7 @@
 "site": "131-24.04 Site A",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 59,
+"temp_8am_f": 60,
 "radar_pending": "overnight"
 },
 {
@@ -3132,7 +3132,7 @@
 "site": "131-24.04 Site D",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 56,
+"temp_8am_f": 57,
 "radar_pending": "overnight"
 },
 {
@@ -3140,7 +3140,7 @@
 "site": "131-24.07 St. Ellen",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 57,
+"temp_8am_f": 58,
 "radar_pending": "overnight"
 },
 {
@@ -3156,7 +3156,7 @@
 "site": "Bexley Road",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 57,
+"temp_8am_f": 58,
 "radar_pending": "overnight"
 },
 {
@@ -3180,7 +3180,7 @@
 "site": "Hickory Grove Church Bridge",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 58,
+"temp_8am_f": 59,
 "radar_pending": "overnight"
 }
 ]
