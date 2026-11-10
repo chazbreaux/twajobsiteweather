@@ -3077,7 +3077,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 57,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-10",
@@ -3085,7 +3085,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 57,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-10",
@@ -3093,15 +3093,15 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 59,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-10",
 "site": "131-24.03 Site B",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 60,
-"radar_pending": "overnight"
+"temp_8am_f": 59,
+"radar_pending": ""
 },
 {
 "date": "2026-11-10",
@@ -3109,15 +3109,15 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 59,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-10",
 "site": "131-24.04 Site A",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 60,
-"radar_pending": "overnight"
+"temp_8am_f": 59,
+"radar_pending": ""
 },
 {
 "date": "2026-11-10",
@@ -3125,7 +3125,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 58,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-10",
@@ -3133,7 +3133,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 57,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-10",
@@ -3141,7 +3141,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 58,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-10",
@@ -3149,7 +3149,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 57,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-10",
@@ -3157,7 +3157,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 58,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-10",
@@ -3165,7 +3165,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 58,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-10",
@@ -3173,7 +3173,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 58,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-10",
@@ -3181,6 +3181,6 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 59,
-"radar_pending": "overnight"
+"radar_pending": ""
 }
 ]
