@@ -126,7 +126,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
     tot=Math.round(tot*100)/100;
     var past=0;for(i=1;i<=N;i++){if(key+"-"+p2(i)<=td)past++}
     var s=SITES.filter(function(x){return x.name===site})[0],proj=s&&s.project?s.project:"";
-    var head='<div class="hd"><img src="logo.png" alt="" onerror="this.style.display=\'none\'"><div class="tt"><b>Daily Weather Record</b></div><div class="st"><b>'+esc(site)+'</b><span>'+MON[m-1]+" "+y+(proj?" &middot; "+esc(proj):"")+"</span></div></div>";
+    var head='<div class="hd"><img src="logo-blue.png" alt="" onerror="this.style.display=\'none\'"><div class="tt"><b>Daily Weather Record</b></div><div class="st"><b>'+esc(site)+'</b><span>'+MON[m-1]+" "+y+(proj?" &middot; "+esc(proj):"")+"</span></div></div>";
     var legend='<div class="lg">Rain shading:<span style="background:#fff"></span>none<span class="r1"></span>0.01&ndash;0.09<span class="r2"></span>0.10&ndash;0.49<span class="r3"></span>0.50&ndash;0.99<span class="r4"></span>1.00+</div>';
     var note='<p>Rain in inches &nbsp;&middot;&nbsp; Temperatures (&deg;F) at 8 AM &middot; 12 PM &middot; 5 PM</p>';
     var foot=function(pg){return'<div class="ft">'+legend+note+"</div>"};
