@@ -3301,11 +3301,11 @@
 "model_overnight_rain_in": 0.04,
 "overnight_rain_in": 0.02,
 "temp_8am_f": 58,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Rain",
-"am_rain_in": 0.04,
-"temp_12pm_f": 68
+"am_rain_in": 0.06,
+"temp_12pm_f": 69
 },
 {
 "date": "2026-11-11",
@@ -3313,11 +3313,11 @@
 "model_overnight_rain_in": 0.04,
 "overnight_rain_in": 0.02,
 "temp_8am_f": 58,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Rain",
-"am_rain_in": 0.04,
-"temp_12pm_f": 67
+"am_rain_in": 0.06,
+"temp_12pm_f": 69
 },
 {
 "date": "2026-11-11",
@@ -3325,11 +3325,11 @@
 "model_overnight_rain_in": 0.04,
 "overnight_rain_in": 0.02,
 "temp_8am_f": 60,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Rain",
-"am_rain_in": 0.03,
-"temp_12pm_f": 72
+"am_rain_in": 0.05,
+"temp_12pm_f": 73
 },
 {
 "date": "2026-11-11",
@@ -3337,23 +3337,23 @@
 "model_overnight_rain_in": 0.02,
 "overnight_rain_in": 0.02,
 "temp_8am_f": 60,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Rain",
-"am_rain_in": 0.04,
-"temp_12pm_f": 71
+"am_rain_in": 0.08,
+"temp_12pm_f": 72
 },
 {
 "date": "2026-11-11",
 "site": "131-24.03 Site C",
 "model_overnight_rain_in": 0.0,
-"overnight_rain_in": 0.02,
+"overnight_rain_in": 0.03,
 "temp_8am_f": 59,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Rain",
-"am_rain_in": 0.03,
-"temp_12pm_f": 69
+"am_rain_in": 0.06,
+"temp_12pm_f": 70
 },
 {
 "date": "2026-11-11",
@@ -3361,11 +3361,11 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 62,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
-"temp_12pm_f": 74
+"temp_12pm_f": 75
 },
 {
 "date": "2026-11-11",
@@ -3373,23 +3373,23 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 59,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
-"temp_12pm_f": 72
+"temp_12pm_f": 73
 },
 {
 "date": "2026-11-11",
 "site": "131-24.04 Site D",
 "model_overnight_rain_in": 0.13,
-"overnight_rain_in": 0.01,
+"overnight_rain_in": 0.02,
 "temp_8am_f": 59,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Rain",
 "am_rain_in": 0.07,
-"temp_12pm_f": 67
+"temp_12pm_f": 69
 },
 {
 "date": "2026-11-11",
@@ -3397,11 +3397,11 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 62,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
-"temp_12pm_f": 74
+"temp_12pm_f": 75
 },
 {
 "date": "2026-11-11",
@@ -3409,11 +3409,11 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.01,
 "temp_8am_f": 60,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
-"temp_12pm_f": 72
+"temp_12pm_f": 75
 },
 {
 "date": "2026-11-11",
@@ -3421,7 +3421,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 62,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
@@ -3433,23 +3433,23 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.01,
 "temp_8am_f": 60,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
-"temp_12pm_f": 73
+"temp_12pm_f": 78
 },
 {
 "date": "2026-11-11",
 "site": "Ellis Odom Bridge",
 "model_overnight_rain_in": 0.03,
-"overnight_rain_in": 0.04,
+"overnight_rain_in": 0.05,
 "temp_8am_f": 59,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.03,
 "am_conditions": "Rain",
-"am_rain_in": 0.05,
-"temp_12pm_f": 70
+"am_rain_in": 0.06,
+"temp_12pm_f": 72
 },
 {
 "date": "2026-11-11",
@@ -3457,10 +3457,10 @@
 "model_overnight_rain_in": 0.02,
 "overnight_rain_in": 0.02,
 "temp_8am_f": 61,
-"radar_pending": "am",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
-"temp_12pm_f": 73
+"temp_12pm_f": 75
 }
 ]
