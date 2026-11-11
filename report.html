@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monthly Weather Reports</title>
+<style>
+:root{--ink:#14213d;--mut:#5b6577;--line:#b9c0cc;--brand:#0f3a6d;--gold:#f5a800;--bg:#e9edf3}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+/* ---------- screen controls ---------- */
+.ctl{background:var(--brand);color:#fff;padding:14px 16px;border-bottom:4px solid var(--gold)}
+.ctl h1{margin:0 0 8px;font-size:1.15rem}
+.row{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end}
+.row label{display:flex;flex-direction:column;font-size:.78rem;gap:3px}
+.row select,.row button{font:inherit;font-size:1rem;padding:8px 10px;border-radius:6px;border:1px solid #9fb2cc;background:#fff;color:#14213d;min-height:40px}
+.row button{background:var(--gold);border-color:var(--gold);font-weight:700;cursor:pointer}
+.row a{color:#cfe0f7;font-size:.9rem;align-self:center}
+.hint{margin:10px 0 0;font-size:.85rem;color:#cfe0f7;line-height:1.35}
+.msg{padding:18px 16px;font-size:1rem}
+.papers{padding:14px 0 30px;display:flex;flex-direction:column;align-items:center;gap:16px}
+/* ---------- the printed sheet ---------- */
+.sheet{width:10.2in;background:#fff;color:#111;box-shadow:0 2px 10px rgba(0,0,0,.25);padding:.25in .3in .2in;display:flex;flex-direction:column;height:7.7in;overflow:hidden;font-size:9pt}
+.hd{display:flex;align-items:center;gap:.15in;border-bottom:2.5pt solid var(--brand);padding-bottom:.07in}
+.hd img{height:.5in;width:auto}
+.hd .tt{flex:1}
+.hd .tt b{display:block;font-size:10pt;letter-spacing:.04em;text-transform:uppercase;color:var(--brand)}
+.hd .tt span{font-size:8pt;color:#555}
+.hd .st{text-align:right}
+.hd .st b{display:block;font-size:17pt;line-height:1.05}
+.hd .st span{font-size:11pt;font-weight:600;color:var(--brand)}
+.sum{display:flex;gap:.08in;margin:.08in 0}
+.sum div{flex:1;border:.75pt solid #9aa3b2;border-radius:3pt;padding:.04in .08in}
+.sum small{display:block;font-size:6.5pt;text-transform:uppercase;letter-spacing:.05em;color:#555}
+.sum b{font-size:12.5pt}
+.sum i{font-style:normal;font-size:7pt;color:#555;display:block}
+.wk{display:grid;grid-template-columns:repeat(7,1fr);gap:0}
+.wk div{background:var(--brand);color:#fff;text-align:center;font-size:7.5pt;font-weight:700;padding:.025in 0;letter-spacing:.06em;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);flex:1;min-height:0;border-left:.75pt solid #9aa3b2;border-top:.75pt solid #9aa3b2}
+.cell{border-right:.75pt solid #9aa3b2;border-bottom:.75pt solid #9aa3b2;padding:.03in .05in;display:flex;flex-direction:column;position:relative;min-height:0;overflow:hidden}
+.cell.out{background:#f1f1f1;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.cell .dn{font-size:8pt;font-weight:700;color:#444}
+.cell .rn{font-size:15pt;font-weight:800;text-align:center;margin-top:.01in;line-height:1.1}
+.cell .rn u{text-decoration:none;font-size:8pt;font-weight:600;margin-left:1pt}
+.cell .tp{font-size:7pt;text-align:center;color:#222;margin-top:auto}
+.cell .cd{font-size:6.5pt;text-align:center;color:#555;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cell .no{font-size:10pt;text-align:center;color:#999;margin-top:.1in}
+.r1{background:#e6eef9}.r2{background:#bcd3ef}.r3{background:#85aedf}.r4{background:#4d85c9;color:#fff}
+.r1,.r2,.r3,.r4{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.r4 .dn,.r4 .tp,.r4 .cd{color:#fff}
+.ft{margin-top:.07in;display:flex;gap:.2in;font-size:6.6pt;color:#444;line-height:1.3}
+.ft .lg{white-space:nowrap}
+.ft .lg span{display:inline-block;width:.16in;height:.1in;border:.5pt solid #777;vertical-align:-1pt;margin:0 2pt 0 5pt;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.ft p{margin:0}
+.pg{margin-left:auto;white-space:nowrap}
+/* detail table page */
+.dt{width:100%;border-collapse:collapse;font-size:7.6pt;flex:1}
+.dt th{background:var(--brand);color:#fff;padding:2pt 4pt;text-align:center;font-size:7pt;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.dt td{border-bottom:.5pt solid #c3c9d4;padding:.5pt 4pt;text-align:center;line-height:1.15}
+.dt td.l,.dt th.l{text-align:left}
+.dt tr.tot td{border-top:1.5pt solid #111;font-weight:800;background:#eef2f8;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.dt tr.wet td.t{font-weight:800}
+.dt .na{color:#999}
+.dtwrap{flex:1;min-height:0;display:flex;flex-direction:column}
+@media print{
+  @page{size:letter landscape;margin:.4in}
+  html,body{background:#fff}
+  .noprint{display:none!important}
+  .papers{padding:0;display:block;zoom:1!important}
+  .sheet{box-shadow:none;margin:0;width:10.2in;height:7.7in;break-after:page;page-break-after:always;padding:0}
+  .sheet:last-child{break-after:auto;page-break-after:auto}
+}
+</style>
+</head>
+<body>
+<div class="ctl noprint">
+  <h1>Monthly Weather Reports</h1>
+  <div class="row">
+    <label>Month<select id="mon"></select></label>
+    <label>Site<select id="site"></select></label>
+    <button id="print">Print / Save as PDF</button>
+    <a href="./">Back to dashboard</a>
+  </div>
+  <p class="hint">Each site gets two landscape pages: a calendar and a day-by-day table. Pick &ldquo;All sites&rdquo; to print one set per site. In the print window choose <b>Letter, Landscape</b> and turn on <b>Background graphics</b> so the rain shading prints.</p>
+</div>
+<div id="msg" class="msg noprint"></div>
+<div id="papers" class="papers"></div>
+
+<script>
+(function(){
+  var MON=["January","February","March","April","May","June","July","August","September","October","November","December"];
+  var DOW=["SUN","MON","TUE","WED","THU","FRI","SAT"];
+  var READ=[],SITES=[],$=function(i){return document.getElementById(i)};
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function p2(n){return(n<10?"0":"")+n}
+  function nat(a,b){a=String(a).trim();b=String(b).trim();var ka=/^\d/.test(a)?1:0,kb=/^\d/.test(b)?1:0;return ka!==kb?ka-kb:a.localeCompare(b,undefined,{numeric:true,sensitivity:"base"})}
+  function today(){var d=new Date(new Date().toLocaleString("en-US",{timeZone:"America/Chicago"}));return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate())}
+  function dim(y,m){return new Date(Date.UTC(y,m,0)).getUTCDate()}      // m is 1-12
+  function dow(y,m,d){return new Date(Date.UTC(y,m-1,d)).getUTCDay()}
+  function get(u,json){return fetch(u,{cache:"no-store"}).then(function(r){if(!r.ok)throw 0;return json?r.json():r.text()})}
+
+  // same rule as the dashboard: radar value if there is one, else the weather-model value (marked *)
+  function rainOf(r,k,mk,per){return r[k]!=null?{v:r[k],m:false,p:(r.radar_pending||"").split(",").indexOf(per)>=0}:(r[mk]!=null?{v:r[mk],m:true,p:false}:null)}
+  function day(r,isToday){
+    if(!r)return null;
+    var parts=[rainOf(r,"overnight_rain_in","model_overnight_rain_in","overnight"),rainOf(r,"am_rain_in","model_am_rain_in","am"),rainOf(r,"pm_rain_in","model_pm_rain_in","pm")];
+    var have=parts.filter(Boolean),tot=have.reduce(function(s,x){return s+x.v},0);
+    return{parts:parts,n:have.length,tot:Math.round(tot*100)/100,model:have.some(function(x){return x.m}),pend:have.some(function(x){return x.p}),
+      partial:have.length<3||isToday,t:[r.temp_8am_f,r.temp_12pm_f,r.temp_5pm_f],am:r.am_conditions||"",pm:r.pm_conditions||""}}
+  function shade(t){return t>=1?"r4":t>=0.5?"r3":t>=0.1?"r2":t>=0.01?"r1":""}
+  function fmt(v){return v.toFixed(2)}
+  function cond(d){if(d.am&&d.pm)return d.am===d.pm?d.am:d.am+" → "+d.pm;return d.am||d.pm||""}
+  function tmp(v){return v==null?"–":Math.round(v)}
+
+  function sheets(site,y,m){
+    var key=y+"-"+p2(m),td=today(),N=dim(y,m),byDay={},i;
+    READ.forEach(function(r){if(r.site===site&&r.date.slice(0,7)===key)byDay[+r.date.slice(8)]=r});
+    var D=[];for(i=1;i<=N;i++){var ds=key+"-"+p2(i);D[i]=ds>td?null:day(byDay[i],ds===td)}
+    // month summary
+    var tot=0,rainy=0,wet=null,rec=0,anyP=false,anyM=false,hi=null,lo=null;
+    for(i=1;i<=N;i++){var d=D[i];if(!d)continue;rec++;tot+=d.tot;if(d.tot>=0.01)rainy++;if(!wet||d.tot>wet.tot)wet={d:i,tot:d.tot};if(d.partial)anyP=true;if(d.model)anyM=true;
+      d.t.forEach(function(v){if(v!=null){if(hi==null||v>hi)hi=v;if(lo==null||v<lo)lo=v}})}
+    tot=Math.round(tot*100)/100;
+    var past=0;for(i=1;i<=N;i++){if(key+"-"+p2(i)<=td)past++}
+    var s=SITES.filter(function(x){return x.name===site})[0],proj=s&&s.project?s.project:"";
+    var head='<div class="hd"><img src="logo.png" alt="" onerror="this.style.display=\'none\'"><div class="tt"><b>Daily Weather Record</b></div><div class="st"><b>'+esc(site)+'</b><span>'+MON[m-1]+" "+y+(proj?" &middot; "+esc(proj):"")+"</span></div></div>";
+    var legend='<div class="lg">Rain shading:<span style="background:#fff"></span>none<span class="r1"></span>0.01&ndash;0.09<span class="r2"></span>0.10&ndash;0.49<span class="r3"></span>0.50&ndash;0.99<span class="r4"></span>1.00+</div>';
+    var note='<p>Rain in inches &nbsp;&middot;&nbsp; Temperatures (&deg;F) at 8 AM &middot; 12 PM &middot; 5 PM</p>';
+    var foot=function(pg){return'<div class="ft">'+legend+note+"</div>"};
+
+    // ---- page 1: calendar ----
+    var lead=dow(y,m,1),weeks=Math.ceil((lead+N)/7),cells="";
+    for(i=0;i<weeks*7;i++){var dn=i-lead+1;
+      if(dn<1||dn>N){cells+='<div class="cell out"></div>';continue}
+      var d=D[dn],rr=d&&d.n?d:null;
+      if(!d){cells+='<div class="cell"><span class="dn">'+dn+"</span></div>";continue}
+      if(!rr){cells+='<div class="cell"><span class="dn">'+dn+'</span><div class="no">no data</div></div>';continue}
+      cells+='<div class="cell '+shade(d.tot)+'"><span class="dn">'+dn+'</span><div class="rn">'+fmt(d.tot)+"<u>in</u></div>"+'<div class="cd">AM '+esc(d.am||"–")+'</div><div class="cd">PM '+esc(d.pm||"–")+'</div><div class="tp">'+d.t.map(tmp).join(" · ")+"&deg;</div></div>"}
+    var sum='<div class="sum"><div><small>Rainfall for the month</small><b>'+fmt(tot)+' in</b><i>'+(rec?"over "+rec+" recorded day"+(rec===1?"":"s"):"no records")+"</i></div>"+
+      '<div><small>Days with rain (0.01 in+)</small><b>'+rainy+"</b><i>of "+past+" day"+(past===1?"":"s")+" so far</i></div>"+
+      '<div><small>Wettest day</small><b>'+(wet&&wet.tot>0?MON[m-1].slice(0,3)+" "+wet.d+" &middot; "+fmt(wet.tot)+" in":"&mdash;")+"</b><i>&nbsp;</i></div>"+
+      '<div><small>Temperature range</small><b>'+(hi==null?"&mdash;":Math.round(lo)+"&deg; to "+Math.round(hi)+"&deg;F")+"</b><i>8 AM, 12 PM, 5 PM readings</i></div>"+
+      '<div><small>Days recorded</small><b>'+rec+"</b><i>"+(rec<past?(past-rec)+" with no data":"complete")+(key===td.slice(0,7)?" &middot; month in progress":"")+"</i></div></div>";
+    var p1='<section class="sheet">'+head+sum+'<div class="wk">'+DOW.map(function(x){return"<div>"+x+"</div>"}).join("")+'</div><div class="cal" style="grid-template-rows:repeat('+weeks+',1fr)">'+cells+"</div>"+foot(1)+"</section>";
+
+    // ---- page 2: day-by-day table ----
+    var rows="",tO=0,tA=0,tP=0;
+    for(i=1;i<=N;i++){var d=D[i],ds=key+"-"+p2(i),label=DOW[dow(y,m,i)].charAt(0)+DOW[dow(y,m,i)].slice(1).toLowerCase()+" "+MON[m-1].slice(0,3)+" "+i;
+      if(!d||!d.n){rows+='<tr><td class="l">'+label+'</td><td colspan="10" class="na">'+(d===null?"":"no data")+"</td></tr>";continue}
+      var c=function(x){return x?fmt(x.v):"&ndash;"};
+      tO+=d.parts[0]?d.parts[0].v:0;tA+=d.parts[1]?d.parts[1].v:0;tP+=d.parts[2]?d.parts[2].v:0;
+      rows+='<tr class="'+(d.tot>=0.01?"wet":"")+'"><td class="l">'+label+"</td><td>"+c(d.parts[0])+"</td><td>"+c(d.parts[1])+"</td><td>"+c(d.parts[2])+'</td><td class="t">'+fmt(d.tot)+"</td><td>"+esc(d.am||"–")+"</td><td>"+esc(d.pm||"–")+"</td><td>"+tmp(d.t[0])+"</td><td>"+tmp(d.t[1])+"</td><td>"+tmp(d.t[2])+"</td><td></td></tr>"}
+    rows+='<tr class="tot"><td class="l">Month total</td><td>'+fmt(tO)+"</td><td>"+fmt(tA)+"</td><td>"+fmt(tP)+"</td><td>"+fmt(tot)+'</td><td colspan="6"></td></tr>';
+    var p2h='<section class="sheet">'+head+'<div class="dtwrap"><table class="dt"><thead><tr><th class="l">Date</th><th>Overnight rain<br>5 PM&ndash;8 AM (in)</th><th>Morning rain<br>8 AM&ndash;12 PM (in)</th><th>Afternoon rain<br>12 PM&ndash;5 PM (in)</th><th>Day total<br>(in)</th><th>Morning<br>conditions</th><th>Afternoon<br>conditions</th><th>8 AM<br>&deg;F</th><th>12 PM<br>&deg;F</th><th>5 PM<br>&deg;F</th><th>Notes</th></tr></thead><tbody>'+rows+"</tbody></table></div>"+foot(2)+"</section>";
+    return p1+p2h}
+
+  function monthsAvail(){
+    var set={};READ.forEach(function(r){set[r.date.slice(0,7)]=1});set[today().slice(0,7)]=1;
+    return Object.keys(set).sort().reverse()}
+  function siteNames(){
+    var n=[];SITES.forEach(function(s){if(s.history&&n.indexOf(s.name)<0)n.push(s.name)});
+    READ.forEach(function(r){if(n.indexOf(r.site)<0)n.push(r.site)});
+    return n.sort(nat)}
+  function draw(){
+    var ym=$("mon").value.split("-"),y=+ym[0],m=+ym[1],sel=$("site").value,names=siteNames();
+    if(sel!=="*")names=names.filter(function(x){return x===sel});
+    $("msg").textContent=names.length?"":"No sites are set up for history yet.";
+    $("papers").innerHTML=names.map(function(n){return sheets(n,y,m)}).join("");
+    try{history.replaceState(null,"","?month="+$("mon").value+(sel!=="*"?"&site="+encodeURIComponent(sel):""))}catch(e){}
+    fit()}
+  function fit(){var w=window.innerWidth-16,z=Math.min(1,w/(10.2*96+8));$("papers").style.zoom=z<1?z:""}
+  function init(){
+    var q={};location.search.replace(/^\?/,"").split("&").forEach(function(p){var a=p.split("=");if(a[0])q[a[0]]=decodeURIComponent(a[1]||"")});
+    var ms=monthsAvail();$("mon").innerHTML=ms.map(function(k){return'<option value="'+k+'">'+MON[+k.slice(5)-1]+" "+k.slice(0,4)+"</option>"}).join("");
+    $("mon").value=ms.indexOf(q.month)>=0?q.month:ms[0];
+    var n=siteNames();$("site").innerHTML='<option value="*">All sites ('+n.length+")</option>"+n.map(function(x){return'<option value="'+esc(x)+'">'+esc(x)+"</option>"}).join("");
+    if(q.site&&n.indexOf(q.site)>=0)$("site").value=q.site;
+    $("mon").onchange=$("site").onchange=draw;$("print").onclick=function(){window.print()};
+    window.addEventListener("resize",fit);draw()}
+
+  Promise.all([get("data/daily.json",true).catch(function(){return[]}),get("sites.txt").catch(function(){return""})]).then(function(a){
+    READ=a[0]||[];
+    SITES=String(a[1]).split(/\r?\n/).map(function(l){return l.trim()}).filter(function(l){return l&&l[0]!=="#"}).map(function(l){
+      var p=l.split(",").map(function(x){return x.trim()}),o={name:p[0],history:false,project:""};
+      p.slice(1).forEach(function(x){if(/^history$/i.test(x))o.history=true;var m=/^project\s*=\s*(.+)$/i.exec(x);if(m)o.project=m[1]});return o});
+    init()});
+})();
+</script>
+</body>
+</html>
