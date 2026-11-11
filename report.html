@@ -107,7 +107,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
     var parts=[rainOf(r,"overnight_rain_in","model_overnight_rain_in","overnight"),rainOf(r,"am_rain_in","model_am_rain_in","am"),rainOf(r,"pm_rain_in","model_pm_rain_in","pm")];
     var have=parts.filter(Boolean),tot=have.reduce(function(s,x){return s+x.v},0);
     return{parts:parts,n:have.length,tot:Math.round(tot*100)/100,model:have.some(function(x){return x.m}),pend:have.some(function(x){return x.p}),
-      partial:have.length<3||isToday,t:[r.temp_8am_f,r.temp_12pm_f,r.temp_5pm_f],am:r.am_conditions||"",pm:r.pm_conditions||""}}
+      partial:have.length<3||isToday,t:[r.temp_8am_f,r.temp_12pm_f,r.temp_5pm_f],am:lab(r.am_conditions,r.temp_8am_f),pm:lab(r.pm_conditions,r.temp_12pm_f)}}
+  // the log only says "Rain/Snow"; show Snow when it was freezing at the start of that period, otherwise Rain
+  function lab(c,t){if(!c)return"";if(/rain|snow/i.test(c))return(t!=null&&t<=32)?"Snow":"Rain";return c}
   function shade(t){return t>=1?"r4":t>=0.5?"r3":t>=0.1?"r2":t>=0.01?"r1":""}
   function fmt(v){return v.toFixed(2)}
   function cond(d){if(d.am&&d.pm)return d.am===d.pm?d.am:d.am+" → "+d.pm;return d.am||d.pm||""}
@@ -155,17 +157,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
     var p2h='<section class="sheet">'+head+'<div class="dtwrap"><table class="dt"><thead><tr><th class="l">Date</th><th>Overnight rain<br>5 PM&ndash;8 AM (in)</th><th>Morning rain<br>8 AM&ndash;12 PM (in)</th><th>Afternoon rain<br>12 PM&ndash;5 PM (in)</th><th>Day total<br>(in)</th><th>Morning<br>conditions</th><th>Afternoon<br>conditions</th><th>8 AM<br>&deg;F</th><th>12 PM<br>&deg;F</th><th>5 PM<br>&deg;F</th><th>Notes</th></tr></thead><tbody>'+rows+"</tbody></table></div>"+foot(2)+"</section>";
     return p1+p2h}
 
-  function monthsAvail(){
-    var set={};READ.forEach(function(r){set[r.date.slice(0,7)]=1});set[today().slice(0,7)]=1;
-    return Object.keys(set).sort().reverse()}
+  // Only sites currently flagged ", history" in sites.txt get reports. A site that is un-flagged or removed drops out.
+  // (If sites.txt can't be read, fall back to every site in the data.)
   function siteNames(){
     var n=[];SITES.forEach(function(s){if(s.history&&n.indexOf(s.name)<0)n.push(s.name)});
-    READ.forEach(function(r){if(n.indexOf(r.site)<0)n.push(r.site)});
+    if(!SITES.length)READ.forEach(function(r){if(n.indexOf(r.site)<0)n.push(r.site)});
     return n.sort(nat)}
+  function hasData(site,key){return READ.some(function(r){return r.site===site&&r.date.slice(0,7)===key})}
+  function monthsAvail(){
+    var set={},n=siteNames();READ.forEach(function(r){if(n.indexOf(r.site)>=0)set[r.date.slice(0,7)]=1});set[today().slice(0,7)]=1;
+    return Object.keys(set).sort().reverse()}
   function draw(){
     var ym=$("mon").value.split("-"),y=+ym[0],m=+ym[1],sel=$("site").value,names=siteNames();
     if(sel!=="*")names=names.filter(function(x){return x===sel});
-    $("msg").textContent=names.length?"":"No sites are set up for history yet.";
+    // skip sites that had no records that month (e.g. started later, or not running yet)
+    var all=names;names=names.filter(function(x){return hasData(x,$("mon").value)});
+    $("msg").textContent=!all.length?"No sites are set up for history yet.":!names.length?"No records for "+(sel==="*"?"any site":sel)+" in "+MON[m-1]+" "+y+".":"";
     $("papers").innerHTML=names.map(function(n){return sheets(n,y,m)}).join("");
     try{history.replaceState(null,"","?month="+$("mon").value+(sel!=="*"?"&site="+encodeURIComponent(sel):""))}catch(e){}
     fit()}
