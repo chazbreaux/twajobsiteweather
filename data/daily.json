@@ -3748,56 +3748,56 @@
 "site": "112-25 Site A",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 49,
-"radar_pending": "overnight"
+"temp_8am_f": 50,
+"radar_pending": ""
 },
 {
 "date": "2026-11-13",
 "site": "112-25 Site B",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 49,
-"radar_pending": "overnight"
+"temp_8am_f": 50,
+"radar_pending": ""
 },
 {
 "date": "2026-11-13",
 "site": "131-24.03 Site A",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 50,
-"radar_pending": "overnight"
+"temp_8am_f": 51,
+"radar_pending": ""
 },
 {
 "date": "2026-11-13",
 "site": "131-24.03 Site B",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 50,
-"radar_pending": "overnight"
+"temp_8am_f": 51,
+"radar_pending": ""
 },
 {
 "date": "2026-11-13",
 "site": "131-24.03 Site C",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 50,
-"radar_pending": "overnight"
+"temp_8am_f": 51,
+"radar_pending": ""
 },
 {
 "date": "2026-11-13",
 "site": "131-24.04 Site A",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 51,
-"radar_pending": "overnight"
+"temp_8am_f": 52,
+"radar_pending": ""
 },
 {
 "date": "2026-11-13",
 "site": "131-24.04 Site C",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 50,
-"radar_pending": "overnight"
+"temp_8am_f": 51,
+"radar_pending": ""
 },
 {
 "date": "2026-11-13",
@@ -3805,15 +3805,15 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 49,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-13",
 "site": "131-24.07 St. Ellen",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 51,
-"radar_pending": "overnight"
+"temp_8am_f": 52,
+"radar_pending": ""
 },
 {
 "date": "2026-11-13",
@@ -3821,7 +3821,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 50,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-13",
@@ -3829,7 +3829,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 51,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-13",
@@ -3844,8 +3844,8 @@
 "site": "Ellis Odom Bridge",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 49,
-"radar_pending": "overnight"
+"temp_8am_f": 50,
+"radar_pending": ""
 },
 {
 "date": "2026-11-13",
@@ -3853,6 +3853,6 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 50,
-"radar_pending": "overnight"
+"radar_pending": ""
 }
 ]
