@@ -3973,7 +3973,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 40,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-14",
@@ -3981,7 +3981,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 40,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-14",
@@ -3989,7 +3989,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 42,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-14",
@@ -3997,23 +3997,23 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 42,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-14",
 "site": "131-24.03 Site C",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 41,
-"radar_pending": "overnight"
+"temp_8am_f": 42,
+"radar_pending": ""
 },
 {
 "date": "2026-11-14",
 "site": "131-24.04 Site A",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 41,
-"radar_pending": "overnight"
+"temp_8am_f": 42,
+"radar_pending": ""
 },
 {
 "date": "2026-11-14",
@@ -4021,54 +4021,62 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 41,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-14",
 "site": "131-24.04 Site D",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 41,
-"radar_pending": "overnight"
+"temp_8am_f": 40,
+"radar_pending": ""
 },
 {
 "date": "2026-11-14",
 "site": "131-24.07 St. Ellen",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 40,
-"radar_pending": "overnight"
+"temp_8am_f": 41,
+"radar_pending": ""
 },
 {
 "date": "2026-11-14",
 "site": "162-19A Perry Industrial Bridge",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 42,
-"radar_pending": "overnight"
+"temp_8am_f": 41,
+"radar_pending": ""
 },
 {
 "date": "2026-11-14",
 "site": "Bexley Road",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
+"temp_8am_f": 40,
+"radar_pending": ""
+},
+{
+"date": "2026-11-14",
+"site": "Buck Creek Road",
+"model_overnight_rain_in": 0.0,
+"overnight_rain_in": 0.0,
 "temp_8am_f": 41,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-14",
 "site": "Ellis Odom Bridge",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 41,
-"radar_pending": "overnight"
+"temp_8am_f": 40,
+"radar_pending": ""
 },
 {
 "date": "2026-11-14",
 "site": "Hickory Grove Church Bridge",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 42,
-"radar_pending": "overnight"
+"temp_8am_f": 41,
+"radar_pending": ""
 }
 ]
