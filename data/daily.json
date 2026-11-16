@@ -4483,7 +4483,7 @@
 "date": "2026-11-16",
 "site": "131-24.07 St. Ellen",
 "model_overnight_rain_in": 0.05,
-"overnight_rain_in": 0.07,
+"overnight_rain_in": 0.06,
 "temp_8am_f": 49,
 "radar_pending": ""
 },
@@ -4499,7 +4499,7 @@
 "date": "2026-11-16",
 "site": "Bexley Road",
 "model_overnight_rain_in": 0.03,
-"overnight_rain_in": 0.09,
+"overnight_rain_in": 0.06,
 "temp_8am_f": 49,
 "radar_pending": ""
 },
