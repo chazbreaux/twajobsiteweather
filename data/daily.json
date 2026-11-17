@@ -4421,7 +4421,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 50,
-"radar_pending": "pm",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
@@ -4429,7 +4429,7 @@
 "model_pm_rain_in": 0.0,
 "pm_conditions": "Partly cloudy",
 "pm_rain_in": 0.0,
-"temp_5pm_f": 54
+"temp_5pm_f": 55
 },
 {
 "date": "2026-11-16",
@@ -4437,7 +4437,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 50,
-"radar_pending": "pm",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
@@ -4445,7 +4445,7 @@
 "model_pm_rain_in": 0.0,
 "pm_conditions": "Partly cloudy",
 "pm_rain_in": 0.0,
-"temp_5pm_f": 54
+"temp_5pm_f": 55
 },
 {
 "date": "2026-11-16",
@@ -4453,7 +4453,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 50,
-"radar_pending": "pm",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
@@ -4469,7 +4469,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 50,
-"radar_pending": "pm",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
@@ -4485,7 +4485,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 50,
-"radar_pending": "pm",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
@@ -4493,7 +4493,7 @@
 "model_pm_rain_in": 0.0,
 "pm_conditions": "Partly cloudy",
 "pm_rain_in": 0.0,
-"temp_5pm_f": 55
+"temp_5pm_f": 56
 },
 {
 "date": "2026-11-16",
@@ -4501,7 +4501,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 49,
-"radar_pending": "pm",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
@@ -4509,7 +4509,7 @@
 "model_pm_rain_in": 0.0,
 "pm_conditions": "Partly cloudy",
 "pm_rain_in": 0.0,
-"temp_5pm_f": 55
+"temp_5pm_f": 56
 },
 {
 "date": "2026-11-16",
@@ -4517,7 +4517,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 50,
-"radar_pending": "pm",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
@@ -4533,7 +4533,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 50,
-"radar_pending": "pm",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
@@ -4541,15 +4541,15 @@
 "model_pm_rain_in": 0.0,
 "pm_conditions": "Partly cloudy",
 "pm_rain_in": 0.0,
-"temp_5pm_f": 54
+"temp_5pm_f": 55
 },
 {
 "date": "2026-11-16",
 "site": "131-24.07 St. Ellen",
 "model_overnight_rain_in": 0.05,
-"overnight_rain_in": 0.08,
+"overnight_rain_in": 0.07,
 "temp_8am_f": 49,
-"radar_pending": "pm",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
@@ -4557,7 +4557,7 @@
 "model_pm_rain_in": 0.0,
 "pm_conditions": "Cloudy",
 "pm_rain_in": 0.0,
-"temp_5pm_f": 54
+"temp_5pm_f": 55
 },
 {
 "date": "2026-11-16",
@@ -4565,7 +4565,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 49,
-"radar_pending": "pm",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
@@ -4573,7 +4573,7 @@
 "model_pm_rain_in": 0.0,
 "pm_conditions": "Partly cloudy",
 "pm_rain_in": 0.0,
-"temp_5pm_f": 55
+"temp_5pm_f": 56
 },
 {
 "date": "2026-11-16",
@@ -4581,7 +4581,7 @@
 "model_overnight_rain_in": 0.03,
 "overnight_rain_in": 0.07,
 "temp_8am_f": 49,
-"radar_pending": "pm",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
@@ -4589,7 +4589,7 @@
 "model_pm_rain_in": 0.0,
 "pm_conditions": "Cloudy",
 "pm_rain_in": 0.0,
-"temp_5pm_f": 55
+"temp_5pm_f": 56
 },
 {
 "date": "2026-11-16",
@@ -4597,7 +4597,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.03,
 "temp_8am_f": 49,
-"radar_pending": "pm",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
@@ -4611,9 +4611,9 @@
 "date": "2026-11-16",
 "site": "Ellis Odom Bridge",
 "model_overnight_rain_in": 0.0,
-"overnight_rain_in": 0.08,
+"overnight_rain_in": 0.07,
 "temp_8am_f": 49,
-"radar_pending": "pm",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
@@ -4629,7 +4629,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 50,
-"radar_pending": "pm",
+"radar_pending": "",
 "model_am_rain_in": 0.0,
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
@@ -4637,6 +4637,118 @@
 "model_pm_rain_in": 0.0,
 "pm_conditions": "Partly cloudy",
 "pm_rain_in": 0.0,
-"temp_5pm_f": 56
+"temp_5pm_f": 57
+},
+{
+"date": "2026-11-17",
+"site": "112-25 Site A",
+"model_overnight_rain_in": 0.0,
+"overnight_rain_in": 0.0,
+"temp_8am_f": 50,
+"radar_pending": "overnight"
+},
+{
+"date": "2026-11-17",
+"site": "112-25 Site B",
+"model_overnight_rain_in": 0.0,
+"overnight_rain_in": 0.0,
+"temp_8am_f": 50,
+"radar_pending": "overnight"
+},
+{
+"date": "2026-11-17",
+"site": "131-24.03 Site A",
+"model_overnight_rain_in": 0.0,
+"overnight_rain_in": 0.0,
+"temp_8am_f": 51,
+"radar_pending": "overnight"
+},
+{
+"date": "2026-11-17",
+"site": "131-24.03 Site B",
+"model_overnight_rain_in": 0.0,
+"overnight_rain_in": 0.0,
+"temp_8am_f": 50,
+"radar_pending": "overnight"
+},
+{
+"date": "2026-11-17",
+"site": "131-24.03 Site C",
+"model_overnight_rain_in": 0.0,
+"overnight_rain_in": 0.0,
+"temp_8am_f": 50,
+"radar_pending": "overnight"
+},
+{
+"date": "2026-11-17",
+"site": "131-24.04 Site A",
+"model_overnight_rain_in": 0.0,
+"overnight_rain_in": 0.0,
+"temp_8am_f": 51,
+"radar_pending": "overnight"
+},
+{
+"date": "2026-11-17",
+"site": "131-24.04 Site C",
+"model_overnight_rain_in": 0.0,
+"overnight_rain_in": 0.0,
+"temp_8am_f": 51,
+"radar_pending": "overnight"
+},
+{
+"date": "2026-11-17",
+"site": "131-24.04 Site D",
+"model_overnight_rain_in": 0.0,
+"overnight_rain_in": 0.0,
+"temp_8am_f": 51,
+"radar_pending": "overnight"
+},
+{
+"date": "2026-11-17",
+"site": "131-24.07 St. Ellen",
+"model_overnight_rain_in": 0.0,
+"overnight_rain_in": 0.0,
+"temp_8am_f": 51,
+"radar_pending": "overnight"
+},
+{
+"date": "2026-11-17",
+"site": "162-19A Perry Industrial Bridge",
+"model_overnight_rain_in": 0.0,
+"overnight_rain_in": 0.0,
+"temp_8am_f": 51,
+"radar_pending": "overnight"
+},
+{
+"date": "2026-11-17",
+"site": "Bexley Road",
+"model_overnight_rain_in": 0.0,
+"overnight_rain_in": 0.0,
+"temp_8am_f": 52,
+"radar_pending": "overnight"
+},
+{
+"date": "2026-11-17",
+"site": "Buck Creek Road",
+"model_overnight_rain_in": 0.0,
+"overnight_rain_in": 0.0,
+"temp_8am_f": 51,
+"radar_pending": "overnight"
+},
+{
+"date": "2026-11-17",
+"site": "Ellis Odom Bridge",
+"model_overnight_rain_in": 0.0,
+"overnight_rain_in": 0.0,
+"temp_8am_f": 50,
+"radar_pending": "overnight"
+},
+{
+"date": "2026-11-17",
+"site": "Hickory Grove Church Bridge",
+"model_overnight_rain_in": 0.0,
+"overnight_rain_in": 0.0,
+"temp_8am_f": 51,
+"radar_pending": "overnight"
 }
 ]
