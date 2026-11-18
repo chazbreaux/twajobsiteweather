@@ -4869,7 +4869,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 57,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-18",
@@ -4877,7 +4877,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 57,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-18",
@@ -4885,7 +4885,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 58,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-18",
@@ -4893,7 +4893,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 58,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-18",
@@ -4901,7 +4901,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 58,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-18",
@@ -4909,7 +4909,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 58,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-18",
@@ -4917,7 +4917,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 58,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-18",
@@ -4925,7 +4925,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 57,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-18",
@@ -4933,7 +4933,7 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 58,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-18",
@@ -4941,15 +4941,15 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 58,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-18",
 "site": "Bexley Road",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 59,
-"radar_pending": "overnight"
+"temp_8am_f": 58,
+"radar_pending": ""
 },
 {
 "date": "2026-11-18",
@@ -4957,15 +4957,15 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 59,
-"radar_pending": "overnight"
+"radar_pending": ""
 },
 {
 "date": "2026-11-18",
 "site": "Ellis Odom Bridge",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 58,
-"radar_pending": "overnight"
+"temp_8am_f": 57,
+"radar_pending": ""
 },
 {
 "date": "2026-11-18",
@@ -4973,6 +4973,6 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 59,
-"radar_pending": "overnight"
+"radar_pending": ""
 }
 ]
