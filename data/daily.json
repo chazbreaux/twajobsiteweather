@@ -5092,16 +5092,32 @@
 "site": "112-25 Site A",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 62,
-"radar_pending": "overnight"
+"temp_8am_f": 61,
+"radar_pending": "pm",
+"model_am_rain_in": 0.0,
+"am_conditions": "Partly cloudy",
+"am_rain_in": 0.0,
+"temp_12pm_f": 71,
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 67
 },
 {
 "date": "2026-11-19",
 "site": "112-25 Site B",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 62,
-"radar_pending": "overnight"
+"temp_8am_f": 61,
+"radar_pending": "pm",
+"model_am_rain_in": 0.0,
+"am_conditions": "Partly cloudy",
+"am_rain_in": 0.0,
+"temp_12pm_f": 71,
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 67
 },
 {
 "date": "2026-11-19",
@@ -5109,7 +5125,15 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 62,
-"radar_pending": "overnight"
+"radar_pending": "pm",
+"model_am_rain_in": 0.0,
+"am_conditions": "Partly cloudy",
+"am_rain_in": 0.0,
+"temp_12pm_f": 71,
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Partly cloudy",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 68
 },
 {
 "date": "2026-11-19",
@@ -5117,47 +5141,95 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 62,
-"radar_pending": "overnight"
+"radar_pending": "pm",
+"model_am_rain_in": 0.0,
+"am_conditions": "Partly cloudy",
+"am_rain_in": 0.0,
+"temp_12pm_f": 71,
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Partly cloudy",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 68
 },
 {
 "date": "2026-11-19",
 "site": "131-24.03 Site C",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 62,
-"radar_pending": "overnight"
+"temp_8am_f": 61,
+"radar_pending": "pm",
+"model_am_rain_in": 0.0,
+"am_conditions": "Partly cloudy",
+"am_rain_in": 0.0,
+"temp_12pm_f": 70,
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 68
 },
 {
 "date": "2026-11-19",
 "site": "131-24.04 Site A",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 63,
-"radar_pending": "overnight"
+"temp_8am_f": 62,
+"radar_pending": "pm",
+"model_am_rain_in": 0.0,
+"am_conditions": "Sunny",
+"am_rain_in": 0.0,
+"temp_12pm_f": 69,
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Partly cloudy",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 68
 },
 {
 "date": "2026-11-19",
 "site": "131-24.04 Site C",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 63,
-"radar_pending": "overnight"
+"temp_8am_f": 62,
+"radar_pending": "pm",
+"model_am_rain_in": 0.0,
+"am_conditions": "Sunny",
+"am_rain_in": 0.0,
+"temp_12pm_f": 70,
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Partly cloudy",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 68
 },
 {
 "date": "2026-11-19",
 "site": "131-24.04 Site D",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 62,
-"radar_pending": "overnight"
+"temp_8am_f": 61,
+"radar_pending": "pm",
+"model_am_rain_in": 0.0,
+"am_conditions": "Partly cloudy",
+"am_rain_in": 0.0,
+"temp_12pm_f": 71,
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 67
 },
 {
 "date": "2026-11-19",
 "site": "131-24.07 St. Ellen",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 64,
-"radar_pending": "overnight"
+"temp_8am_f": 63,
+"radar_pending": "pm",
+"model_am_rain_in": 0.0,
+"am_conditions": "Rain",
+"am_rain_in": 0.01,
+"temp_12pm_f": 69,
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Partly cloudy",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 69
 },
 {
 "date": "2026-11-19",
@@ -5165,15 +5237,31 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 63,
-"radar_pending": "overnight"
+"radar_pending": "pm",
+"model_am_rain_in": 0.0,
+"am_conditions": "Partly cloudy",
+"am_rain_in": 0.0,
+"temp_12pm_f": 71,
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Partly cloudy",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 68
 },
 {
 "date": "2026-11-19",
 "site": "Bexley Road",
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
-"temp_8am_f": 64,
-"radar_pending": "overnight"
+"temp_8am_f": 63,
+"radar_pending": "pm",
+"model_am_rain_in": 0.0,
+"am_conditions": "Partly cloudy",
+"am_rain_in": 0.0,
+"temp_12pm_f": 69,
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Partly cloudy",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 69
 },
 {
 "date": "2026-11-19",
@@ -5181,7 +5269,15 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 63,
-"radar_pending": "overnight"
+"radar_pending": "pm",
+"model_am_rain_in": 0.0,
+"am_conditions": "Partly cloudy",
+"am_rain_in": 0.0,
+"temp_12pm_f": 70,
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Partly cloudy",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 69
 },
 {
 "date": "2026-11-19",
@@ -5189,7 +5285,15 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 62,
-"radar_pending": "overnight"
+"radar_pending": "pm",
+"model_am_rain_in": 0.0,
+"am_conditions": "Sunny",
+"am_rain_in": 0.0,
+"temp_12pm_f": 70,
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Partly cloudy",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 67
 },
 {
 "date": "2026-11-19",
@@ -5197,6 +5301,14 @@
 "model_overnight_rain_in": 0.0,
 "overnight_rain_in": 0.0,
 "temp_8am_f": 63,
-"radar_pending": "overnight"
+"radar_pending": "pm",
+"model_am_rain_in": 0.0,
+"am_conditions": "Partly cloudy",
+"am_rain_in": 0.0,
+"temp_12pm_f": 71,
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Partly cloudy",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 69
 }
 ]
