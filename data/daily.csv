@@ -345,17 +345,17 @@ date,site,overnight_rain_in,temp_8am_f,am_conditions,am_rain_in,temp_12pm_f,pm_c
 2026-11-20,Buck Creek Road,0.0,63,Cloudy,0.0,76,Cloudy,0.0,74,,,0.0,0.0,0.0
 2026-11-20,Ellis Odom Bridge,0.0,62,Partly cloudy,0.0,74,Cloudy,0.0,72,,,0.0,0.0,0.0
 2026-11-20,Hickory Grove Church Bridge,0.0,63,Partly cloudy,0.0,76,Cloudy,0.0,74,,,0.0,0.0,0.0
-2026-11-21,112-25 Site A,0.0,61,Partly cloudy,0.0,72,,,,,,0.0,0.0,
-2026-11-21,112-25 Site B,0.0,61,Partly cloudy,0.0,72,,,,,,0.0,0.0,
-2026-11-21,131-24.03 Site A,0.0,62,Cloudy,0.0,73,,,,,,0.0,0.0,
-2026-11-21,131-24.03 Site B,0.0,62,Cloudy,0.0,72,,,,,,0.0,0.0,
-2026-11-21,131-24.03 Site C,0.0,62,Partly cloudy,0.0,72,,,,,,0.0,0.0,
-2026-11-21,131-24.04 Site A,0.0,64,Partly cloudy,0.0,73,,,,,,0.0,0.0,
-2026-11-21,131-24.04 Site C,0.0,63,Sunny,0.0,73,,,,,,0.0,0.0,
-2026-11-21,131-24.04 Site D,0.0,61,Partly cloudy,0.0,72,,,,,,0.0,0.0,
-2026-11-21,131-24.07 St. Ellen,0.0,65,Partly cloudy,0.0,73,,,,,,0.0,0.0,
-2026-11-21,162-19A Perry Industrial Bridge,0.0,65,Partly cloudy,0.0,74,,,,,,0.0,0.0,
-2026-11-21,Bexley Road,0.0,65,Partly cloudy,0.0,73,,,,,,0.0,0.0,
-2026-11-21,Buck Creek Road,0.0,65,Partly cloudy,0.0,74,,,,,,0.0,0.0,
-2026-11-21,Ellis Odom Bridge,0.0,62,Partly cloudy,0.0,72,,,,,,0.0,0.0,
-2026-11-21,Hickory Grove Church Bridge,0.0,65,Partly cloudy,0.0,74,,,,,,0.0,0.0,
+2026-11-21,112-25 Site A,0.0,61,Partly cloudy,0.0,72,Partly cloudy,0.0,70,,,0.0,0.0,0.0
+2026-11-21,112-25 Site B,0.0,61,Partly cloudy,0.0,72,Partly cloudy,0.0,70,,,0.0,0.0,0.0
+2026-11-21,131-24.03 Site A,0.0,62,Cloudy,0.0,73,Partly cloudy,0.0,71,,,0.0,0.0,0.0
+2026-11-21,131-24.03 Site B,0.0,62,Cloudy,0.0,72,Partly cloudy,0.0,71,,,0.0,0.0,0.0
+2026-11-21,131-24.03 Site C,0.0,62,Partly cloudy,0.0,72,Partly cloudy,0.0,71,,,0.0,0.0,0.0
+2026-11-21,131-24.04 Site A,0.0,64,Partly cloudy,0.0,73,Partly cloudy,0.0,71,,,0.0,0.0,0.0
+2026-11-21,131-24.04 Site C,0.0,63,Sunny,0.0,73,Partly cloudy,0.0,71,,,0.0,0.0,0.0
+2026-11-21,131-24.04 Site D,0.0,61,Partly cloudy,0.0,72,Partly cloudy,0.0,70,,,0.0,0.0,0.0
+2026-11-21,131-24.07 St. Ellen,0.0,65,Partly cloudy,0.0,73,Cloudy,0.0,71,,,0.0,0.0,0.0
+2026-11-21,162-19A Perry Industrial Bridge,0.0,65,Partly cloudy,0.0,74,Partly cloudy,0.0,71,,,0.0,0.0,0.0
+2026-11-21,Bexley Road,0.0,65,Partly cloudy,0.0,73,Cloudy,0.0,71,,,0.0,0.0,0.0
+2026-11-21,Buck Creek Road,0.0,65,Partly cloudy,0.0,74,Partly cloudy,0.0,72,,,0.0,0.0,0.0
+2026-11-21,Ellis Odom Bridge,0.0,62,Partly cloudy,0.0,72,Sunny,0.0,71,,,0.0,0.0,0.0
+2026-11-21,Hickory Grove Church Bridge,0.0,65,Partly cloudy,0.0,74,Partly cloudy,0.0,72,,,0.0,0.0,0.0
