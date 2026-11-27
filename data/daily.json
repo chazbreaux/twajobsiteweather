@@ -6487,7 +6487,7 @@
 "temp_8am_f": 52,
 "model_am_rain_in": 0.34,
 "am_conditions": "Rain",
-"am_rain_in": 0.93,
+"am_rain_in": 0.94,
 "temp_12pm_f": 53,
 "radar_pending": "",
 "model_pm_rain_in": 0.02,
@@ -6583,7 +6583,7 @@
 "temp_8am_f": 49,
 "model_am_rain_in": 1.09,
 "am_conditions": "Rain",
-"am_rain_in": 0.84,
+"am_rain_in": 0.83,
 "temp_12pm_f": 48,
 "radar_pending": "",
 "model_pm_rain_in": 0.02,
@@ -6611,11 +6611,11 @@
 "date": "2026-11-25",
 "site": "Buck Creek Road",
 "model_overnight_rain_in": 0.92,
-"overnight_rain_in": 1.36,
+"overnight_rain_in": 1.35,
 "temp_8am_f": 49,
 "model_am_rain_in": 0.91,
 "am_conditions": "Rain",
-"am_rain_in": 0.87,
+"am_rain_in": 0.86,
 "temp_12pm_f": 48,
 "radar_pending": "",
 "model_pm_rain_in": 0.0,
@@ -6665,7 +6665,11 @@
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
 "temp_12pm_f": 49,
-"radar_pending": ""
+"radar_pending": "",
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 49
 },
 {
 "date": "2026-11-26",
@@ -6677,7 +6681,11 @@
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
 "temp_12pm_f": 49,
-"radar_pending": ""
+"radar_pending": "",
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 49
 },
 {
 "date": "2026-11-26",
@@ -6689,7 +6697,11 @@
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
 "temp_12pm_f": 49,
-"radar_pending": ""
+"radar_pending": "",
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 50
 },
 {
 "date": "2026-11-26",
@@ -6701,7 +6713,11 @@
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
 "temp_12pm_f": 49,
-"radar_pending": ""
+"radar_pending": "",
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 50
 },
 {
 "date": "2026-11-26",
@@ -6713,7 +6729,11 @@
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
 "temp_12pm_f": 48,
-"radar_pending": ""
+"radar_pending": "",
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 49
 },
 {
 "date": "2026-11-26",
@@ -6725,7 +6745,11 @@
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
 "temp_12pm_f": 50,
-"radar_pending": ""
+"radar_pending": "",
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 51
 },
 {
 "date": "2026-11-26",
@@ -6737,7 +6761,11 @@
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
 "temp_12pm_f": 50,
-"radar_pending": ""
+"radar_pending": "",
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 51
 },
 {
 "date": "2026-11-26",
@@ -6749,7 +6777,11 @@
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
 "temp_12pm_f": 49,
-"radar_pending": ""
+"radar_pending": "",
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 50
 },
 {
 "date": "2026-11-26",
@@ -6761,7 +6793,11 @@
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
 "temp_12pm_f": 51,
-"radar_pending": ""
+"radar_pending": "",
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 51
 },
 {
 "date": "2026-11-26",
@@ -6773,7 +6809,11 @@
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
 "temp_12pm_f": 49,
-"radar_pending": ""
+"radar_pending": "",
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 48
 },
 {
 "date": "2026-11-26",
@@ -6785,7 +6825,11 @@
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
 "temp_12pm_f": 51,
-"radar_pending": ""
+"radar_pending": "",
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 51
 },
 {
 "date": "2026-11-26",
@@ -6797,7 +6841,11 @@
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
 "temp_12pm_f": 50,
-"radar_pending": ""
+"radar_pending": "",
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 49
 },
 {
 "date": "2026-11-26",
@@ -6809,7 +6857,11 @@
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
 "temp_12pm_f": 48,
-"radar_pending": ""
+"radar_pending": "",
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 47
 },
 {
 "date": "2026-11-26",
@@ -6821,6 +6873,10 @@
 "am_conditions": "Cloudy",
 "am_rain_in": 0.0,
 "temp_12pm_f": 49,
-"radar_pending": ""
+"radar_pending": "",
+"model_pm_rain_in": 0.0,
+"pm_conditions": "Sunny",
+"pm_rain_in": 0.0,
+"temp_5pm_f": 48
 }
 ]
